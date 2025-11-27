@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Your Gift Link | Jega Digital</title>
+    <meta property="og:title" content="Jega Digital Generator">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1605218427306-635ba2439af2?q=80&w=600&auto=format&fit=crop">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Lato', sans-serif; background-color: #f8f5f2; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; color: #333; }
+        .container { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 400px; width: 90%; text-align: center; margin: 20px 0; }
+        label { display: block; text-align: left; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; color: #888; letter-spacing: 1px; }
+        input { width: 100%; padding: 15px; margin-bottom: 20px; border: 2px solid #eee; border-radius: 10px; font-size: 16px; box-sizing: border-box; outline: none; }
+        input:focus { border-color: #333; }
+        button.primary-btn { background-color: #333; color: white; border: none; padding: 15px; font-size: 16px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; transition: background 0.3s; }
+        button.primary-btn:hover { background-color: #000; }
+        #app-interface, #expired-screen { display: none; } 
+        .error { color: #d9534f; font-size: 14px; margin-bottom: 15px; display: none; }
+        .result-box { margin-top: 30px; display: none; background: #f0f0f0; padding: 20px; border-radius: 10px; text-align: left; }
+        .result-link { word-break: break-all; color: #555; font-size: 14px; margin-bottom: 10px; display: block; }
+        .timer-text { margin-top: 20px; font-size: 12px; color: #ccc; }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="login-screen">
+        <h1>🔒 Restricted Access</h1>
+        <p>Enter the Access Code found in your Etsy download.</p>
+        <input type="password" id="accessCode" placeholder="Enter Access Code">
+        <p class="error" id="loginError">Invalid Code.</p>
+        <button class="primary-btn" onclick="checkPass()">Unlock Tool</button>
+    </div>
+
+    <div class="container" id="expired-screen">
+        <h1 style="color: #d9534f;">🚫 Access Expired</h1>
+        <p>Your 30-day access has ended.</p>
+        <a href="https://www.etsy.com/shop/YourShopName" target="_blank"><button class="primary-btn">Buy New Pass</button></a>
+    </div>
+
+    <div class="container" id="app-interface">
+        <h1>✨ Create Invitation</h1>
+        <p style="margin-bottom: 30px; color:#666;">Fill in the details for your card.</p>
+        
+        <label>Top Title (Optional)</label>
+        <input type="text" id="cardTitle" placeholder="e.g. Save the Date">
+
+        <label>Main Message (Required)</label>
+        <input type="text" id="cardMessage" placeholder="e.g. We are getting married!">
+
+        <label>Date (Optional)</label>
+        <input type="text" id="cardDate" placeholder="e.g. October 26th, 2025">
+
+        <label>Time (Optional)</label>
+        <input type="text" id="cardTime" placeholder="e.g. 4:00 PM">
+
+        <label>Location (Optional)</label>
+        <input type="text" id="cardLoc" placeholder="e.g. The Plaza Hotel, NYC">
+
+        <button class="primary-btn" onclick="generateLink()">Create Magic Link</button>
+
+        <div id="resultArea" class="result-box">
+            <span style="font-size:12px; font-weight:bold; color:#888; text-transform:uppercase;">Your Unique Link:</span>
+            <a id="finalLink" class="result-link" href="#" target="_blank"></a>
+            <button style="background:white; color:#333; border:1px solid #ddd; padding:10px; width:100%; border-radius:5px; cursor:pointer;" onclick="copyToClipboard()">Copy to Clipboard</button>
+        </div>
+        <p class="timer-text" id="days-remaining"></p>
+    </div>
+
+    <script>
+        const SECRET_CODE = "GIFT2025"; 
+        const ACCESS_DAYS = 30; 
+        
+        window.onload = function() { checkExpiry(); };
+
+        function checkExpiry() {
+            const firstLogin = localStorage.getItem('jega_start_date');
+            if (firstLogin) {
+                const now = new Date().getTime(); 
+                const diffDays = (now - parseInt(firstLogin)) / (1000 * 60 * 60 * 24);
+                if (diffDays > ACCESS_DAYS) { 
+                    document.getElementById("login-screen").style.display = "none"; 
+                    document.getElementById("app-interface").style.display = "none"; 
+                    document.getElementById("expired-screen").style.display = "block"; 
+                    return false; 
+                } else { 
+                    document.getElementById("days-remaining").innerText = "License active: " + Math.ceil(ACCESS_DAYS - diffDays) + " days remaining."; 
+                    return true; 
+                }
+            } 
+            return true; 
+        }
+
+        function checkPass() {
+            if (!checkExpiry()) return; 
+            const input = document.getElementById("accessCode").value;
+            if (input.toUpperCase() === SECRET_CODE) { 
+                if (!localStorage.getItem('jega_start_date')) localStorage.setItem('jega_start_date', new Date().getTime()); 
+                document.getElementById("login-screen").style.display = "none"; 
+                document.getElementById("app-interface").style.display = "block"; 
+                checkExpiry(); 
+            } else { 
+                document.getElementById("loginError").style.display = "block"; 
+            }
+        }
+
+        function generateLink() {
+            const title = document.getElementById("cardTitle").value;
+            const msg = document.getElementById("cardMessage").value;
+            const date = document.getElementById("cardDate").value;
+            const time = document.getElementById("cardTime").value;
+            const loc = document.getElementById("cardLoc").value;
+            
+            if (!msg) { alert("Please enter a main message!"); return; }
+
+            // UPDATED: Points to 'card.html' on the same domain
+            const baseUrl = window.location.origin + "/card.html"; 
+            let finalUrl = `${baseUrl}?msg=${encodeURIComponent(msg)}`;
+
+            if (title) finalUrl += `&title=${encodeURIComponent(title)}`;
+            if (date) finalUrl += `&date=${encodeURIComponent(date)}`;
+            if (time) finalUrl += `&time=${encodeURIComponent(time)}`;
+            if (loc) finalUrl += `&loc=${encodeURIComponent(loc)}`;
+
+            const linkDisplay = document.getElementById("finalLink");
+            linkDisplay.innerText = finalUrl;
+            linkDisplay.href = finalUrl;
+            document.getElementById("resultArea").style.display = "block";
+        }
+        function copyToClipboard() { 
+            const linkText = document.getElementById("finalLink").innerText; 
+            navigator.clipboard.writeText(linkText).then(() => alert("Link Copied!")); 
+        }
+    </script>
+</body>
+</html>

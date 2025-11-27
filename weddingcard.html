@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>A Special Invitation</title>
+    
+    <meta property="og:image" content="https://images.unsplash.com/photo-1605218427306-635ba2439af2?q=80&w=600&auto=format&fit=crop">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Great+Vibes&display=swap" rel="stylesheet">
+
+    <style>
+        body { margin: 0; padding: 0; background-color: #fdf6f0; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: 'Playfair Display', serif; overflow: hidden; color: #5a4a42; }
+        .card-container { position: relative; width: 320px; height: 480px; background: #fff; border-radius: 20px; box-shadow: 0 25px 60px rgba(90, 74, 66, 0.2); overflow: hidden; }
+        
+        #prize-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+            padding: 30px; box-sizing: border-box;
+            background-image: linear-gradient(rgba(255, 253, 245, 0.85), rgba(255, 253, 245, 0.85)), url('https://images.unsplash.com/photo-1526047932273-341f2a7631f9?q=80&w=600&auto=format&fit=crop');
+            background-size: cover; background-position: center;
+            border: 8px double #d4af37; border-radius: 20px; z-index: 1;
+        }
+
+        .prize-title { font-family: 'Great Vibes', cursive; font-size: 32px; color: #c5a059; margin-bottom: 10px; text-shadow: 2px 2px 0px #fff; }
+        .prize-message { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 600; color: #3d2e27; line-height: 1.2; padding: 0 10px; margin-bottom: 15px; }
+        
+        .prize-details { border-top: 1px solid #c5a059; border-bottom: 1px solid #c5a059; padding: 10px 0; margin-top: 10px; width: 70%; background: rgba(255,255,255,0.7); }
+        .detail-item { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #8c7b70; margin-top: 5px; }
+        .detail-value { font-size: 16px; font-weight: 600; color: #3d2e27; margin-bottom: 5px; }
+        .brand-footer { position: absolute; bottom: 20px; font-size: 10px; color: #cba773; letter-spacing: 2px; text-transform: uppercase; }
+
+        canvas { position: absolute; top: 0; left: 0; z-index: 2; cursor: pointer; border-radius: 20px; touch-action: none; }
+        .instructions { margin-top: 25px; color: #a39288; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; animation: pulse 2s infinite; font-family: sans-serif; }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+    </style>
+</head>
+<body>
+    <div class="card-container">
+        <div id="prize-layer">
+            <div class="prize-title" id="card-title">A Special Invitation</div>
+            <div class="prize-message" id="prize-text">Loading...</div>
+            <div class="prize-details" id="details-container">
+                <div id="date-group"><div class="detail-item">Date</div><div class="detail-value" id="card-date">--</div></div>
+                <div id="time-group"><div class="detail-item">Time</div><div class="detail-value" id="card-time">--</div></div>
+                <div id="location-group"><div class="detail-item">Location</div><div class="detail-value" id="card-location">--</div></div>
+            </div>
+            <div class="brand-footer">With Love</div>
+        </div>
+        <canvas id="scratchCanvas"></canvas>
+    </div>
+    <p class="instructions">Rub screen to reveal</p>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        document.getElementById('prize-text').innerText = urlParams.get('msg') || "Scratch to reveal!";
+        
+        const titleParam = urlParams.get('title'); if (titleParam) document.getElementById('card-title').innerText = titleParam;
+        
+        const dateParam = urlParams.get('date');
+        const timeParam = urlParams.get('time');
+        const locParam = urlParams.get('loc');
+
+        if (dateParam) document.getElementById('card-date').innerText = dateParam; else document.getElementById('date-group').style.display = "none"; 
+        if (timeParam) document.getElementById('card-time').innerText = timeParam; else document.getElementById('time-group').style.display = "none";
+        if (locParam) document.getElementById('card-location').innerText = locParam; else document.getElementById('location-group').style.display = "none";
+        
+        if (!dateParam && !timeParam && !locParam) document.getElementById('details-container').style.display = 'none';
+
+        const canvas = document.getElementById('scratchCanvas');
+        const ctx = canvas.getContext('2d');
+        const container = document.querySelector('.card-container');
+        const dpr = window.devicePixelRatio || 1;
+        const rect = container.getBoundingClientRect();
+        canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr); canvas.style.width = `${rect.width}px`; canvas.style.height = `${rect.height}px`;
+
+        function drawFoil() {
+            const gradient = ctx.createLinearGradient(0, 0, rect.width, rect.height);
+            gradient.addColorStop(0, '#C5A059'); gradient.addColorStop(0.3, '#E6C776'); gradient.addColorStop(0.6, '#C5A059'); gradient.addColorStop(1, '#E6C776'); 
+            ctx.fillStyle = gradient; ctx.fillRect(0, 0, rect.width, rect.height);
+            for (let i = 0; i < 5000; i++) { ctx.fillStyle = `rgba(255,255,255, ${Math.random() * 0.3})`; ctx.beginPath(); ctx.arc(Math.random() * rect.width, Math.random() * rect.height, Math.random() * 2, 0, Math.PI * 2); ctx.fill(); }
+            ctx.fillStyle = "rgba(255,255,255,0.9)"; ctx.font = "italic 600 24px 'Playfair Display'"; ctx.textAlign = "center"; ctx.shadowColor = "rgba(0,0,0,0.2)"; ctx.shadowBlur = 5; ctx.fillText("Scratch to Reveal", rect.width/2, rect.height/2);
+        }
+        drawFoil();
+
+        let isDrawing = false;
+        function scratch(x, y) { ctx.globalCompositeOperation = 'destination-out'; ctx.beginPath(); const angle = Math.random() * Math.PI * 2; const radius = 40; ctx.ellipse(x, y, radius, radius * 0.8, angle, 0, Math.PI * 2); ctx.fill(); }
+        canvas.addEventListener('mousedown', (e) => { isDrawing = true; }); canvas.addEventListener('mouseup', (e) => { isDrawing = false; });
+        canvas.addEventListener('mousemove', (e) => { if (isDrawing) { const rect = canvas.getBoundingClientRect(); scratch(e.clientX - rect.left, e.clientY - rect.top); } });
+        canvas.addEventListener('touchstart', (e) => { isDrawing = true; }, {passive: false}); canvas.addEventListener('touchend', (e) => { isDrawing = false; });
+        canvas.addEventListener('touchmove', (e) => { if (isDrawing) { const rect = canvas.getBoundingClientRect(); const touch = e.touches[0]; scratch(touch.clientX - rect.left, touch.clientY - rect.top); } }, {passive: false});
+    </script>
+</body>
+</html>
