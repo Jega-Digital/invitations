@@ -19,7 +19,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Tangerine:wght@700&display=swap" rel="stylesheet">
     
     <style>
-        /* (CSS styles remain the same as previous clean version) */
+        /* General Styles */
         body { margin: 0; padding: 0; background-color: #fdf6f0; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: 'Playfair Display', serif; overflow: hidden; color: #5a4a42; }
         .card-container { position: relative; width: 320px; height: 480px; background: #fff; border-radius: 20px; box-shadow: 0 25px 60px rgba(90, 74, 66, 0.2); overflow: hidden; }
         
@@ -35,7 +35,7 @@
         .prize-title { font-family: 'Tangerine', cursive; font-size: 38px; color: #000000; margin-bottom: 10px; text-shadow: 2px 2px 0px #fff; line-height: 1.1; }
         .prize-message { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 600; color: #3d2e27; line-height: 1.2; padding: 0 10px; margin-bottom: 15px; }
         
-        .prize-details { border-top: 1px solid #c5a059; border-bottom: 1px solid #c5a059; padding: 10px 0; margin-top: 10px; width: 80%; background: rgba(255,255,255,0.7); }
+        .prize-details { border-top: 1px solid #c5a059; border-bottom: 1px solid #c50d59; padding: 10px 0; margin-top: 10px; width: 80%; background: rgba(255,255,255,0.7); }
         .detail-item { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #8c7b70; margin-top: 5px; }
         .detail-value { font-size: 14px; font-weight: 600; color: #3d2e27; margin-bottom: 5px; }
         .brand-footer { position: absolute; bottom: 20px; font-size: 10px; color: #cba773; letter-spacing: 2px; text-transform: uppercase; }
@@ -72,60 +72,26 @@
 
     <script>
         // --- TONE.JS SETUP ---
-        let noise;
         let sampler;
-        let canPlay = false; // Flag to enable audio context after first user tap
+        let canPlay = false; 
 
         function setupAudio() {
-            // 1. Scratch Noise (White Noise bursts)
-            noise = new Tone.Noise("white").toDestination();
-            noise.volume.value = -20; // Keep noise volume low
-            
-            // 2. Reveal Sampler (Glockenspiel/Chime)
             sampler = new Tone.Sampler({
-                urls: {
-                    C4: "C4.mp3",
-                },
+                urls: { C4: "C4.mp3" },
                 baseUrl: "https://tonejs.github.io/audio/salamander/",
-                onload: () => {
-                    // console.log("Sampler loaded");
-                }
             }).toDestination();
-            sampler.volume.value = 0; // Standard volume
-        }
-
-        // --- SCRATCH SOUND CONTROLS ---
-        let noiseTimeout;
-
-        function startScratchSound() {
-            if (!canPlay) return;
-            noise.start();
-            // Start a short sound burst and fade it out
-            noise.rampTo(0, 0.01); 
-            noise.volume.rampTo(-10, 0.1); 
-            // Stop sound after a very short time
-            noiseTimeout = setTimeout(() => {
-                noise.volume.rampTo(-20, 0.5);
-                noise.stop(Tone.now() + 0.5); 
-            }, 100);
-        }
-
-        function stopScratchSound() {
-            if (noiseTimeout) clearTimeout(noiseTimeout);
-            noise.stop(Tone.now() + 0.1); 
+            sampler.volume.value = 0; 
         }
 
         function playRevealChime() {
             if (sampler) {
-                sampler.triggerAttackRelease("G5", "8n"); // High chime
-                sampler.triggerAttackRelease("C6", "4n", "+0.2"); // Final bell
+                sampler.triggerAttackRelease("G5", "8n"); 
+                sampler.triggerAttackRelease("C6", "4n", "+0.2"); 
             }
         }
 
-
         // --- DATA FILLING & SETUP ---
         const urlParams = new URLSearchParams(window.location.search);
-        // ... (data filling remains the same) ...
         document.getElementById('prize-text').innerText = urlParams.get('msg') || "Scratch to reveal!";
         const titleParam = urlParams.get('title'); if (titleParam) document.getElementById('card-title').innerText = titleParam;
         const dateParam = urlParams.get('date'); const timeParam = urlParams.get('time'); const locParam = urlParams.get('loc');
@@ -134,22 +100,19 @@
         if (locParam) document.getElementById('card-location').innerText = locParam; else document.getElementById('location-group').style.display = "none";
         if (!dateParam && !timeParam && !locParam) document.getElementById('details-container').style.display = 'none';
 
-
         // --- CANVAS SETUP ---
         const canvas = document.getElementById('scratchCanvas');
         const ctx = canvas.getContext('2d');
         const container = document.querySelector('.card-container');
         const confettiContainer = document.getElementById('confetti-container');
-        const totalPixels = canvas.width * canvas.height;
-        let isComplete = false;
-
         const dpr = window.devicePixelRatio || 1;
         const rect = container.getBoundingClientRect();
         canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
         ctx.scale(dpr, dpr); canvas.style.width = `${rect.width}px`; canvas.style.height = `${rect.height}px`;
 
+        let isComplete = false;
+        
         function drawFoil() {
-            // ... (drawFoil function remains the same) ...
             const gradient = ctx.createLinearGradient(0, 0, rect.width, rect.height);
             gradient.addColorStop(0, '#C5A059'); gradient.addColorStop(0.3, '#E6C776'); gradient.addColorStop(0.6, '#C5A059'); gradient.addColorStop(1, '#E6C776'); 
             ctx.fillStyle = gradient; ctx.fillRect(0, 0, rect.width, rect.height);
@@ -165,10 +128,8 @@
         function runAnimation() {
             if (isComplete) return;
             isComplete = true; 
-            stopScratchSound(); // Stop the scratching noise
-            playRevealChime(); // Play the final chime
+            playRevealChime(); 
             
-            // ... (rest of animation logic remains the same) ...
             const burst = document.createElement('div');
             burst.className = 'burst-effect';
             container.appendChild(burst);
@@ -196,22 +157,29 @@
             }, 3000);
         }
         
-        function checkScratchCompletion() {
+        // --- NEW OPTIMIZED CHECK LOGIC ---
+        function checkScratchCompletionOnLift() {
             if (isComplete) return; 
-            if (Math.random() > 0.95) startScratchSound(); // Small chance to trigger scratch sound during move
-            
+
+            // --- RE-INTRODUCING LIGHTWEIGHT PIXEL CHECK ---
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const pixels = imageData.data;
             let currentScratched = 0;
-
-            for (let i = 3; i < pixels.length; i += 4) {
+            
+            // Check only 1 out of every 20 pixels to keep it fast
+            const checkDensity = 20; 
+            const totalCheckablePixels = (canvas.width * canvas.height) / checkDensity;
+            
+            for (let i = 3; i < pixels.length; i += 4 * checkDensity) {
                 if (pixels[i] === 0) {
                     currentScratched++;
                 }
             }
-            const scratchPercentage = (currentScratched / totalPixels) * 100;
 
-            if (scratchPercentage >= 80) {
+            const scratchPercentage = (currentScratched / totalCheckablePixels) * 100;
+
+            // Trigger animation only if 95% of the visible area is gone
+            if (scratchPercentage >= 95) { 
                 runAnimation();
             }
         }
@@ -225,7 +193,6 @@
             const radius = 40; 
             ctx.ellipse(x, y, radius, radius * 0.8, angle, 0, Math.PI * 2); 
             ctx.fill(); 
-            checkScratchCompletion();
         }
 
         // 1. Initial Setup: Must be triggered by a user action
@@ -233,7 +200,6 @@
         document.addEventListener('mousedown', initializeAudioContext, { once: true });
         
         function initializeAudioContext() {
-            // Tone.start() ensures the AudioContext starts
             Tone.start().then(() => {
                 setupAudio();
                 canPlay = true;
@@ -244,11 +210,10 @@
         // 2. Event Listeners for Interaction
         canvas.addEventListener('mousedown', (e) => { 
             isDrawing = true; 
-            startScratchSound(); 
         }); 
         canvas.addEventListener('mouseup', (e) => { 
             isDrawing = false; 
-            stopScratchSound();
+            checkScratchCompletionOnLift(); // Check only when the finger is lifted
         });
         canvas.addEventListener('mousemove', (e) => { 
             if (isDrawing) { 
@@ -258,11 +223,10 @@
         });
         canvas.addEventListener('touchstart', (e) => { 
             isDrawing = true; 
-            startScratchSound();
         }, {passive: false}); 
         canvas.addEventListener('touchend', (e) => { 
             isDrawing = false; 
-            stopScratchSound();
+            checkScratchCompletionOnLift(); // Check only when the finger is lifted
         });
         canvas.addEventListener('touchmove', (e) => { 
             if (isDrawing) { 
