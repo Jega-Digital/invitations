@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>A Special Invitation</title>
     
+    <!-- Tone.js for Audio Generation (Free, No Copyright) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
     <!-- Open Graph Data -->
     <meta property="og:image" content="https://images.unsplash.com/photo-1605218427306-635ba2439af2?q=80&w=600&auto=format&fit=crop">
     <meta property="og:image:width" content="1200">
@@ -13,103 +16,44 @@
     <!-- CUSTOM FONTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Combined your Tangerine font with Playfair Display (Required for main message) -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Tangerine:wght@700&display=swap" rel="stylesheet">
     
     <style>
-        /* General Styles */
+        /* (CSS styles remain the same as previous clean version) */
         body { margin: 0; padding: 0; background-color: #fdf6f0; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: 'Playfair Display', serif; overflow: hidden; color: #5a4a42; }
         .card-container { position: relative; width: 320px; height: 480px; background: #fff; border-radius: 20px; box-shadow: 0 25px 60px rgba(90, 74, 66, 0.2); overflow: hidden; }
         
-        /* Prize Layer (Your Background) */
         #prize-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
             padding: 30px; box-sizing: border-box;
-            /* Floral Background + Overlay */
             background-image: linear-gradient(rgba(255, 253, 245, 0.85), rgba(255, 253, 245, 0.85)), url('https://images.unsplash.com/photo-1526047932273-341f2a7631f9?q=80&w=600&auto=format&fit=crop');
             background-size: cover; background-position: center;
             border: 8px double #d4af37; border-radius: 20px; z-index: 1;
         }
 
-        /* PRIZE TITLE (Your custom Tangerine font/color) */
-        .prize-title { 
-            font-family: 'Tangerine', cursive; 
-            font-size: 38px; 
-            color: #000000; 
-            margin-bottom: 10px; 
-            text-shadow: 2px 2px 0px #fff; 
-            line-height: 1.1; /* Ensure multi-line titles don't space out too much */
-        }
+        .prize-title { font-family: 'Tangerine', cursive; font-size: 38px; color: #000000; margin-bottom: 10px; text-shadow: 2px 2px 0px #fff; line-height: 1.1; }
         .prize-message { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 600; color: #3d2e27; line-height: 1.2; padding: 0 10px; margin-bottom: 15px; }
         
-        /* Prize Details (Your Custom Box) */
         .prize-details { border-top: 1px solid #c5a059; border-bottom: 1px solid #c5a059; padding: 10px 0; margin-top: 10px; width: 80%; background: rgba(255,255,255,0.7); }
         .detail-item { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #8c7b70; margin-top: 5px; }
         .detail-value { font-size: 14px; font-weight: 600; color: #3d2e27; margin-bottom: 5px; }
         .brand-footer { position: absolute; bottom: 20px; font-size: 10px; color: #cba773; letter-spacing: 2px; text-transform: uppercase; }
 
-        /* Scratch Layer */
-        canvas { 
-            position: absolute; top: 0; left: 0; z-index: 2; cursor: pointer; border-radius: 20px; touch-action: none; 
-            transition: opacity 0.5s ease; /* Allows canvas to fade out */
-        }
+        canvas { position: absolute; top: 0; left: 0; z-index: 2; cursor: pointer; border-radius: 20px; touch-action: none; transition: opacity 0.5s ease; }
         .instructions { margin-top: 25px; color: #a39288; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; animation: pulse 2s infinite; font-family: sans-serif; }
         
-        /* === NEW ANIMATION CSS === */
-        #confetti-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 3; /* Above the scratch layer */
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 1s ease;
-        }
-        
-        .petal {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: #d4af37; /* Gold color */
-            border-radius: 50%;
-            opacity: 0;
-            transform: translateY(0);
-        }
-        
-        @keyframes fall {
-            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(480px) rotate(360deg); opacity: 0; }
-        }
-
-        .burst-effect {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(252,217,143,0.5) 50%, rgba(255,255,255,0) 100%);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            animation: burst 1s forwards;
-            z-index: 4;
-        }
-        
-        @keyframes burst {
-            0% { opacity: 1; transform: scale(0.5) translate(-50%, -50%); }
-            50% { opacity: 0.8; transform: scale(1.5) translate(-50%, -50%); }
-            100% { opacity: 0; transform: scale(2.0) translate(-50%, -50%); }
-        }
-        /* End of New CSS */
-
+        /* === ANIMATION CSS === */
+        #confetti-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; opacity: 0; transition: opacity 1s ease; }
+        .petal { position: absolute; width: 10px; height: 10px; background: #d4af37; border-radius: 50%; opacity: 0; transform: translateY(0); }
+        @keyframes fall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(480px) rotate(360deg); opacity: 0; } }
+        .burst-effect { position: absolute; top: 50%; left: 50%; width: 200px; height: 200px; background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(252,217,143,0.5) 50%, rgba(255,255,255,0) 100%); border-radius: 50%; transform: translate(-50%, -50%); animation: burst 1s forwards; z-index: 4; }
+        @keyframes burst { 0% { opacity: 1; transform: scale(0.5) translate(-50%, -50%); } 50% { opacity: 0.8; transform: scale(1.5) translate(-50%, -50%); } 100% { opacity: 0; transform: scale(2.0) translate(-50%, -50%); } }
         @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
     </style>
 </head>
 <body>
     <div class="card-container">
-        <!-- ADDED CONFETTI CONTAINER -->
         <div id="confetti-container"></div> 
         
         <div id="prize-layer">
@@ -127,9 +71,61 @@
     <p class="instructions">Rub screen to reveal</p>
 
     <script>
+        // --- TONE.JS SETUP ---
+        let noise;
+        let sampler;
+        let canPlay = false; // Flag to enable audio context after first user tap
+
+        function setupAudio() {
+            // 1. Scratch Noise (White Noise bursts)
+            noise = new Tone.Noise("white").toDestination();
+            noise.volume.value = -20; // Keep noise volume low
+            
+            // 2. Reveal Sampler (Glockenspiel/Chime)
+            sampler = new Tone.Sampler({
+                urls: {
+                    C4: "C4.mp3",
+                },
+                baseUrl: "https://tonejs.github.io/audio/salamander/",
+                onload: () => {
+                    // console.log("Sampler loaded");
+                }
+            }).toDestination();
+            sampler.volume.value = 0; // Standard volume
+        }
+
+        // --- SCRATCH SOUND CONTROLS ---
+        let noiseTimeout;
+
+        function startScratchSound() {
+            if (!canPlay) return;
+            noise.start();
+            // Start a short sound burst and fade it out
+            noise.rampTo(0, 0.01); 
+            noise.volume.rampTo(-10, 0.1); 
+            // Stop sound after a very short time
+            noiseTimeout = setTimeout(() => {
+                noise.volume.rampTo(-20, 0.5);
+                noise.stop(Tone.now() + 0.5); 
+            }, 100);
+        }
+
+        function stopScratchSound() {
+            if (noiseTimeout) clearTimeout(noiseTimeout);
+            noise.stop(Tone.now() + 0.1); 
+        }
+
+        function playRevealChime() {
+            if (sampler) {
+                sampler.triggerAttackRelease("G5", "8n"); // High chime
+                sampler.triggerAttackRelease("C6", "4n", "+0.2"); // Final bell
+            }
+        }
+
+
+        // --- DATA FILLING & SETUP ---
         const urlParams = new URLSearchParams(window.location.search);
-        
-        // --- DATA FILLING ---
+        // ... (data filling remains the same) ...
         document.getElementById('prize-text').innerText = urlParams.get('msg') || "Scratch to reveal!";
         const titleParam = urlParams.get('title'); if (titleParam) document.getElementById('card-title').innerText = titleParam;
         const dateParam = urlParams.get('date'); const timeParam = urlParams.get('time'); const locParam = urlParams.get('loc');
@@ -138,12 +134,11 @@
         if (locParam) document.getElementById('card-location').innerText = locParam; else document.getElementById('location-group').style.display = "none";
         if (!dateParam && !timeParam && !locParam) document.getElementById('details-container').style.display = 'none';
 
+
         // --- CANVAS SETUP ---
         const canvas = document.getElementById('scratchCanvas');
         const ctx = canvas.getContext('2d');
         const container = document.querySelector('.card-container');
-        
-        // NEW GLOBAL VARS FOR ANIMATION
         const confettiContainer = document.getElementById('confetti-container');
         const totalPixels = canvas.width * canvas.height;
         let isComplete = false;
@@ -154,13 +149,11 @@
         ctx.scale(dpr, dpr); canvas.style.width = `${rect.width}px`; canvas.style.height = `${rect.height}px`;
 
         function drawFoil() {
-            // Your custom drawFoil function logic
+            // ... (drawFoil function remains the same) ...
             const gradient = ctx.createLinearGradient(0, 0, rect.width, rect.height);
             gradient.addColorStop(0, '#C5A059'); gradient.addColorStop(0.3, '#E6C776'); gradient.addColorStop(0.6, '#C5A059'); gradient.addColorStop(1, '#E6C776'); 
             ctx.fillStyle = gradient; ctx.fillRect(0, 0, rect.width, rect.height);
             for (let i = 0; i < 5000; i++) { ctx.fillStyle = `rgba(255,255,255, ${Math.random() * 0.3})`; ctx.beginPath(); ctx.arc(Math.random() * rect.width, Math.random() * rect.height, Math.random() * 2, 0, Math.PI * 2); ctx.fill(); }
-            
-            // NOTE: Using Playfair Display here for the scratch text, as Tangerine is too thin to read.
             ctx.fillStyle = "rgba(255,255,255,0.9)"; 
             ctx.font = "italic 600 24px 'Playfair Display'"; 
             ctx.textAlign = "center"; ctx.shadowColor = "rgba(0,0,0,0.2)"; ctx.shadowBlur = 5; 
@@ -168,17 +161,18 @@
         }
         drawFoil();
 
-        // --- NEW CONFETTI / BURST LOGIC ---
+        // --- ANIMATION / SOUND TRIGGER ---
         function runAnimation() {
             if (isComplete) return;
-            isComplete = true; // Prevents re-firing
-
-            // 1. Glitter Burst (Light flash effect)
+            isComplete = true; 
+            stopScratchSound(); // Stop the scratching noise
+            playRevealChime(); // Play the final chime
+            
+            // ... (rest of animation logic remains the same) ...
             const burst = document.createElement('div');
             burst.className = 'burst-effect';
             container.appendChild(burst);
 
-            // 2. Petals/Glitter Trail (Falls)
             for (let i = 0; i < 50; i++) {
                 const petal = document.createElement('div');
                 petal.className = 'petal';
@@ -193,7 +187,7 @@
             }
 
             confettiContainer.style.opacity = 1;
-            canvas.style.opacity = 0; // Fade out the remaining scratch layer
+            canvas.style.opacity = 0; 
             document.querySelector('.instructions').innerText = 'The surprise is revealed!';
 
             setTimeout(() => {
@@ -204,7 +198,8 @@
         
         function checkScratchCompletion() {
             if (isComplete) return; 
-
+            if (Math.random() > 0.95) startScratchSound(); // Small chance to trigger scratch sound during move
+            
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const pixels = imageData.data;
             let currentScratched = 0;
@@ -214,10 +209,9 @@
                     currentScratched++;
                 }
             }
-
             const scratchPercentage = (currentScratched / totalPixels) * 100;
 
-            if (scratchPercentage >= 99) { // 90% is the completion threshold
+            if (scratchPercentage >= 80) {
                 runAnimation();
             }
         }
@@ -228,21 +222,55 @@
             ctx.globalCompositeOperation = 'destination-out'; 
             ctx.beginPath(); 
             const angle = Math.random() * Math.PI * 2; 
-            const radius = 60; 
+            const radius = 40; 
             ctx.ellipse(x, y, radius, radius * 0.8, angle, 0, Math.PI * 2); 
             ctx.fill(); 
-            
-            // Check completion after every scratch event
             checkScratchCompletion();
         }
 
-        // Event Listeners
-        canvas.addEventListener('mousedown', (e) => { isDrawing = true; }); 
-        canvas.addEventListener('mouseup', (e) => { isDrawing = false; checkScratchCompletion(); });
-        canvas.addEventListener('mousemove', (e) => { if (isDrawing) { const rect = canvas.getBoundingClientRect(); scratch(e.clientX - rect.left, e.clientY - rect.top); } });
-        canvas.addEventListener('touchstart', (e) => { isDrawing = true; }, {passive: false}); 
-        canvas.addEventListener('touchend', (e) => { isDrawing = false; checkScratchCompletion(); });
-        canvas.addEventListener('touchmove', (e) => { if (isDrawing) { const rect = canvas.getBoundingClientRect(); const touch = e.touches[0]; scratch(touch.clientX - rect.left, touch.clientY - rect.top); } }, {passive: false});
+        // 1. Initial Setup: Must be triggered by a user action
+        document.addEventListener('touchstart', initializeAudioContext, { once: true });
+        document.addEventListener('mousedown', initializeAudioContext, { once: true });
+        
+        function initializeAudioContext() {
+            // Tone.start() ensures the AudioContext starts
+            Tone.start().then(() => {
+                setupAudio();
+                canPlay = true;
+            });
+        }
+
+
+        // 2. Event Listeners for Interaction
+        canvas.addEventListener('mousedown', (e) => { 
+            isDrawing = true; 
+            startScratchSound(); 
+        }); 
+        canvas.addEventListener('mouseup', (e) => { 
+            isDrawing = false; 
+            stopScratchSound();
+        });
+        canvas.addEventListener('mousemove', (e) => { 
+            if (isDrawing) { 
+                const rect = canvas.getBoundingClientRect(); 
+                scratch(e.clientX - rect.left, e.clientY - rect.top); 
+            } 
+        });
+        canvas.addEventListener('touchstart', (e) => { 
+            isDrawing = true; 
+            startScratchSound();
+        }, {passive: false}); 
+        canvas.addEventListener('touchend', (e) => { 
+            isDrawing = false; 
+            stopScratchSound();
+        });
+        canvas.addEventListener('touchmove', (e) => { 
+            if (isDrawing) { 
+                const rect = canvas.getBoundingClientRect(); 
+                const touch = e.touches[0]; 
+                scratch(touch.clientX - rect.left, touch.clientY - rect.top); 
+            } 
+        }, {passive: false});
     </script>
 </body>
 </html>
