@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Your Gift Link | Jega Digital</title>
-    <!-- Open Graph Data -->
     <meta property="og:title" content="Jega Digital Generator">
     <meta property="og:image" content="https://images.unsplash.com/photo-1605218427306-635ba2439af2?q=80&w=600&auto=format&fit=crop">
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
@@ -25,7 +24,6 @@
 </head>
 <body>
 
-    <!-- SCREEN 1: LOGIN -->
     <div class="container" id="login-screen">
         <h1>🔒 Restricted Access</h1>
         <p>Enter the Access Code found in your Etsy download.</p>
@@ -34,14 +32,12 @@
         <button class="primary-btn" onclick="checkPass()">Unlock Tool</button>
     </div>
 
-    <!-- SCREEN 2: EXPIRED -->
     <div class="container" id="expired-screen">
         <h1 style="color: #d9534f;">🚫 Access Expired</h1>
         <p>Your 30-day access has ended.</p>
         <a href="https://www.etsy.com/shop/YourShopName" target="_blank"><button class="primary-btn">Buy New Pass</button></a>
     </div>
 
-    <!-- SCREEN 3: THE TOOL -->
     <div class="container" id="app-interface">
         <h1>✨ Create Invitation</h1>
         <p style="margin-bottom: 30px; color:#666;">Fill in the details for your card.</p>
@@ -72,8 +68,23 @@
     </div>
 
     <script>
-        const SECRET_CODE = "GIFT2025"; 
-        const ACCESS_DAYS = 30; 
+        // --- Jega Digital Product Codes & Security Configuration ---
+        // Maps the user-provided access code to the correct card file.
+        const CODES = {
+            // Gold Card Product (Default)
+            'GOLD2025': {
+                file: 'card.html',
+                theme: 'Gold Floral',
+                active: true
+            },
+            // Purple Card Product (NEW!)
+            'PURPLE2025': {
+                file: 'card-purple.html',
+                theme: 'Purple Floral',
+                active: true
+            }
+        };
+        const ACCESS_DAYS = 30;
         
         window.onload = function() { 
             // 1. Check if access is expired
@@ -102,6 +113,7 @@
                     document.getElementById("expired-screen").style.display = "block"; 
                     // Crucial: Clear access status when expired
                     localStorage.removeItem('jega_access_granted'); 
+                    localStorage.removeItem('jega_card_file'); // Clear file association too
                     return false; 
                 } else { 
                     document.getElementById("days-remaining").innerText = "License active: " + Math.ceil(ACCESS_DAYS - diffDays) + " days remaining."; 
@@ -113,15 +125,20 @@
 
         function checkPass() {
             if (!checkExpiry()) return; 
-            const input = document.getElementById("accessCode").value;
+            const input = document.getElementById("accessCode").value.toUpperCase();
             
-            if (input.toUpperCase() === SECRET_CODE) { 
-                if (!localStorage.getItem('jega_start_date')) localStorage.setItem('jega_start_date', new Date().getTime()); 
+            // 1. Check if the input code is in the CODES list
+            if (CODES[input] && CODES[input].active) { 
+                // 2. Access is valid: Set start date (if new) and grant access
+                if (!localStorage.getItem('jega_start_date')) {
+                    localStorage.setItem('jega_start_date', new Date().getTime());
+                }
                 
-                // NEW: Grant permanent access (until expiry)
+                // 3. Store the specific card file the user bought
+                localStorage.setItem('jega_card_file', CODES[input].file);
                 localStorage.setItem('jega_access_granted', 'true');
                 
-                showAppInterface(); 
+                showAppInterface();
             } else { 
                 document.getElementById("loginError").style.display = "block"; 
             }
@@ -136,7 +153,11 @@
             
             if (!msg) { alert("Please enter a main message!"); return; }
 
-            const baseUrl = window.location.origin + "/card.html"; 
+            // Get the correct file name based on the purchased code (defaults to card.html)
+            const cardFile = localStorage.getItem('jega_card_file') || 'card.html'; 
+
+            // Construct the Base URL using the correct card file
+            const baseUrl = window.location.origin + "/" + cardFile; 
             let finalUrl = `${baseUrl}?msg=${encodeURIComponent(msg)}`;
 
             if (title) finalUrl += `&title=${encodeURIComponent(title)}`;
