@@ -17,8 +17,8 @@
         button.primary-btn { background-color: #333; color: white; border: none; padding: 15px; font-size: 16px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; transition: background 0.3s; }
         button.primary-btn:hover { background-color: #000; }
         #app-interface, #expired-screen { display: none; } 
-        .error { color: #d9534f; font-size: 14px; margin-bottom: 15px; display: none; }
-        /* Removed .result-box and .result-link styling as output is now removed from screen */
+        /* DEBUGGING STYLE: Make error large and prominent */
+        .error { color: #d9534f; font-size: 18px; font-weight: bold; margin-top: 15px; margin-bottom: 15px; display: none; padding: 10px; border: 1px solid #d9534f; border-radius: 5px; }
 
         /* Sign Out Styles */
         .signout-btn {
@@ -42,6 +42,7 @@
         <h1>🔒 Restricted Access</h1>
         <p>Enter the Access Code found in your Etsy download.</p>
         <input type="password" id="accessCode" placeholder="Enter Access Code">
+        <!-- Error message now placed centrally -->
         <p class="error" id="loginError">Invalid Code.</p>
         <button class="primary-btn" onclick="checkPass()">Unlock Tool</button>
     </div>
@@ -74,8 +75,8 @@
 
         <!-- DETAILED MESSAGE CONTAINER (ALWAYS VISIBLE for all cards) -->
         <div id="cardMessageContainer">
-            <label>Detailed Message (Optional)</label> <!-- Changed label text -->
-            <input type="text" id="cardMessage" placeholder="e.g. Hope you like this gift! Love, Sarah.">
+            <label id="cardMessageLabel">Detailed Message (Required for Invitation Cards)</label> <!-- Changed label text -->
+            <input type="text" id="cardMessage" placeholder="e.g. We are getting married! / Hope you like this gift! Love, Sarah.">
         </div>
         <!-- END DETAILED MESSAGE CONTAINER -->
         
@@ -94,9 +95,7 @@
 
         <button class="primary-btn" onclick="generateLink()">Create Magic Link</button>
 
-        <!-- REMOVED: #resultArea container -->
-        
-        <!-- REMOVED: License Timer elements -->
+        <!-- The loginError element is now used for both login errors and link generation errors -->
     </div>
 
     <script>
@@ -149,6 +148,7 @@
             const cardFile = localStorage.getItem('jega_card_file');
             const codeContainer = document.getElementById('giftCodeContainer');
             const dynamicFields = document.getElementById('dynamicFields'); // Container for Date/Time/Loc
+            const messageLabel = document.getElementById('cardMessageLabel');
             
             const currentCode = Object.values(CODES).find(c => c.file === cardFile);
             
@@ -161,15 +161,15 @@
                 }
 
                 // Control General Input Fields (Date/Time/Loc)
-                // HIDE dynamic fields ONLY if the product is card-money.html
                 if (currentCode.file === 'card-money.html') {
                     dynamicFields.style.display = 'none';
+                    messageLabel.innerText = "Detailed Message (Optional)"; // Meme card: Message is optional
                 } else {
                     dynamicFields.style.display = 'block';
+                    messageLabel.innerText = "Detailed Message (Required for Invitation Cards)"; // Wedding card: Message is mandatory
                 }
                 
                 // Control Timer display (REMOVED TIMER DISPLAY)
-                // The timer text is not displayed on the screen anymore
             }
         }
 
@@ -233,28 +233,29 @@
             const loc = document.getElementById("cardLoc").value;
             
             const cardFile = localStorage.getItem('jega_card_file') || 'card.html'; 
-            const currentCardData = Object.values(CODES).find(c => c.file === cardFile);
+            const currentCode = Object.values(CODES).find(c => c.file === cardFile);
             
             // --- VALIDATION AND LINK ASSEMBLY ---
 
+            // Reset error display
+            document.getElementById("loginError").style.display = "none";
+            document.getElementById("loginError").style.color = '#d9534f';
+            
             // 1. Gift Code Check (Required for meme cards)
             let giftCode = '';
-            if (currentCardData && currentCardData.requiresCode) {
+            if (currentCode && currentCode.requiresCode) {
                 giftCode = document.getElementById('giftCodeInput').value;
                 if (!giftCode) {
-                    document.getElementById("loginError").innerText = "Error: Please enter the required Gift Card Code!";
+                    document.getElementById("loginError").innerText = "ERROR: You must enter the Gift Card Code!";
                     document.getElementById("loginError").style.display = "block";
-                    document.getElementById("loginError").style.color = '#d9534f'; // Red error color
                     return;
                 }
             }
             
-            // 2. Message Check (Required for non-meme cards)
-            // Changed validation: Only check if NOT card-money.html AND if detmsg is empty
-            if (currentCardData.file !== 'card-money.html' && !detmsg) {
-                 document.getElementById("loginError").innerText = "Error: Please enter a Detailed Message for this product.";
+            // 2. Detailed Message Check (Required for non-meme cards)
+            if (currentCode.file !== 'card-money.html' && !detmsg) {
+                 document.getElementById("loginError").innerText = "ERROR: Please enter the Detailed Message for this invitation card.";
                  document.getElementById("loginError").style.display = "block";
-                 document.getElementById("loginError").style.color = '#d9534f'; // Red error color
                  return;
             }
 
@@ -262,7 +263,7 @@
             let finalUrl;
 
             // 3. Assemble Base URL based on product type
-            if (currentCardData.file === 'card-money.html') {
+            if (currentCode.file === 'card-money.html') {
                  // Money card uses hardcoded 'msg=67'
                  finalUrl = `${baseUrl}?msg=67`;
             } else {
@@ -271,16 +272,16 @@
             }
 
 
-            // 4. Append common parameters
+            // 4. Append parameters
             if (title) finalUrl += `&title=${encodeURIComponent(title)}`;
             
             // If it's a MEME card, pass the detailed message as 'detmsg'
-            if (currentCardData.file === 'card-money.html' && detmsg) {
+            if (currentCode.file === 'card-money.html' && detmsg) {
                  finalUrl += `&detmsg=${encodeURIComponent(detmsg)}`; 
             }
             
             // Append Date/Time/Loc only for standard cards
-            if (currentCardData.file !== 'card-money.html') {
+            if (currentCode.file !== 'card-money.html') {
                 if (date) finalUrl += `&date=${encodeURIComponent(date)}`;
                 if (time) finalUrl += `&time=${encodeURIComponent(time)}`;
                 if (loc) finalUrl += `&loc=${encodeURIComponent(loc)}`;
@@ -297,7 +298,7 @@
             document.execCommand('copy');
             document.body.removeChild(textArea);
 
-            document.getElementById("loginError").innerText = "Success! Magic Link Copied to Clipboard.";
+            document.getElementById("loginError").innerText = "SUCCESS! Magic Link Copied to Clipboard.";
             document.getElementById("loginError").style.display = "block";
             document.getElementById("loginError").style.color = '#38A169'; // Green success color
             
