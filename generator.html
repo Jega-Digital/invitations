@@ -250,6 +250,7 @@
             }
             
             // 2. Message Check (Required for non-meme cards)
+            // Changed validation: Only check if NOT card-money.html AND if detmsg is empty
             if (currentCardData.file !== 'card-money.html' && !detmsg) {
                  document.getElementById("loginError").innerText = "Error: Please enter a Detailed Message for this product.";
                  document.getElementById("loginError").style.display = "block";
@@ -265,7 +266,7 @@
                  // Money card uses hardcoded 'msg=67'
                  finalUrl = `${baseUrl}?msg=67`;
             } else {
-                 // All other cards use the detmsg field for the main message (msg)
+                 // All other cards use the detmsg field for the primary message (msg)
                  finalUrl = `${baseUrl}?msg=${encodeURIComponent(detmsg)}`; 
             }
 
