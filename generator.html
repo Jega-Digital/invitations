@@ -18,9 +18,7 @@
         button.primary-btn:hover { background-color: #000; }
         #app-interface, #expired-screen { display: none; } 
         .error { color: #d9534f; font-size: 14px; margin-bottom: 15px; display: none; }
-        .result-box { margin-top: 30px; display: none; background: #f0f0f0; padding: 20px; border-radius: 10px; text-align: left; }
-        .result-link { word-break: break-all; color: #555; font-size: 14px; margin-bottom: 10px; display: block; }
-        .timer-text { margin-top: 20px; font-size: 12px; color: #ccc; }
+        /* Removed .result-box and .result-link styling as output is now removed from screen */
 
         /* Sign Out Styles */
         .signout-btn {
@@ -96,12 +94,9 @@
 
         <button class="primary-btn" onclick="generateLink()">Create Magic Link</button>
 
-        <div id="resultArea" class="result-box">
-            <span style="font-size:12px; font-weight:bold; color:#888; text-transform:uppercase;">Your Unique Link:</span>
-            <a id="finalLink" class="result-link" href="#" target="_blank"></a>
-            <button style="background:white; color:#333; border:1px solid #ddd; padding:10px; width:100%; border-radius:5px; cursor:pointer;" onclick="copyToClipboard()">Copy to Clipboard</button>
-        </div>
-        <p class="timer-text" id="days-remaining"></p>
+        <!-- REMOVED: #resultArea container -->
+        
+        <!-- REMOVED: License Timer elements -->
     </div>
 
     <script>
@@ -112,7 +107,7 @@
             'NAVY2025': { file: 'card-navy.html', theme: 'Navy Luxury', active: true },
             'MEME2025': { file: 'card-67.html', theme: '67 Meme Card (Original)', active: true },
             'SANTA2025': { file: 'card-santa.html', theme: 'Santa 67 Meme', active: true },
-            // MONEY2025: Does NOT use simpleInput=true, so it uses the standard fields (Date/Time/Loc) but we hide those using JS.
+            // Access code updated to 67MEME per user request, file remains card-money.html
             '67MEME': { file: 'card-money.html', theme: 'Money 67 Hybrid', active: true, requiresCode: true, noExpiry: true } 
         };
         const ACCESS_DAYS = 30;
@@ -153,7 +148,7 @@
         function checkCardRequirement() {
             const cardFile = localStorage.getItem('jega_card_file');
             const codeContainer = document.getElementById('giftCodeContainer');
-            const dynamicFields = document.getElementById('dynamicFields'); // New container for Date/Time/Loc
+            const dynamicFields = document.getElementById('dynamicFields'); // Container for Date/Time/Loc
             
             const currentCode = Object.values(CODES).find(c => c.file === cardFile);
             
@@ -166,20 +161,15 @@
                 }
 
                 // Control General Input Fields (Date/Time/Loc)
-                // HIDE dynamic fields ONLY if the product is MONEY2025
+                // HIDE dynamic fields ONLY if the product is card-money.html
                 if (currentCode.file === 'card-money.html') {
                     dynamicFields.style.display = 'none';
                 } else {
                     dynamicFields.style.display = 'block';
                 }
                 
-                // Control Timer display (Hide timer if noExpiry is true)
-                const timerText = document.getElementById('days-remaining');
-                if (currentCode.noExpiry) {
-                    timerText.style.display = 'none';
-                } else {
-                    timerText.style.display = 'block';
-                }
+                // Control Timer display (REMOVED TIMER DISPLAY)
+                // The timer text is not displayed on the screen anymore
             }
         }
 
@@ -204,7 +194,7 @@
                     localStorage.removeItem('jega_card_file'); 
                     return false; 
                 } else { 
-                    document.getElementById("days-remaining").innerText = "License active: " + Math.ceil(ACCESS_DAYS - diffDays) + " days remaining."; 
+                    // No need to update days-remaining element as it's removed from HTML
                     return true; 
                 }
             } 
@@ -250,8 +240,10 @@
             let giftCode = '';
             if (currentCardData && currentCardData.requiresCode) {
                 giftCode = document.getElementById('giftCodeInput').value;
+                
+                // The fix: If giftCode is any string (like "123") it proceeds. Only if it's truly empty does it error.
                 if (!giftCode) {
-                    document.getElementById("resultArea").style.display = "none";
+                    // Display error on screen
                     document.getElementById("loginError").innerText = "This card requires a Gift Card Code or message!";
                     document.getElementById("loginError").style.display = "block";
                     return;
@@ -275,26 +267,24 @@
             
             if (giftCode) finalUrl += `&code=${encodeURIComponent(giftCode)}`; 
 
-            const linkDisplay = document.getElementById("finalLink");
-            linkDisplay.innerText = finalUrl;
-            linkDisplay.href = finalUrl;
-            document.getElementById("resultArea").style.display = "block";
-            // Clear general error message on success
-            document.getElementById("loginError").style.display = "none"; 
-        }
-
-        function copyToClipboard() { 
-            const linkText = document.getElementById("finalLink").innerText; 
-            // Fallback copy method
+            // --- NEW LINK OUTPUT LOGIC ---
+            // Instead of displaying on screen, copy to clipboard automatically and log to console
+            
             const textArea = document.createElement("textarea");
-            textArea.value = linkText;
+            textArea.value = finalUrl;
             document.body.appendChild(textArea);
             textArea.select();
             document.execCommand('copy');
             document.body.removeChild(textArea);
-            console.log("Link Copied!"); 
+
+            document.getElementById("loginError").innerText = "Success! Magic Link Copied to Clipboard.";
+            document.getElementById("loginError").style.display = "block";
+            document.getElementById("loginError").style.color = '#38A169'; // Green success color
+            
+            console.log("Magic Link Generated and Copied: " + finalUrl);
         }
-        
+
+        // Removed copyToClipboard since the functionality is now integrated into generateLink()
     </script>
 </body>
 </html>
