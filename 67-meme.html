@@ -52,7 +52,7 @@
             font-size: 100px;
             font-weight: 900;
             color: #00FF00; /* NEON GREEN */
-            text-shadow: 4px 4px 0px #F7FCFE; /* Increased Black Shadow for pop */
+            text-shadow: 4px 4px 0px #F7FCFE; /* White Shadow for pop */
             line-height: 1.0;
             margin-bottom: 20px;
             width: 100%;
@@ -217,22 +217,50 @@
             ctx.fillText(urlParams.get('title') || "SCRATCH FOR YOUR GIFT!", rect.width/2, rect.height/2 + 5);
         }
         drawFoil();
-
-        // --- COPY FUNCTION FOR GIFT CODE ---
-        function copyGiftCode() { 
-            const codeText = document.getElementById("gift-code-display").innerText; 
-            
+        
+        // --- NEW: ROBUST FALLBACK COPY FUNCTION ---
+        function fallbackCopy(text, button) {
             const textArea = document.createElement("textarea");
-            textArea.value = codeText;
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.opacity = 0;
             document.body.appendChild(textArea);
+            textArea.focus();
             textArea.select();
-            document.execCommand('copy');
+            
+            let success = false;
+            try {
+                success = document.execCommand('copy');
+                button.innerText = 'Code Copied!';
+            } catch (err) {
+                console.error("Fallback copy failed:", err);
+                button.innerText = 'Copy Failed!';
+            }
+            
             document.body.removeChild(textArea);
             
-            document.getElementById("copy-gift-btn").innerText = 'Code Copied!';
-            setTimeout(() => {
-                document.getElementById("copy-gift-btn").innerText = 'Copy Code';
-            }, 1500);
+            setTimeout(() => { button.innerText = 'Copy Code'; }, 1500);
+        }
+
+        // --- NEW: MAIN COPY FUNCTION ---
+        function copyGiftCode() { 
+            const codeText = document.getElementById("gift-code-display").innerText; 
+            const copyButton = document.getElementById("copy-gift-btn");
+
+            if (navigator.clipboard && window.isSecureContext) {
+                // 1. Use modern, non-deprecated method
+                navigator.clipboard.writeText(codeText).then(() => {
+                    copyButton.innerText = 'Code Copied!';
+                    setTimeout(() => { copyButton.innerText = 'Copy Code'; }, 1500);
+                }).catch(err => {
+                    // 2. If modern fails (e.g., restricted iframe), use fallback
+                    console.error("Modern clipboard access failed. Using fallback:", err);
+                    fallbackCopy(codeText, copyButton);
+                });
+            } else {
+                // 3. Direct use of fallback for non-secure contexts/older browsers
+                fallbackCopy(codeText, copyButton);
+            }
         }
         window.copyGiftCode = copyGiftCode; // Expose globally for button click
 
@@ -313,7 +341,7 @@
             ctx.globalCompositeOperation = 'destination-out'; 
             ctx.beginPath(); 
             const angle = Math.random() * Math.PI * 2; 
-            const radius =45; 
+            const radius = 45; 
             ctx.ellipse(x, y, radius, radius * 0.8, angle, 0, Math.PI * 2); 
             ctx.fill(); 
         }
