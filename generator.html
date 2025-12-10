@@ -194,7 +194,6 @@
                     localStorage.removeItem('jega_card_file'); 
                     return false; 
                 } else { 
-                    // No need to update days-remaining element as it's removed from HTML
                     return true; 
                 }
             } 
@@ -236,30 +235,51 @@
             const cardFile = localStorage.getItem('jega_card_file') || 'card.html'; 
             const currentCardData = Object.values(CODES).find(c => c.file === cardFile);
             
-            // --- GIFT CODE CHECK ---
+            // --- VALIDATION AND LINK ASSEMBLY ---
+
+            // 1. Gift Code Check (Required for meme cards)
             let giftCode = '';
             if (currentCardData && currentCardData.requiresCode) {
                 giftCode = document.getElementById('giftCodeInput').value;
-                
-                // The fix: If giftCode is any string (like "123") it proceeds. Only if it's truly empty does it error.
                 if (!giftCode) {
-                    // Display error on screen
-                    document.getElementById("loginError").innerText = "This card requires a Gift Card Code or message!";
+                    document.getElementById("loginError").innerText = "Error: Please enter the required Gift Card Code!";
                     document.getElementById("loginError").style.display = "block";
+                    document.getElementById("loginError").style.color = '#d9534f'; // Red error color
                     return;
                 }
             }
-            // --- END GIFT CODE CHECK ---
+            
+            // 2. Message Check (Required for non-meme cards)
+            if (currentCardData.file !== 'card-money.html' && !detmsg) {
+                 document.getElementById("loginError").innerText = "Error: Please enter a Detailed Message for this product.";
+                 document.getElementById("loginError").style.display = "block";
+                 document.getElementById("loginError").style.color = '#d9534f'; // Red error color
+                 return;
+            }
 
             const baseUrl = window.location.origin + "/" + cardFile; 
-            let finalUrl = `${baseUrl}?msg=67`; // Hardcode msg=67 for the meme card
+            let finalUrl;
 
+            // 3. Assemble Base URL based on product type
+            if (currentCardData.file === 'card-money.html') {
+                 // Money card uses hardcoded 'msg=67'
+                 finalUrl = `${baseUrl}?msg=67`;
+            } else {
+                 // All other cards use the detmsg field for the main message (msg)
+                 finalUrl = `${baseUrl}?msg=${encodeURIComponent(detmsg)}`; 
+            }
+
+
+            // 4. Append common parameters
             if (title) finalUrl += `&title=${encodeURIComponent(title)}`;
-            // Pass detailed message as 'detmsg' parameter
-            if (detmsg) finalUrl += `&detmsg=${encodeURIComponent(detmsg)}`; 
             
-            // Only add these parameters if they are not the money card (which hides the fields)
-            if (currentCode.file !== 'card-money.html') {
+            // If it's a MEME card, pass the detailed message as 'detmsg'
+            if (currentCardData.file === 'card-money.html' && detmsg) {
+                 finalUrl += `&detmsg=${encodeURIComponent(detmsg)}`; 
+            }
+            
+            // Append Date/Time/Loc only for standard cards
+            if (currentCardData.file !== 'card-money.html') {
                 if (date) finalUrl += `&date=${encodeURIComponent(date)}`;
                 if (time) finalUrl += `&time=${encodeURIComponent(time)}`;
                 if (loc) finalUrl += `&loc=${encodeURIComponent(loc)}`;
@@ -267,8 +287,7 @@
             
             if (giftCode) finalUrl += `&code=${encodeURIComponent(giftCode)}`; 
 
-            // --- NEW LINK OUTPUT LOGIC ---
-            // Instead of displaying on screen, copy to clipboard automatically and log to console
+            // --- LINK OUTPUT AND COPY ---
             
             const textArea = document.createElement("textarea");
             textArea.value = finalUrl;
@@ -283,8 +302,7 @@
             
             console.log("Magic Link Generated and Copied: " + finalUrl);
         }
-
-        // Removed copyToClipboard since the functionality is now integrated into generateLink()
+        
     </script>
 </body>
 </html>
