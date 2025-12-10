@@ -26,6 +26,16 @@
             50% { transform: translateY(-5px); }
             100% { transform: translateY(0); }
         }
+        
+        /* NEW: BOUNCE ANIMATION FOR BUTTON FEEDBACK */
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
 
         .card-container { 
             position: relative; width: 320px; height: 480px; background: #222; border-radius: 20px; 
@@ -85,6 +95,11 @@
         }
         #copy-gift-btn:hover {
             background-color: #00a8a8;
+        }
+        
+        /* Class applied on copy success */
+        #copy-gift-btn.animate-bounce {
+            animation: bounce 0.5s ease-in-out;
         }
 
 
@@ -195,7 +210,7 @@
 
         let isComplete = false;
         
-        // --- DRAW GREEN CASH FOIL ---
+        // --- DRAW GREEN CASH FOIL (Money/Cash Theme remains for functionality) ---
         function drawFoil() {
             const gradient = ctx.createLinearGradient(0, 0, rect.width, rect.height);
             // Green/Cash Gradient
@@ -222,8 +237,10 @@
         function fallbackCopy(text, button) {
             const textArea = document.createElement("textarea");
             textArea.value = text;
-            textArea.style.position = 'fixed';
-            textArea.style.opacity = 0;
+            // Key Fix: Make the element visible and position it off-screen
+            textArea.style.position = 'absolute';
+            textArea.style.left = '-9999px'; 
+            textArea.style.top = '0';
             document.body.appendChild(textArea);
             textArea.focus();
             textArea.select();
@@ -231,7 +248,7 @@
             let success = false;
             try {
                 success = document.execCommand('copy');
-                button.innerText = 'Code Copied!';
+                button.classList.add('animate-bounce'); // Add bounce class on success
             } catch (err) {
                 console.error("Fallback copy failed:", err);
                 button.innerText = 'Copy Failed!';
@@ -239,21 +256,31 @@
             
             document.body.removeChild(textArea);
             
-            setTimeout(() => { button.innerText = 'Copy Code'; }, 1500);
+            setTimeout(() => { 
+                button.innerText = 'Copy Code'; 
+                button.classList.remove('animate-bounce'); // Remove class after animation
+            }, 500); // 500ms duration matches CSS animation
         }
 
         // --- NEW: MAIN COPY FUNCTION ---
         function copyGiftCode() { 
             const codeText = document.getElementById("gift-code-display").innerText; 
             const copyButton = document.getElementById("copy-gift-btn");
+            
+            // Temporary visual feedback
+            copyButton.innerText = 'Copying...';
 
             if (navigator.clipboard && window.isSecureContext) {
                 // 1. Use modern, non-deprecated method
                 navigator.clipboard.writeText(codeText).then(() => {
+                    copyButton.classList.add('animate-bounce'); // Add bounce class on success
                     copyButton.innerText = 'Code Copied!';
-                    setTimeout(() => { copyButton.innerText = 'Copy Code'; }, 1500);
+                    setTimeout(() => { 
+                        copyButton.innerText = 'Copy Code'; 
+                        copyButton.classList.remove('animate-bounce');
+                    }, 500);
                 }).catch(err => {
-                    // 2. If modern fails (e.g., restricted iframe), use fallback
+                    // 2. If modern fails, use the robust fallback
                     console.error("Modern clipboard access failed. Using fallback:", err);
                     fallbackCopy(codeText, copyButton);
                 });
