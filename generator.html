@@ -32,6 +32,9 @@
         
         /* Gift Code Input Specific Style */
         #giftCodeContainer { margin-bottom: 20px; border: 2px solid #10B981; padding: 15px; border-radius: 10px; background: #e6fff4; display: none; }
+        
+        /* Message Field Styling */
+        #cardMessageContainer { margin-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -60,26 +63,36 @@
         <h1>✨ Create Invitation</h1>
         <p style="margin-bottom: 30px; color:#666;">Fill in the details for your card.</p>
         
+        <!-- TOP TITLE FIELD (Kept separate) -->
         <label>Top Title (Optional)</label>
         <input type="text" id="cardTitle" placeholder="e.g. Save the Date">
-
-        <label>Main Message (Required)</label>
-        <input type="text" id="cardMessage" placeholder="e.g. We are getting married!">
-
+        
         <!-- GIFT CODE INPUT -->
         <div id="giftCodeContainer">
             <label for="giftCodeInput" style="color: #10B981;">Gift Card Code (Required for this Card)</label>
             <input type="text" id="giftCodeInput" placeholder="e.g. AMAZON-X93B or 'Gift sent via PayPal'">
         </div>
+        <!-- END GIFT CODE INPUT -->
 
-        <label>Date (Optional)</label>
-        <input type="text" id="cardDate" placeholder="e.g. October 26th, 2025">
+        <!-- DETAILED MESSAGE CONTAINER (ALWAYS VISIBLE for all cards) -->
+        <div id="cardMessageContainer">
+            <label>Detailed Message (Optional)</label> <!-- Changed label text -->
+            <input type="text" id="cardMessage" placeholder="e.g. Hope you like this gift! Love, Sarah.">
+        </div>
+        <!-- END DETAILED MESSAGE CONTAINER -->
+        
+        <!-- DYNAMIC FIELDS CONTAINER (HIDES DATE/TIME/LOCATION for money card) -->
+        <div id="dynamicFields">
+            <!-- These are the traditional fields -->
+            <label>Date (Optional)</label>
+            <input type="text" id="cardDate" placeholder="e.g. October 26th, 2025">
 
-        <label>Time (Optional)</label>
-        <input type="text" id="cardTime" placeholder="e.g. 4:00 PM">
+            <label>Time (Optional)</label>
+            <input type="text" id="cardTime" placeholder="e.g. 4:00 PM">
 
-        <label>Location (Optional)</label>
-        <input type="text" id="cardLoc" placeholder="e.g. The Plaza Hotel, NYC">
+            <label>Location (Optional)</label>
+            <input type="text" id="cardLoc" placeholder="e.g. The Plaza Hotel, NYC">
+        </div>
 
         <button class="primary-btn" onclick="generateLink()">Create Magic Link</button>
 
@@ -99,7 +112,8 @@
             'NAVY2025': { file: 'card-navy.html', theme: 'Navy Luxury', active: true },
             'MEME2025': { file: 'card-67.html', theme: '67 Meme Card (Original)', active: true },
             'SANTA2025': { file: 'card-santa.html', theme: 'Santa 67 Meme', active: true },
-            'MONEY2025': { file: 'card-money.html', theme: 'Money 67 Hybrid', active: true, requiresCode: true }
+            // MONEY2025: Does NOT use simpleInput=true, so it uses the standard fields (Date/Time/Loc) but we hide those using JS.
+            '67MEME': { file: 'card-money.html', theme: 'Money 67 Hybrid', active: true, requiresCode: true, noExpiry: true } 
         };
         const ACCESS_DAYS = 30;
         
@@ -111,7 +125,7 @@
             }
         };
 
-        // --- SIGN OUT FUNCTION ---
+        // --- SIGN OUT FUNCTION (Unchanged) ---
         function signOut() {
             // 1. Clear all authentication and product data
             localStorage.removeItem('jega_start_date');
@@ -135,22 +149,50 @@
             checkCardRequirement();
         }
 
-        // Checks if the currently logged-in card needs a gift code
+        // Checks which fields should be visible based on the card type
         function checkCardRequirement() {
             const cardFile = localStorage.getItem('jega_card_file');
             const codeContainer = document.getElementById('giftCodeContainer');
+            const dynamicFields = document.getElementById('dynamicFields'); // New container for Date/Time/Loc
             
             const currentCode = Object.values(CODES).find(c => c.file === cardFile);
             
-            if (currentCode && currentCode.requiresCode) {
-                codeContainer.style.display = 'block';
-            } else {
-                codeContainer.style.display = 'none';
+            if (currentCode) {
+                // Control Gift Code Input visibility
+                if (currentCode.requiresCode) {
+                    codeContainer.style.display = 'block';
+                } else {
+                    codeContainer.style.display = 'none';
+                }
+
+                // Control General Input Fields (Date/Time/Loc)
+                // HIDE dynamic fields ONLY if the product is MONEY2025
+                if (currentCode.file === 'card-money.html') {
+                    dynamicFields.style.display = 'none';
+                } else {
+                    dynamicFields.style.display = 'block';
+                }
+                
+                // Control Timer display (Hide timer if noExpiry is true)
+                const timerText = document.getElementById('days-remaining');
+                if (currentCode.noExpiry) {
+                    timerText.style.display = 'none';
+                } else {
+                    timerText.style.display = 'block';
+                }
             }
         }
 
         function checkExpiry() {
             const firstLogin = localStorage.getItem('jega_start_date');
+            const cardFile = localStorage.getItem('jega_card_file');
+            const currentCode = Object.values(CODES).find(c => c.file === cardFile);
+
+            // If the current product has no expiry, skip the check
+            if (currentCode && currentCode.noExpiry) {
+                 return true;
+            }
+            
             if (firstLogin) {
                 const now = new Date().getTime(); 
                 const diffDays = (now - parseInt(firstLogin)) / (1000 * 60 * 60 * 24);
@@ -173,12 +215,19 @@
             if (!checkExpiry()) return; 
             const input = document.getElementById("accessCode").value.toUpperCase();
             
-            if (CODES[input] && CODES[input].active) { 
-                if (!localStorage.getItem('jega_start_date')) {
+            const selectedCode = CODES[input];
+
+            if (selectedCode && selectedCode.active) { 
+                
+                // If product requires expiry, set the start date. Otherwise, skip.
+                if (!selectedCode.noExpiry && !localStorage.getItem('jega_start_date')) {
                     localStorage.setItem('jega_start_date', new Date().getTime());
+                } else if (selectedCode.noExpiry) {
+                    // For non-expiring products, ensure old start date is removed if a customer switches
+                    localStorage.removeItem('jega_start_date');
                 }
                 
-                localStorage.setItem('jega_card_file', CODES[input].file);
+                localStorage.setItem('jega_card_file', selectedCode.file);
                 localStorage.setItem('jega_access_granted', 'true');
                 
                 showAppInterface();
@@ -189,7 +238,7 @@
 
         function generateLink() {
             const title = document.getElementById("cardTitle").value;
-            const msg = document.getElementById("cardMessage").value;
+            const detmsg = document.getElementById("cardMessage").value; // Detailed Message content
             const date = document.getElementById("cardDate").value;
             const time = document.getElementById("cardTime").value;
             const loc = document.getElementById("cardLoc").value;
@@ -197,13 +246,6 @@
             const cardFile = localStorage.getItem('jega_card_file') || 'card.html'; 
             const currentCardData = Object.values(CODES).find(c => c.file === cardFile);
             
-            if (!msg) { 
-                document.getElementById("resultArea").style.display = "none";
-                document.getElementById("loginError").innerText = "Please enter a main message!";
-                document.getElementById("loginError").style.display = "block";
-                return; 
-            }
-
             // --- GIFT CODE CHECK ---
             let giftCode = '';
             if (currentCardData && currentCardData.requiresCode) {
@@ -218,12 +260,18 @@
             // --- END GIFT CODE CHECK ---
 
             const baseUrl = window.location.origin + "/" + cardFile; 
-            let finalUrl = `${baseUrl}?msg=${encodeURIComponent(msg)}`;
+            let finalUrl = `${baseUrl}?msg=67`; // Hardcode msg=67 for the meme card
 
             if (title) finalUrl += `&title=${encodeURIComponent(title)}`;
-            if (date) finalUrl += `&date=${encodeURIComponent(date)}`;
-            if (time) finalUrl += `&time=${encodeURIComponent(time)}`;
-            if (loc) finalUrl += `&loc=${encodeURIComponent(loc)}`;
+            // Pass detailed message as 'detmsg' parameter
+            if (detmsg) finalUrl += `&detmsg=${encodeURIComponent(detmsg)}`; 
+            
+            // Only add these parameters if they are not the money card (which hides the fields)
+            if (currentCode.file !== 'card-money.html') {
+                if (date) finalUrl += `&date=${encodeURIComponent(date)}`;
+                if (time) finalUrl += `&time=${encodeURIComponent(time)}`;
+                if (loc) finalUrl += `&loc=${encodeURIComponent(loc)}`;
+            }
             
             if (giftCode) finalUrl += `&code=${encodeURIComponent(giftCode)}`; 
 
