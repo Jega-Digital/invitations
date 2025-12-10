@@ -10,17 +10,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Lato', sans-serif; background-color: #f8f5f2; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; color: #333; }
-        .container { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 400px; width: 90%; text-align: center; margin: 20px 0; }
-        label { display: block; text-align: left; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; color: #888; letter-spacing: 1px; }
-        input { width: 100%; padding: 15px; margin-bottom: 20px; border: 2px solid #eee; border-radius: 10px; font-size: 16px; box-sizing: border-box; outline: none; }
-        input:focus { border-color: #333; }
+        .container { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 400px; width: 90%; text-align: center; margin: 20px 0; position: relative; }
+        label { display: flex; justify-content: space-between; align-items: center; text-align: left; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; color: #888; letter-spacing: 1px; }
+        input, select { width: 100%; padding: 15px; margin-bottom: 20px; border: 2px solid #eee; border-radius: 10px; font-size: 16px; box-sizing: border-box; outline: none; }
+        input:focus, select:focus { border-color: #333; }
         button.primary-btn { background-color: #333; color: white; border: none; padding: 15px; font-size: 16px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; transition: background 0.3s; }
         button.primary-btn:hover { background-color: #000; }
         #app-interface, #expired-screen { display: none; } 
-        .error { color: #d9534f; font-size: 14px; margin-bottom: 15px; display: none; }
-        .result-box { margin-top: 30px; display: none; background: #f0f0f0; padding: 20px; border-radius: 10px; text-align: left; }
-        .result-link { word-break: break-all; color: #555; font-size: 14px; margin-bottom: 10px; display: block; }
-        .timer-text { margin-top: 20px; font-size: 12px; color: #ccc; }
+        /* DEBUGGING STYLE: Make error large and prominent */
+        .error { color: #d9534f; font-size: 18px; font-weight: bold; margin-top: 15px; margin-bottom: 15px; display: none; padding: 10px; border: 1px solid #d9534f; border-radius: 5px; }
+
+        /* Sign Out Styles */
+        .signout-btn {
+            position: absolute; top: 10px; right: 10px; 
+            background: none; border: none; font-size: 10px; 
+            color: #ccc; cursor: pointer; padding: 5px;
+        }
+        .signout-btn:hover { color: #888; }
+        
+        /* Gift Code Input Specific Style */
+        #giftCodeContainer { margin-bottom: 20px; border: 2px solid #10B981; padding: 15px; border-radius: 10px; background: #e6fff4; display: none; }
+        
+        /* Message Field Styling */
+        #cardMessageContainer { margin-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -30,6 +42,7 @@
         <h1>🔒 Restricted Access</h1>
         <p>Enter the Access Code found in your Etsy download.</p>
         <input type="password" id="accessCode" placeholder="Enter Access Code">
+        <!-- Error message now placed centrally -->
         <p class="error" id="loginError">Invalid Code.</p>
         <button class="primary-btn" onclick="checkPass()">Unlock Tool</button>
     </div>
@@ -43,56 +56,150 @@
 
     <!-- SCREEN 3: THE TOOL -->
     <div class="container" id="app-interface">
+        <!-- New Sign Out Button -->
+        <button class="signout-btn" onclick="signOut()">Sign Out</button>
+
         <h1>✨ Create Invitation</h1>
         <p style="margin-bottom: 30px; color:#666;">Fill in the details for your card.</p>
         
+        <!-- TOP TITLE FIELD (Kept separate) -->
         <label>Top Title (Optional)</label>
         <input type="text" id="cardTitle" placeholder="e.g. Save the Date">
+        
+        <!-- GIFT CODE INPUT -->
+        <div id="giftCodeContainer">
+            <label for="giftCodeInput" style="color: #10B981;">Gift Card Code (Required for this Card)</label>
+            <input type="text" id="giftCodeInput" placeholder="e.g. AMAZON-X93B or 'Gift sent via PayPal'">
+        </div>
+        <!-- END GIFT CODE INPUT -->
 
-        <label>Main Message (Required)</label>
-        <input type="text" id="cardMessage" placeholder="e.g. We are getting married!">
+        <!-- DETAILED MESSAGE CONTAINER (ALWAYS VISIBLE for all cards) -->
+        <div id="cardMessageContainer">
+            <label id="cardMessageLabel">Detailed Message (Required for Invitation Cards)</label> <!-- Changed label text -->
+            <input type="text" id="cardMessage" placeholder="e.g. We are getting married! / Hope you like this gift! Love, Sarah.">
+        </div>
+        <!-- END DETAILED MESSAGE CONTAINER -->
+        
+        <!-- DYNAMIC FIELDS CONTAINER (HIDES DATE/TIME/LOCATION for money card) -->
+        <div id="dynamicFields">
+            <!-- These are the traditional fields -->
+            <label>Date (Optional)</label>
+            <input type="text" id="cardDate" placeholder="e.g. October 26th, 2025">
 
-        <label>Date (Optional)</label>
-        <input type="text" id="cardDate" placeholder="e.g. October 26th, 2025">
+            <label>Time (Optional)</label>
+            <input type="text" id="cardTime" placeholder="e.g. 4:00 PM">
 
-        <label>Time (Optional)</label>
-        <input type="text" id="cardTime" placeholder="e.g. 4:00 PM">
-
-        <label>Location (Optional)</label>
-        <input type="text" id="cardLoc" placeholder="e.g. The Plaza Hotel, NYC">
+            <label>Location (Optional)</label>
+            <input type="text" id="cardLoc" placeholder="e.g. The Plaza Hotel, NYC">
+        </div>
 
         <button class="primary-btn" onclick="generateLink()">Create Magic Link</button>
 
-        <div id="resultArea" class="result-box">
-            <span style="font-size:12px; font-weight:bold; color:#888; text-transform:uppercase;">Your Unique Link:</span>
-            <a id="finalLink" class="result-link" href="#" target="_blank"></a>
-            <button style="background:white; color:#333; border:1px solid #ddd; padding:10px; width:100%; border-radius:5px; cursor:pointer;" onclick="copyToClipboard()">Copy to Clipboard</button>
-        </div>
-        <p class="timer-text" id="days-remaining"></p>
+        <!-- The linkGenerationError element is now used for both login errors and link generation errors -->
+        <p class="error" id="linkGenerationError">.</p>
     </div>
 
     <script>
-        const SECRET_CODE = "GIFT2025"; 
-        const ACCESS_DAYS = 30; 
+        // --- Jega Digital Product Codes & Security Configuration ---
+        const CODES = {
+            'GOLD2025': { file: 'card.html', theme: 'Gold Floral', active: true },
+            'PURPLE2025': { file: 'card-purple.html', theme: 'Purple Floral', active: true },
+            'NAVY2025': { file: 'card-navy.html', theme: 'Navy Luxury', active: true },
+            'MEME2025': { file: 'card-67.html', theme: '67 Meme Card (Original)', active: true },
+            'SANTA2025': { file: 'card-santa.html', theme: 'Santa 67 Meme', active: true },
+            // UPDATED: Renamed file link from 'card-money.html' to '67-meme.html'
+            '67MEME': { file: '67-meme.html', theme: 'Money 67 Hybrid', active: true, requiresCode: true, noExpiry: true } 
+        };
+        const ACCESS_DAYS = 30;
         
+        const errorDisplay = document.getElementById("loginError");
+        const linkErrorDisplay = document.getElementById("linkGenerationError");
+
+        // Helper to display errors clearly
+        function displayError(message, isSuccess = false) {
+            linkErrorDisplay.innerText = message;
+            linkErrorDisplay.style.display = "block";
+            linkErrorDisplay.style.color = isSuccess ? '#38A169' : '#d9534f';
+            linkErrorDisplay.style.borderColor = isSuccess ? '#38A169' : '#d9534f';
+        }
+
+        // Load API key and check login status on load
         window.onload = function() { 
-            // 1. Check if access is expired
             if (!checkExpiry()) return;
-            
-            // 2. If not expired, check if they are already logged in
             if (localStorage.getItem('jega_access_granted') === 'true') {
                 showAppInterface();
             }
         };
 
+        // --- SIGN OUT FUNCTION ---
+        function signOut() {
+            // 1. Clear all authentication and product data
+            localStorage.removeItem('jega_start_date');
+            localStorage.removeItem('jega_access_granted');
+            localStorage.removeItem('jega_card_file');
+            
+            // 2. Clear any lingering form data
+            document.getElementById('accessCode').value = '';
+            
+            // 3. Clear the residual success/error message
+            linkErrorDisplay.innerText = "";
+            linkErrorDisplay.style.display = "none";
+            
+            // 4. Reset interface to login screen
+            document.getElementById("login-screen").style.display = "block"; 
+            document.getElementById("app-interface").style.display = "none"; 
+            
+            console.log("User successfully signed out.");
+        }
+        
         function showAppInterface() {
             document.getElementById("login-screen").style.display = "none"; 
             document.getElementById("app-interface").style.display = "block"; 
-            checkExpiry(); // Update the timer text
+            checkExpiry(); 
+            checkCardRequirement();
+        }
+
+        // Checks which fields should be visible based on the card type
+        function checkCardRequirement() {
+            const cardFile = localStorage.getItem('jega_card_file');
+            const codeContainer = document.getElementById('giftCodeContainer');
+            const dynamicFields = document.getElementById('dynamicFields'); // Container for Date/Time/Loc
+            const messageLabel = document.getElementById('cardMessageLabel');
+            
+            const currentCode = Object.values(CODES).find(c => c.file === cardFile);
+            
+            if (currentCode) {
+                // Control Gift Code Input visibility
+                if (currentCode.requiresCode) {
+                    codeContainer.style.display = 'block';
+                } else {
+                    codeContainer.style.display = 'none';
+                }
+
+                // Control General Input Fields (Date/Time/Loc)
+                // HIDE dynamic fields ONLY if the product is the 67 meme card
+                if (currentCode.file === '67-meme.html') {
+                    dynamicFields.style.display = 'none';
+                    messageLabel.innerText = "Detailed Message (Optional)"; // Meme card: Message is optional
+                } else {
+                    dynamicFields.style.display = 'block';
+                    messageLabel.innerText = "Detailed Message (Required for Invitation Cards)"; // Wedding card: Message is mandatory
+                }
+                
+                // Control Timer display (REMOVED TIMER DISPLAY)
+            }
         }
 
         function checkExpiry() {
             const firstLogin = localStorage.getItem('jega_start_date');
+            const cardFile = localStorage.getItem('jega_card_file');
+            const currentCode = Object.values(CODES).find(c => c.file === cardFile);
+
+            // If the current product has no expiry, skip the check
+            if (currentCode && currentCode.noExpiry) {
+                 return true;
+            }
+            
             if (firstLogin) {
                 const now = new Date().getTime(); 
                 const diffDays = (now - parseInt(firstLogin)) / (1000 * 60 * 60 * 24);
@@ -100,11 +207,10 @@
                     document.getElementById("login-screen").style.display = "none"; 
                     document.getElementById("app-interface").style.display = "none"; 
                     document.getElementById("expired-screen").style.display = "block"; 
-                    // Crucial: Clear access status when expired
                     localStorage.removeItem('jega_access_granted'); 
+                    localStorage.removeItem('jega_card_file'); 
                     return false; 
                 } else { 
-                    document.getElementById("days-remaining").innerText = "License active: " + Math.ceil(ACCESS_DAYS - diffDays) + " days remaining."; 
                     return true; 
                 }
             } 
@@ -113,46 +219,113 @@
 
         function checkPass() {
             if (!checkExpiry()) return; 
-            const input = document.getElementById("accessCode").value;
+            const input = document.getElementById("accessCode").value.toUpperCase();
             
-            if (input.toUpperCase() === SECRET_CODE) { 
-                if (!localStorage.getItem('jega_start_date')) localStorage.setItem('jega_start_date', new Date().getTime()); 
+            const selectedCode = CODES[input];
+
+            if (selectedCode && selectedCode.active) { 
                 
-                // NEW: Grant permanent access (until expiry)
+                // If product requires expiry, set the start date. Otherwise, skip.
+                if (!selectedCode.noExpiry && !localStorage.getItem('jega_start_date')) {
+                    localStorage.setItem('jega_start_date', new Date().getTime());
+                } else if (selectedCode.noExpiry) {
+                    // For non-expiring products, ensure old start date is removed if a customer switches
+                    localStorage.removeItem('jega_start_date');
+                }
+                
+                localStorage.setItem('jega_card_file', selectedCode.file);
                 localStorage.setItem('jega_access_granted', 'true');
                 
-                showAppInterface(); 
+                showAppInterface();
             } else { 
-                document.getElementById("loginError").style.display = "block"; 
+                errorDisplay.innerText = "Invalid Code.";
+                errorDisplay.style.display = "block"; 
             }
         }
 
         function generateLink() {
-            const title = document.getElementById("cardTitle").value;
-            const msg = document.getElementById("cardMessage").value;
-            const date = document.getElementById("cardDate").value;
-            const time = document.getElementById("cardTime").value;
-            const loc = document.getElementById("cardLoc").value;
-            
-            if (!msg) { alert("Please enter a main message!"); return; }
+            // Clear previous errors/success messages
+            linkErrorDisplay.style.display = "none";
 
-            const baseUrl = window.location.origin + "/card.html"; 
-            let finalUrl = `${baseUrl}?msg=${encodeURIComponent(msg)}`;
+            try {
+                // Fetch form values safely
+                const title = document.getElementById("cardTitle").value;
+                const detmsg = document.getElementById("cardMessage").value; 
+                const date = document.getElementById("cardDate").value;
+                const time = document.getElementById("cardTime").value;
+                const loc = document.getElementById("cardLoc").value;
+                
+                const cardFile = localStorage.getItem('jega_card_file') || 'card.html'; 
+                const currentCode = Object.values(CODES).find(c => c.file === cardFile);
+                
+                // --- VALIDATION AND LINK ASSEMBLY ---
 
-            if (title) finalUrl += `&title=${encodeURIComponent(title)}`;
-            if (date) finalUrl += `&date=${encodeURIComponent(date)}`;
-            if (time) finalUrl += `&time=${encodeURIComponent(time)}`;
-            if (loc) finalUrl += `&loc=${encodeURIComponent(loc)}`;
+                // 1. Gift Code Check (Required for meme cards)
+                let giftCode = '';
+                if (currentCode && currentCode.requiresCode) {
+                    giftCode = document.getElementById('giftCodeInput').value;
+                    if (!giftCode) {
+                        displayError("ERROR: You must enter the required Gift Card Code!");
+                        return;
+                    }
+                }
+                
+                // 2. Message Check (Required for non-meme cards)
+                if (currentCode.file !== '67-meme.html' && !detmsg) {
+                     displayError("ERROR: Please enter the Detailed Message for this invitation card.");
+                     return;
+                }
 
-            const linkDisplay = document.getElementById("finalLink");
-            linkDisplay.innerText = finalUrl;
-            linkDisplay.href = finalUrl;
-            document.getElementById("resultArea").style.display = "block";
+                const baseUrl = window.location.origin + "/" + cardFile; 
+                let finalUrl;
+
+                // 3. Assemble Base URL based on product type
+                if (currentCode.file === '67-meme.html') {
+                     // Money card uses hardcoded 'msg=67'
+                     finalUrl = `${baseUrl}?msg=67`;
+                } else {
+                     // All other cards use the detmsg field for the primary message (msg)
+                     finalUrl = `${baseUrl}?msg=${encodeURIComponent(detmsg)}`; 
+                }
+
+
+                // 4. Append parameters
+                if (title) finalUrl += `&title=${encodeURIComponent(title)}`;
+                
+                // If it's a MEME card, pass the detailed message as 'detmsg'
+                if (currentCode.file === '67-meme.html' && detmsg) {
+                     finalUrl += `&detmsg=${encodeURIComponent(detmsg)}`; 
+                }
+                
+                // Append Date/Time/Loc only for standard cards
+                if (currentCode.file !== '67-meme.html') {
+                    if (date) finalUrl += `&date=${encodeURIComponent(date)}`;
+                    if (time) finalUrl += `&time=${encodeURIComponent(time)}`;
+                    if (loc) finalUrl += `&loc=${encodeURIComponent(loc)}`;
+                }
+                
+                if (giftCode) finalUrl += `&code=${encodeURIComponent(giftCode)}`; 
+
+                // --- LINK OUTPUT AND COPY ---
+                
+                const textArea = document.createElement("textarea");
+                textArea.value = finalUrl;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+
+                displayError("SUCCESS! Magic Link Copied to Clipboard.", true);
+                
+                console.log("Magic Link Generated and Copied: " + finalUrl);
+
+            } catch (e) {
+                // CATCH CRASH: This will show if the script fails before validation
+                console.error("Critical error during link generation:", e);
+                displayError("CRITICAL ERROR: Failed to assemble link. Try signing out and signing back in. (Check console for details)");
+            }
         }
-        function copyToClipboard() { 
-            const linkText = document.getElementById("finalLink").innerText; 
-            navigator.clipboard.writeText(linkText).then(() => alert("Link Copied!")); 
-        }
+        
     </script>
 </body>
 </html>
