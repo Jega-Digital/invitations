@@ -20,6 +20,19 @@
         /* DEBUGGING STYLE: Make error large and prominent */
         .error { color: #d9534f; font-size: 18px; font-weight: bold; margin-top: 15px; margin-bottom: 15px; display: none; padding: 10px; border: 1px solid #d9534f; border-radius: 5px; }
 
+        /* Style for the clickable link success message */
+        .success-link {
+            text-decoration: none; /* Remove underline */
+            word-break: break-all; /* Allow long link to wrap */
+            font-size: 14px;
+            color: #333;
+            background-color: #d8ffda; /* Light green background */
+            padding: 10px;
+            border-radius: 5px;
+            display: block;
+            margin-top: 5px;
+        }
+
         /* Sign Out Styles */
         .signout-btn {
             position: absolute; top: 10px; right: 10px; 
@@ -117,10 +130,16 @@
 
         // Helper to display errors clearly
         function displayError(message, isSuccess = false) {
-            linkErrorDisplay.innerText = message;
+            linkErrorDisplay.innerHTML = message; // Use innerHTML to allow link insertion
             linkErrorDisplay.style.display = "block";
-            linkErrorDisplay.style.color = isSuccess ? '#38A169' : '#d9534f';
+            linkErrorDisplay.style.color = isSuccess ? 'green' : '#d9534f'; // Use inline color property, not class
             linkErrorDisplay.style.borderColor = isSuccess ? '#38A169' : '#d9534f';
+            // Also ensure the error box is reset to its default error look if successful (it will hold the link element)
+            linkErrorDisplay.classList.remove('success-link'); 
+            linkErrorDisplay.style.fontSize = isSuccess ? '16px' : '18px';
+            linkErrorDisplay.style.padding = isSuccess ? '0' : '10px';
+            linkErrorDisplay.style.border = isSuccess ? 'none' : '1px solid #d9534f';
+            linkErrorDisplay.style.backgroundColor = isSuccess ? 'transparent' : 'white';
         }
 
         // Load API key and check login status on load
@@ -315,7 +334,12 @@
                 document.execCommand('copy');
                 document.body.removeChild(textArea);
 
-                displayError("SUCCESS! Magic Link Copied to Clipboard.", true);
+                // FIX: Display the actual link as a clickable element in the success box
+                const successMessage = `
+                    SUCCESS! Magic Link Copied to Clipboard.
+                    <a href="${finalUrl}" target="_blank" class="success-link">Click to View Card: ${finalUrl}</a>
+                `;
+                displayError(successMessage, true);
                 
                 console.log("Magic Link Generated and Copied: " + finalUrl);
 
