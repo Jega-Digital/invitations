@@ -95,7 +95,8 @@
 
         <button class="primary-btn" onclick="generateLink()">Create Magic Link</button>
 
-        <!-- The loginError element is now used for both login errors and link generation errors -->
+        <!-- The linkGenerationError element is now used for both login errors and link generation errors -->
+        <p class="error" id="linkGenerationError">.</p>
     </div>
 
     <script>
@@ -111,6 +112,17 @@
         };
         const ACCESS_DAYS = 30;
         
+        const errorDisplay = document.getElementById("loginError");
+        const linkErrorDisplay = document.getElementById("linkGenerationError");
+
+        // Helper to display errors clearly
+        function displayError(message, isSuccess = false) {
+            linkErrorDisplay.innerText = message;
+            linkErrorDisplay.style.display = "block";
+            linkErrorDisplay.style.color = isSuccess ? '#38A169' : '#d9534f';
+            linkErrorDisplay.style.borderColor = isSuccess ? '#38A169' : '#d9534f';
+        }
+
         // Load API key and check login status on load
         window.onload = function() { 
             if (!checkExpiry()) return;
@@ -119,7 +131,7 @@
             }
         };
 
-        // --- SIGN OUT FUNCTION (Unchanged) ---
+        // --- SIGN OUT FUNCTION (FIXED) ---
         function signOut() {
             // 1. Clear all authentication and product data
             localStorage.removeItem('jega_start_date');
@@ -129,7 +141,11 @@
             // 2. Clear any lingering form data
             document.getElementById('accessCode').value = '';
             
-            // 3. Reset interface to login screen
+            // 3. Clear the residual success/error message
+            linkErrorDisplay.innerText = "";
+            linkErrorDisplay.style.display = "none";
+            
+            // 4. Reset interface to login screen
             document.getElementById("login-screen").style.display = "block"; 
             document.getElementById("app-interface").style.display = "none"; 
             
@@ -221,88 +237,92 @@
                 
                 showAppInterface();
             } else { 
-                document.getElementById("loginError").style.display = "block"; 
+                errorDisplay.innerText = "Invalid Code.";
+                errorDisplay.style.display = "block"; 
             }
         }
 
         function generateLink() {
-            const title = document.getElementById("cardTitle").value;
-            const detmsg = document.getElementById("cardMessage").value; // Detailed Message content
-            const date = document.getElementById("cardDate").value;
-            const time = document.getElementById("cardTime").value;
-            const loc = document.getElementById("cardLoc").value;
-            
-            const cardFile = localStorage.getItem('jega_card_file') || 'card.html'; 
-            const currentCode = Object.values(CODES).find(c => c.file === cardFile);
-            
-            // --- VALIDATION AND LINK ASSEMBLY ---
+            // Clear previous errors/success messages
+            linkErrorDisplay.style.display = "none";
 
-            // Reset error display
-            document.getElementById("loginError").style.display = "none";
-            document.getElementById("loginError").style.color = '#d9534f';
-            
-            // 1. Gift Code Check (Required for meme cards)
-            let giftCode = '';
-            if (currentCode && currentCode.requiresCode) {
-                giftCode = document.getElementById('giftCodeInput').value;
-                if (!giftCode) {
-                    document.getElementById("loginError").innerText = "ERROR: You must enter the Gift Card Code!";
-                    document.getElementById("loginError").style.display = "block";
-                    return;
+            try {
+                // Fetch form values safely
+                const title = document.getElementById("cardTitle").value;
+                const detmsg = document.getElementById("cardMessage").value; 
+                const date = document.getElementById("cardDate").value;
+                const time = document.getElementById("cardTime").value;
+                const loc = document.getElementById("cardLoc").value;
+                
+                const cardFile = localStorage.getItem('jega_card_file') || 'card.html'; 
+                const currentCode = Object.values(CODES).find(c => c.file === cardFile);
+                
+                // --- VALIDATION ---
+
+                // 1. Gift Code Check (Required for meme cards)
+                let giftCode = '';
+                if (currentCode && currentCode.requiresCode) {
+                    giftCode = document.getElementById('giftCodeInput').value;
+                    if (!giftCode) {
+                        displayError("ERROR: You must enter the required Gift Card Code!");
+                        return;
+                    }
                 }
+                
+                // 2. Detailed Message Check (Required for non-meme cards)
+                if (currentCode.file !== 'card-money.html' && !detmsg) {
+                     displayError("ERROR: Please enter the Detailed Message for this invitation card.");
+                     return;
+                }
+
+                const baseUrl = window.location.origin + "/" + cardFile; 
+                let finalUrl;
+
+                // 3. Assemble Base URL based on product type
+                if (currentCode.file === 'card-money.html') {
+                     // Money card uses hardcoded 'msg=67'
+                     finalUrl = `${baseUrl}?msg=67`;
+                } else {
+                     // All other cards use the detmsg field for the primary message (msg)
+                     finalUrl = `${baseUrl}?msg=${encodeURIComponent(detmsg)}`; 
+                }
+
+
+                // 4. Append parameters
+                if (title) finalUrl += `&title=${encodeURIComponent(title)}`;
+                
+                // If it's a MEME card, pass the detailed message as 'detmsg'
+                if (currentCode.file === 'card-money.html' && detmsg) {
+                     finalUrl += `&detmsg=${encodeURIComponent(detmsg)}`; 
+                }
+                
+                // Append Date/Time/Loc only for standard cards
+                if (currentCode.file !== 'card-money.html') {
+                    if (date) finalUrl += `&date=${encodeURIComponent(date)}`;
+                    if (time) finalUrl += `&time=${encodeURIComponent(time)}`;
+                    if (loc) finalUrl += `&loc=${encodeURIComponent(loc)}`;
+                }
+                
+                if (giftCode) finalUrl += `&code=${encodeURIComponent(giftCode)}`; 
+
+                // --- LINK OUTPUT AND COPY ---
+                
+                const textArea = document.createElement("textarea");
+                textArea.value = finalUrl;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+
+                displayError("SUCCESS! Magic Link Copied to Clipboard.", true);
+                
+                console.log("Magic Link Generated and Copied: " + finalUrl);
+
+            } catch (e) {
+                // CATCH CRASH: This will show if the script fails before validation
+                console.error("Critical error during link generation:", e);
+                displayError("CRITICAL ERROR: Failed to assemble link. Try signing out and signing back in. (Check console for details)");
             }
-            
-            // 2. Detailed Message Check (Required for non-meme cards)
-            if (currentCode.file !== 'card-money.html' && !detmsg) {
-                 document.getElementById("loginError").innerText = "ERROR: Please enter the Detailed Message for this invitation card.";
-                 document.getElementById("loginError").style.display = "block";
-                 return;
-            }
-
-            const baseUrl = window.location.origin + "/" + cardFile; 
-            let finalUrl;
-
-            // 3. Assemble Base URL based on product type
-            if (currentCode.file === 'card-money.html') {
-                 // Money card uses hardcoded 'msg=67'
-                 finalUrl = `${baseUrl}?msg=67`;
-            } else {
-                 // All other cards use the detmsg field for the primary message (msg)
-                 finalUrl = `${baseUrl}?msg=${encodeURIComponent(detmsg)}`; 
-            }
-
-
-            // 4. Append parameters
-            if (title) finalUrl += `&title=${encodeURIComponent(title)}`;
-            
-            // If it's a MEME card, pass the detailed message as 'detmsg'
-            if (currentCode.file === 'card-money.html' && detmsg) {
-                 finalUrl += `&detmsg=${encodeURIComponent(detmsg)}`; 
-            }
-            
-            // Append Date/Time/Loc only for standard cards
-            if (currentCode.file !== 'card-money.html') {
-                if (date) finalUrl += `&date=${encodeURIComponent(date)}`;
-                if (time) finalUrl += `&time=${encodeURIComponent(time)}`;
-                if (loc) finalUrl += `&loc=${encodeURIComponent(loc)}`;
-            }
-            
-            if (giftCode) finalUrl += `&code=${encodeURIComponent(giftCode)}`; 
-
-            // --- LINK OUTPUT AND COPY ---
-            
-            const textArea = document.createElement("textarea");
-            textArea.value = finalUrl;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-
-            document.getElementById("loginError").innerText = "SUCCESS! Magic Link Copied to Clipboard.";
-            document.getElementById("loginError").style.display = "block";
-            document.getElementById("loginError").style.color = '#38A169'; // Green success color
-            
-            console.log("Magic Link Generated and Copied: " + finalUrl);
         }
         
     </script>
