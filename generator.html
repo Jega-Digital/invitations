@@ -77,7 +77,7 @@
         
         <!-- TOP TITLE FIELD (Kept separate) -->
         <label>Top Title (Optional)</label>
-        <input type="text" id="cardTitle" placeholder="e.g. Save the Date">
+        <input type="text" id="cardTitle" placeholder="e.g. Happy Birthday!">
         
         <!-- GIFT CODE INPUT -->
         <div id="giftCodeContainer">
@@ -89,7 +89,7 @@
         <!-- DETAILED MESSAGE CONTAINER (ALWAYS VISIBLE for all cards) -->
         <div id="cardMessageContainer">
             <label id="cardMessageLabel">Detailed Message (Required for Invitation Cards)</label> <!-- Changed label text -->
-            <input type="text" id="cardMessage" placeholder="e.g. We are getting married! / Hope you like this gift! Love, Sarah.">
+            <input type="text" id="cardMessage" placeholder="Hope you like this gift! Love, Sarah.">
         </div>
         <!-- END DETAILED MESSAGE CONTAINER -->
         
@@ -120,8 +120,10 @@
             'NAVY2025': { file: 'card-navy.html', theme: 'Navy Luxury', active: true },
             'MEME2025': { file: 'card-67.html', theme: '67 Meme Card (Original)', active: true },
             'SANTA2025': { file: 'card-santa.html', theme: 'Santa 67 Meme', active: true },
-            // UPDATED: Renamed file link from 'card-money.html' to '67-meme.html'
-            '67MEME': { file: '67-meme.html', theme: 'Money 67 Hybrid', active: true, requiresCode: true, noExpiry: true } 
+            // Gift Card Product 1 (Money Meme)
+            '67MEME': { file: '67-meme.html', theme: 'Money 67 Hybrid', active: true, requiresCode: true, noExpiry: true }, 
+            // NEW: Gift Card Product 2 (Gaming Loot Drop)
+            'CYBERLOOT': { file: 'gaming-card.html', theme: 'Cyber Loot Drop', active: true, requiresCode: true, noExpiry: true } 
         };
         const ACCESS_DAYS = 30;
         
@@ -188,6 +190,9 @@
             const currentCode = Object.values(CODES).find(c => c.file === cardFile);
             
             if (currentCode) {
+                // Determine if it's a gift card type (hides date/time/loc, requires code)
+                const isGiftCardType = currentCode.file === '67-meme.html' || currentCode.file === 'gaming-card.html';
+
                 // Control Gift Code Input visibility
                 if (currentCode.requiresCode) {
                     codeContainer.style.display = 'block';
@@ -196,13 +201,12 @@
                 }
 
                 // Control General Input Fields (Date/Time/Loc)
-                // HIDE dynamic fields ONLY if the product is the 67 meme card
-                if (currentCode.file === '67-meme.html') {
+                if (isGiftCardType) {
                     dynamicFields.style.display = 'none';
-                    messageLabel.innerText = "Detailed Message (Optional)"; // Meme card: Message is optional
+                    messageLabel.innerText = "Detailed Message (Optional)"; // Gift card type: Message is optional
                 } else {
                     dynamicFields.style.display = 'block';
-                    messageLabel.innerText = "Detailed Message (Required for Invitation Cards)"; // Wedding card: Message is mandatory
+                    messageLabel.innerText = "Detailed Message (Required for Invitation Cards)"; // Invitation card type: Message is mandatory
                 }
                 
                 // Control Timer display (REMOVED TIMER DISPLAY)
@@ -277,9 +281,12 @@
                 const cardFile = localStorage.getItem('jega_card_file') || 'card.html'; 
                 const currentCode = Object.values(CODES).find(c => c.file === cardFile);
                 
+                // 1. Check if the card is a gift card type (67MEME or CYBERLOOT)
+                const isGiftCardType = currentCode.file === '67-meme.html' || currentCode.file === 'gaming-card.html';
+
                 // --- VALIDATION AND LINK ASSEMBLY ---
 
-                // 1. Gift Code Check (Required for meme cards)
+                // 2. Gift Code Check (Required for meme/gaming cards)
                 let giftCode = '';
                 if (currentCode && currentCode.requiresCode) {
                     giftCode = document.getElementById('giftCodeInput').value;
@@ -289,41 +296,59 @@
                     }
                 }
                 
-                // 2. Message Check (Required for non-meme cards)
-                if (currentCode.file !== '67-meme.html' && !detmsg) {
+                // 3. Message Check (Required for non-gift card types)
+                if (!isGiftCardType && !detmsg) {
                      displayError("ERROR: Please enter the Detailed Message for this invitation card.");
                      return;
                 }
 
                 const baseUrl = window.location.origin + "/" + cardFile; 
-                let finalUrl;
+                let finalUrl = baseUrl + '?'; // Start base URL assembly
 
-                // 3. Assemble Base URL based on product type
-                if (currentCode.file === '67-meme.html') {
-                     // Money card uses hardcoded 'msg=67'
-                     finalUrl = `${baseUrl}?msg=67`;
+                // 4. Assemble parameters specific to the card type
+
+                if (isGiftCardType) {
+                    // --- Gift Card Types (67MEME, CYBERLOOT) ---
+                    
+                    if (currentCode.file === '67-meme.html') {
+                        // 67 Meme Card requires 'msg=67' for the design to work
+                        finalUrl += `msg=67`; 
+                    } 
+                    // Note: Gaming card does not require a base 'msg' parameter
+
+                    // Handle Secondary/Custom Message Field (detmsg input):
+                    if (detmsg) {
+                        if (currentCode.file === '67-meme.html') {
+                            finalUrl += `&detmsg=${encodeURIComponent(detmsg)}`; // Old meme card uses detmsg
+                        } else if (currentCode.file === 'gaming-card.html') {
+                            finalUrl += `message=${encodeURIComponent(detmsg)}`; // New gaming card uses 'message'
+                        }
+                    }
+
                 } else {
-                     // All other cards use the detmsg field for the primary message (msg)
-                     finalUrl = `${baseUrl}?msg=${encodeURIComponent(detmsg)}`; 
-                }
+                    // --- Invitation Card Types (Floral, Navy, Santa) ---
+                    
+                    // Primary Message (detmsg input goes to 'msg' parameter)
+                    finalUrl += `msg=${encodeURIComponent(detmsg)}`;
 
-
-                // 4. Append parameters
-                if (title) finalUrl += `&title=${encodeURIComponent(title)}`;
-                
-                // If it's a MEME card, pass the detailed message as 'detmsg'
-                if (currentCode.file === '67-meme.html' && detmsg) {
-                     finalUrl += `&detmsg=${encodeURIComponent(detmsg)}`; 
-                }
-                
-                // Append Date/Time/Loc only for standard cards
-                if (currentCode.file !== '67-meme.html') {
+                    // Date/Time/Loc
                     if (date) finalUrl += `&date=${encodeURIComponent(date)}`;
                     if (time) finalUrl += `&time=${encodeURIComponent(time)}`;
                     if (loc) finalUrl += `&loc=${encodeURIComponent(loc)}`;
                 }
+
+                // 5. Common parameters (Title and Gift Code)
+                if (title) finalUrl += `&title=${encodeURIComponent(title)}`;
+                if (giftCode) finalUrl += `&code=${encodeURIComponent(giftCode)}`;
                 
-                if (giftCode) finalUrl += `&code=${encodeURIComponent(giftCode)}`; 
+                // Final cleanup: remove trailing '?' if no params were added (only necessary if multiple optional params are used, but good practice)
+                if (finalUrl.endsWith('?')) {
+                    finalUrl = finalUrl.slice(0, -1);
+                }
+                // Also clean up any leading '&' if the first parameter was optional and skipped
+                if (finalUrl.includes('?&')) {
+                    finalUrl = finalUrl.replace('?&', '?');
+                }
 
                 // --- LINK OUTPUT AND COPY ---
                 
