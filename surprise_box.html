@@ -191,8 +191,8 @@
         }
 
         .box-icon {
-            font-size: 3em;
-            margin-bottom: 10px;
+            font-size: 0.05em;
+            margin-bottom: 14px;
         }
 
         .box-text {
@@ -216,9 +216,9 @@
                 transform: scale(0) rotate(-180deg);
                 opacity: 0;
             }
+            /* FIX: Removed rotation from 60% keyframe to prevent momentary clipping issues */
             60% {
-                /* FIX: Set scale to 1 to prevent temporary overflow */
-                transform: scale(1) rotate(10deg); 
+                transform: scale(1); 
             }
             100% {
                 transform: scale(1) rotate(0deg);
@@ -271,6 +271,21 @@
             .mystery-box {
                 /* Max-width is now handled by the grid, ensuring equal sizing */
             }
+
+            /* FIX: Adjust inner box content for better fit on small screens */
+            .box-content {
+                padding: 10px; /* Reduced padding */
+            }
+
+            /* FIX: Reduced icon size further for mobile devices */
+            .box-icon {
+                font-size: 0.75em; /* Adjusted down from 1.5em */
+                margin-bottom: 5px; /* Reduced margin */
+            }
+
+            .box-text {
+                font-size: 0.70em; /* Slightly smaller text for fit */
+            }
         }
     </style>
 </head>
@@ -312,7 +327,7 @@
         // Messages for empty boxes
         const emptyMessages = [
             { icon: '😏', text: 'Not this one...<br>Keep scratching 😘' },
-            { icon: '💋', text: 'Wrong box babe...<br>Try again 🔥' }
+            { icon: '💋', text: 'Wrong box babe...<br>Try again' }
         ];
         
         let emptyMessageIndex = 0;
