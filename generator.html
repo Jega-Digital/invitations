@@ -76,15 +76,21 @@
         <p style="margin-bottom: 30px; color:#666;">Fill in the details for your card.</p>
         
         <!-- TOP TITLE FIELD (Kept separate) -->
-        <label>Top Title (Optional)</label>
+        <label id="cardTitleLabel">Top Title (Optional)</label>
         <input type="text" id="cardTitle" placeholder="e.g. Happy Birthday!">
+
+        <!-- NEW: SENDER NAME FIELD (FOR SURPRISE BOX) -->
+        <div id="senderNameContainer" style="display:none;">
+            <label id="senderNameLabel">Sender Name (Customize "From:")</label>
+            <input type="text" id="senderNameInput" placeholder="e.g. Your Secret Admirer">
+        </div>
         
-        <!-- GIFT CODE INPUT -->
+        <!-- GIFT CODE / PRIZE INPUT -->
         <div id="giftCodeContainer">
-            <label for="giftCodeInput" style="color: #10B981;">Gift Card Code (Required for this Card)</label>
+            <label for="giftCodeInput" id="giftCodeLabel" style="color: #10B981;">Gift Card Code (Required)</label>
             <input type="text" id="giftCodeInput" placeholder="e.g. AMAZON-X93B or 'Gift sent via PayPal'">
         </div>
-        <!-- END GIFT CODE INPUT -->
+        <!-- END GIFT CODE / PRIZE INPUT -->
 
         <!-- DETAILED MESSAGE CONTAINER (ALWAYS VISIBLE for all cards) -->
         <div id="cardMessageContainer">
@@ -122,8 +128,10 @@
             'SANTA2025': { file: 'card-santa.html', theme: 'Santa 67 Meme', active: true },
             // Gift Card Product 1 (Money Meme)
             '67MEME': { file: '67-meme.html', theme: 'Money 67 Hybrid', active: true, requiresCode: true, noExpiry: true }, 
-            // NEW: Gift Card Product 2 (Gaming Loot Drop)
-            'CYBERLOOT': { file: 'gaming-card.html', theme: 'Cyber Loot Drop', active: true, requiresCode: true, noExpiry: true } 
+            // Gift Card Product 2 (Gaming Loot Drop)
+            'CYBERLOOT': { file: 'gaming-card.html', theme: 'Cyber Loot Drop', active: true, requiresCode: true, noExpiry: true },
+            // NEW PRODUCT: Pleasure Surprise Box
+            'PLEASURE2025': { file: 'surprise_box.html', theme: 'Ultimate Pleasure Surprise', active: true, requiresCode: true, noExpiry: true, customFrom: true, isMultiScratch: true }
         };
         const ACCESS_DAYS = 30;
         
@@ -186,30 +194,52 @@
             const codeContainer = document.getElementById('giftCodeContainer');
             const dynamicFields = document.getElementById('dynamicFields'); // Container for Date/Time/Loc
             const messageLabel = document.getElementById('cardMessageLabel');
+            const giftCodeLabel = document.getElementById('giftCodeLabel');
+            const senderNameContainer = document.getElementById('senderNameContainer');
             
             const currentCode = Object.values(CODES).find(c => c.file === cardFile);
             
+            // Reset visibility
+            codeContainer.style.display = 'none';
+            dynamicFields.style.display = 'block';
+            senderNameContainer.style.display = 'none';
+            
             if (currentCode) {
                 // Determine if it's a gift card type (hides date/time/loc, requires code)
-                const isGiftCardType = currentCode.file === '67-meme.html' || currentCode.file === 'gaming-card.html';
+                const isGiftCardType = currentCode.file === '67-meme.html' || currentCode.file === 'gaming-card.html' || currentCode.file === 'surprise_box.html';
 
-                // Control Gift Code Input visibility
+                // --- 1. Control Gift Code / Prize Input visibility ---
                 if (currentCode.requiresCode) {
                     codeContainer.style.display = 'block';
-                } else {
-                    codeContainer.style.display = 'none';
+                    if (currentCode.file === 'surprise_box.html') {
+                        giftCodeLabel.innerHTML = 'Golden Ticket Prize Text (Required)'; // Custom Prize Label
+                        giftCodeInput.placeholder = 'e.g. 1 Hour Full Body Massage';
+                    } else {
+                        giftCodeLabel.innerHTML = 'Gift Card Code (Required for this Card)'; // Generic Gift Code Label
+                        giftCodeInput.placeholder = "e.g. AMAZON-X93B or 'Gift sent via PayPal'";
+                    }
                 }
 
-                // Control General Input Fields (Date/Time/Loc)
+                // --- 2. Control General Input Fields (Date/Time/Loc) ---
                 if (isGiftCardType) {
                     dynamicFields.style.display = 'none';
-                    messageLabel.innerText = "Detailed Message (Optional)"; // Gift card type: Message is optional
+                    // For Gift Card Types, Message is optional, but label changes based on specific card
+                    if (currentCode.file === 'surprise_box.html') {
+                        messageLabel.innerText = "Personal Message Above Boxes (Optional)";
+                        cardMessage.placeholder = 'e.g. Happy Anniversary, Handsome.';
+                    } else {
+                         messageLabel.innerText = "Detailed Message (Optional)";
+                    }
                 } else {
                     dynamicFields.style.display = 'block';
                     messageLabel.innerText = "Detailed Message (Required for Invitation Cards)"; // Invitation card type: Message is mandatory
                 }
                 
-                // Control Timer display (REMOVED TIMER DISPLAY)
+                // --- 3. Control Sender Name Input ---
+                if (currentCode.customFrom) {
+                    senderNameContainer.style.display = 'block';
+                    senderNameInput.placeholder = 'e.g. Your Secret Admirer';
+                }
             }
         }
 
@@ -277,44 +307,52 @@
                 const date = document.getElementById("cardDate").value;
                 const time = document.getElementById("cardTime").value;
                 const loc = document.getElementById("cardLoc").value;
-                
+                const giftCode = document.getElementById('giftCodeInput').value; // Gift Code or Prize Text
+                const senderName = document.getElementById('senderNameInput').value; // Sender Name Input
+
                 const cardFile = localStorage.getItem('jega_card_file') || 'card.html'; 
                 const currentCode = Object.values(CODES).find(c => c.file === cardFile);
                 
-                // 1. Check if the card is a gift card type (67MEME or CYBERLOOT)
-                const isGiftCardType = currentCode.file === '67-meme.html' || currentCode.file === 'gaming-card.html';
+                // 1. Check if the card is a gift card type (67MEME or CYBERLOOT or SURPRISE_BOX)
+                const isGiftCardType = currentCode.file === '67-meme.html' || currentCode.file === 'gaming-card.html' || currentCode.file === 'surprise_box.html';
 
                 // --- VALIDATION AND LINK ASSEMBLY ---
 
-                // 2. Gift Code Check (Required for meme/gaming cards)
-                let giftCode = '';
-                if (currentCode && currentCode.requiresCode) {
-                    giftCode = document.getElementById('giftCodeInput').value;
-                    if (!giftCode) {
-                        displayError("ERROR: You must enter the required Gift Card Code!");
-                        return;
-                    }
+                // 2. Gift Code / Prize Text Check (Required for meme/gaming/surprise cards)
+                if (currentCode && currentCode.requiresCode && !giftCode) {
+                    displayError("ERROR: You must enter the required Prize/Gift Code text!");
+                    return;
                 }
                 
-                // 3. Message Check (Required for non-gift card types)
+                // 3. Sender Name Check (Required for Surprise Box)
+                if (currentCode && currentCode.customFrom && !senderName) {
+                    displayError("ERROR: You must enter the Sender Name (From:) for this card.");
+                    return;
+                }
+                
+                // 4. Message Check (Required for non-gift card types)
                 if (!isGiftCardType && !detmsg) {
-                     displayError("ERROR: Please enter the Detailed Message for this invitation card.");
-                     return;
+                    displayError("ERROR: Please enter the Detailed Message for this invitation card.");
+                    return;
                 }
 
                 const baseUrl = window.location.origin + "/" + cardFile; 
                 let finalUrl = baseUrl + '?'; // Start base URL assembly
 
-                // 4. Assemble parameters specific to the card type
+                // 5. Assemble parameters specific to the card type
 
-                if (isGiftCardType) {
+                if (currentCode.file === 'surprise_box.html') {
+                    // --- Surprise Box Type ---
+                    finalUrl += `prize=${encodeURIComponent(giftCode)}`; // Use giftCodeInput as PRIZE
+                    if (detmsg) finalUrl += `&message=${encodeURIComponent(detmsg)}`; // Use detmsg as MESSAGE
+                    if (senderName) finalUrl += `&from=${encodeURIComponent(senderName)}`; // Use senderNameInput as FROM
+
+                } else if (isGiftCardType) {
                     // --- Gift Card Types (67MEME, CYBERLOOT) ---
                     
                     if (currentCode.file === '67-meme.html') {
-                        // 67 Meme Card requires 'msg=67' for the design to work
-                        finalUrl += `msg=67`; 
+                        finalUrl += `msg=67`; // 67 Meme Card requires 'msg=67'
                     } 
-                    // Note: Gaming card does not require a base 'msg' parameter
 
                     // Handle Secondary/Custom Message Field (detmsg input):
                     if (detmsg) {
@@ -337,15 +375,15 @@
                     if (loc) finalUrl += `&loc=${encodeURIComponent(loc)}`;
                 }
 
-                // 5. Common parameters (Title and Gift Code)
+                // 6. Common parameters (Title and Gift Code/Prize Code)
                 if (title) finalUrl += `&title=${encodeURIComponent(title)}`;
-                if (giftCode) finalUrl += `&code=${encodeURIComponent(giftCode)}`;
+                // Note: The giftCode is only added if it's NOT the surprise box, as the surprise box uses the 'prize' parameter instead of 'code'.
+                if (giftCode && currentCode.file !== 'surprise_box.html') finalUrl += `&code=${encodeURIComponent(giftCode)}`;
                 
-                // Final cleanup: remove trailing '?' if no params were added (only necessary if multiple optional params are used, but good practice)
+                // Final cleanup: remove trailing '?' and replace '?&'
                 if (finalUrl.endsWith('?')) {
                     finalUrl = finalUrl.slice(0, -1);
                 }
-                // Also clean up any leading '&' if the first parameter was optional and skipped
                 if (finalUrl.includes('?&')) {
                     finalUrl = finalUrl.replace('?&', '?');
                 }
