@@ -197,17 +197,28 @@
             const giftCodeLabel = document.getElementById('giftCodeLabel');
             const senderNameContainer = document.getElementById('senderNameContainer');
             
+            const cardTitleInput = document.getElementById('cardTitle'); // Input
+            const cardTitleLabel = document.getElementById('cardTitleLabel'); // Label
+
             const currentCode = Object.values(CODES).find(c => c.file === cardFile);
             
             // Reset visibility
             codeContainer.style.display = 'none';
             dynamicFields.style.display = 'block';
             senderNameContainer.style.display = 'none';
+            cardTitleInput.style.display = 'block'; // Reset title visibility
+            cardTitleLabel.style.display = 'flex'; // Reset title visibility
             
             if (currentCode) {
                 // Determine if it's a gift card type (hides date/time/loc, requires code)
                 const isGiftCardType = currentCode.file === '67-meme.html' || currentCode.file === 'gaming-card.html' || currentCode.file === 'surprise_box.html';
 
+                // --- NEW LOGIC: Hide Top Title for Surprise Box ---
+                if (currentCode.file === 'surprise_box.html') {
+                    cardTitleInput.style.display = 'none';
+                    cardTitleLabel.style.display = 'none';
+                }
+                
                 // --- 1. Control Gift Code / Prize Input visibility ---
                 if (currentCode.requiresCode) {
                     codeContainer.style.display = 'block';
@@ -336,7 +347,14 @@
                     return;
                 }
 
-                const baseUrl = window.location.origin + "/" + cardFile; 
+                // --- FIX: Use LIVE_BASE_URL to ensure links point to the live server ---
+                // IMPORTANT: Replace [YOUR_GITHUB_PAGES_DOMAIN] with your actual live URL (e.g., https://jega.github.io)
+                const LIVE_BASE_URL = window.location.origin.includes('github.io') || window.location.origin.includes('127.0.0.1')
+                    ? window.location.origin 
+                    : "https://[YOUR_GITHUB_PAGES_DOMAIN]"; // <--- REPLACE THIS PLACEHOLDER!
+                // -----------------------------------------------------------------------
+
+                const baseUrl = LIVE_BASE_URL + "/" + cardFile; 
                 let finalUrl = baseUrl + '?'; // Start base URL assembly
 
                 // 5. Assemble parameters specific to the card type
@@ -376,7 +394,9 @@
                 }
 
                 // 6. Common parameters (Title and Gift Code/Prize Code)
-                if (title) finalUrl += `&title=${encodeURIComponent(title)}`;
+                // Title is SKIPPED for surprise_box.html due to the requirement.
+                if (title && currentCode.file !== 'surprise_box.html') finalUrl += `&title=${encodeURIComponent(title)}`; 
+                
                 // Note: The giftCode is only added if it's NOT the surprise box, as the surprise box uses the 'prize' parameter instead of 'code'.
                 if (giftCode && currentCode.file !== 'surprise_box.html') finalUrl += `&code=${encodeURIComponent(giftCode)}`;
                 
