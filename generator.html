@@ -347,14 +347,8 @@
                     return;
                 }
 
-                // --- FIX: Use LIVE_BASE_URL to ensure links point to the live server ---
-                // IMPORTANT: Replace [YOUR_GITHUB_PAGES_DOMAIN] with your actual live URL (e.g., https://jega.github.io)
-                const LIVE_BASE_URL = window.location.origin.includes('github.io') || window.location.origin.includes('127.0.0.1')
-                    ? window.location.origin 
-                    : "https://[YOUR_GITHUB_PAGES_DOMAIN]"; // <--- REPLACE THIS PLACEHOLDER!
-                // -----------------------------------------------------------------------
-
-                const baseUrl = LIVE_BASE_URL + "/" + cardFile; 
+                // --- BASE URL REVERTED TO ORIGINAL LOGIC ---
+                const baseUrl = window.location.origin + "/" + cardFile; 
                 let finalUrl = baseUrl + '?'; // Start base URL assembly
 
                 // 5. Assemble parameters specific to the card type
