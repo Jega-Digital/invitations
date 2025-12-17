@@ -594,7 +594,7 @@
                 </div>
             </div>
             
-            <a href="https://www.etsy.com/listing/4425556973/gift-for-him-man-golden-ticket-for" target="_blank" class="modal-cta">
+            <a href="https://www.etsy.com/listing/4425556973/gift-for-him-man-golden-ticket-for" target="_blank" class="modal-cta" onclick="if(window.trackCtaClick) trackCtaClick('etsy_purchase'); if(typeof gtag !== 'undefined') gtag('event', 'purchase_click', {event_category: 'conversion', event_label: 'demo_modal'})">
                 ♡ Get Your Own Surprise Box
             </a>
             
@@ -1094,6 +1094,127 @@
                     setTimeout(showModal, 2000);
                 }
             }, 500);
+        }
+
+        // ============================================
+        // DEMO PAGE TRACKING
+        // ============================================
+        
+        const DemoAnalytics = {
+            init: function() {
+                this.trackPageView();
+                this.trackVisitor();
+                this.trackDemoInteraction();
+            },
+
+            trackPageView: function() {
+                const pageData = {
+                    page: 'surprise_box_demo.html',
+                    timestamp: new Date().toISOString(),
+                    referrer: document.referrer || 'direct'
+                };
+
+                let pageViews = JSON.parse(localStorage.getItem('jega_pageviews') || '[]');
+                pageViews.push(pageData);
+                localStorage.setItem('jega_pageviews', JSON.stringify(pageViews));
+
+                console.log('📊 Demo Page View:', pageData);
+            },
+
+            trackVisitor: function() {
+                let visitorId = localStorage.getItem('jega_visitor_id');
+                
+                if (!visitorId) {
+                    visitorId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem('jega_visitor_id', visitorId);
+                    localStorage.setItem('jega_first_visit', new Date().toISOString());
+                    localStorage.setItem('jega_visit_count', '1');
+                } else {
+                    let visitCount = parseInt(localStorage.getItem('jega_visit_count') || '0') + 1;
+                    localStorage.setItem('jega_visit_count', visitCount.toString());
+                }
+
+                // Track demo visits specifically
+                let demoVisits = parseInt(localStorage.getItem('jega_demo_visits') || '0') + 1;
+                localStorage.setItem('jega_demo_visits', demoVisits.toString());
+                
+                console.log('🎮 Demo Visit #' + demoVisits);
+            },
+
+            trackDemoInteraction: function() {
+                // Track when user scratches a box
+                window.trackScratch = function() {
+                    let scratchCount = parseInt(localStorage.getItem('jega_scratch_count') || '0') + 1;
+                    localStorage.setItem('jega_scratch_count', scratchCount.toString());
+                    console.log('✨ Scratch interaction #' + scratchCount);
+                };
+
+                // Track when user finds the prize
+                window.trackWin = function() {
+                    let winCount = parseInt(localStorage.getItem('jega_demo_wins') || '0') + 1;
+                    localStorage.setItem('jega_demo_wins', winCount.toString());
+                    localStorage.setItem('jega_last_win', new Date().toISOString());
+                    console.log('🎉 Demo completed! Total wins: ' + winCount);
+                };
+
+                // Track CTA clicks
+                window.trackCtaClick = function(destination) {
+                    let ctaClicks = JSON.parse(localStorage.getItem('jega_cta_clicks') || '[]');
+                    ctaClicks.push({
+                        destination: destination,
+                        timestamp: new Date().toISOString()
+                    });
+                    localStorage.setItem('jega_cta_clicks', JSON.stringify(ctaClicks));
+                    console.log('🛒 CTA Click:', destination);
+                };
+            },
+
+            getSummary: function() {
+                return {
+                    visitorId: localStorage.getItem('jega_visitor_id'),
+                    totalVisits: localStorage.getItem('jega_visit_count'),
+                    demoVisits: localStorage.getItem('jega_demo_visits'),
+                    scratchCount: localStorage.getItem('jega_scratch_count'),
+                    demoWins: localStorage.getItem('jega_demo_wins'),
+                    ctaClicks: JSON.parse(localStorage.getItem('jega_cta_clicks') || '[]')
+                };
+            }
+        };
+
+        // Initialize demo analytics
+        DemoAnalytics.init();
+        window.DemoAnalytics = DemoAnalytics;
+
+        // Override celebrate to track wins
+        const originalCelebrate = celebrate;
+        celebrate = function() {
+            originalCelebrate();
+            if (window.trackWin) window.trackWin();
+            // Send to Google Analytics
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'demo_win', { event_category: 'engagement' });
+            }
+        };
+    </script>
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8QZK8QQMC3"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-8QZK8QQMC3');
+        
+        // Track demo page view
+        gtag('event', 'page_view', {
+            page_title: 'Surprise Box Demo',
+            page_location: window.location.href
+        });
+        
+        // Track custom events
+        function trackGAEvent(eventName, eventParams) {
+            gtag('event', eventName, eventParams);
+            console.log('📈 GA Event:', eventName, eventParams);
         }
     </script>
 </body>
