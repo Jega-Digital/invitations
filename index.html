@@ -555,17 +555,17 @@
 
         <!-- Navigation -->
         <nav class="nav-section">
-            <a href="https://www.etsy.com/shop/JegaDigital" target="_blank" class="nav-button primary">
+            <a href="https://www.etsy.com/shop/JegaDigital" target="_blank" class="nav-button primary" onclick="trackEvent('button_click', {button: 'shop_all_templates'})">
                 <span class="button-icon">✦</span>
                 Shop All Templates
             </a>
             
-            <a href="surprise_box_demo.html" class="nav-button secondary">
+            <a href="surprise_box_demo.html" class="nav-button secondary" onclick="trackEvent('button_click', {button: 'try_demo'})">
                 <span class="button-icon">♡</span>
                 Try the Surprise Box Demo
             </a>
             
-            <a href="generator.html" class="nav-button tertiary">
+            <a href="generator.html" class="nav-button tertiary" onclick="trackEvent('button_click', {button: 'customer_access'})">
                 <span class="button-icon">✧</span>
                 Customer Access
             </a>
@@ -650,6 +650,331 @@
             sparkle.style.animationDelay = Math.random() * 4 + 's';
             sparkle.style.animationDuration = (3 + Math.random() * 2) + 's';
             heartsContainer.appendChild(sparkle);
+        }
+    </script>
+
+    <!-- Exit Intent Popup -->
+    <div class="exit-popup-overlay" id="exitPopup">
+        <div class="exit-popup">
+            <button class="exit-popup-close" onclick="closeExitPopup()">&times;</button>
+            <div class="exit-popup-icon">💝</div>
+            <h2 class="exit-popup-title">Wait! Don't Leave Empty-Handed</h2>
+            <p class="exit-popup-text">
+                Try our <strong>FREE demo</strong> and see why couples love our digital surprises!
+            </p>
+            <a href="surprise_box_demo.html" class="exit-popup-cta" onclick="trackEvent('exit_popup_click', {destination: 'demo'})">
+                ♡ Try the Free Demo
+            </a>
+            <a href="https://www.etsy.com/shop/JegaDigital" target="_blank" class="exit-popup-secondary" onclick="trackEvent('exit_popup_click', {destination: 'etsy_shop'})">
+                Or browse our Etsy shop →
+            </a>
+        </div>
+    </div>
+
+    <style>
+        /* Exit Intent Popup Styles */
+        .exit-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+            padding: 20px;
+        }
+
+        .exit-popup-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .exit-popup {
+            background: linear-gradient(135deg, #1A0505 0%, #2D0A0A 50%, #4A0E0E 100%);
+            border: 2px solid var(--gold);
+            border-radius: 20px;
+            padding: 40px 32px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            transform: scale(0.8) translateY(-30px);
+            transition: transform 0.4s ease;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                0 0 80px rgba(212, 175, 55, 0.2);
+            position: relative;
+        }
+
+        .exit-popup-overlay.active .exit-popup {
+            transform: scale(1) translateY(0);
+        }
+
+        .exit-popup-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--soft-pink);
+            font-size: 28px;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+
+        .exit-popup-close:hover {
+            opacity: 1;
+        }
+
+        .exit-popup-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+            animation: pulse-icon 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-icon {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .exit-popup-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 26px;
+            color: var(--gold);
+            margin-bottom: 12px;
+        }
+
+        .exit-popup-text {
+            color: var(--blush);
+            font-size: 15px;
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+
+        .exit-popup-cta {
+            display: block;
+            width: 100%;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, var(--crimson) 0%, var(--hot-pink) 100%);
+            color: var(--cream);
+            font-family: 'Libre Baskerville', serif;
+            font-size: 15px;
+            font-weight: 700;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(220, 20, 60, 0.4);
+        }
+
+        .exit-popup-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(255, 20, 147, 0.5);
+        }
+
+        .exit-popup-secondary {
+            color: var(--gold);
+            font-size: 13px;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .exit-popup-secondary:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+    </style>
+
+    <script>
+        // ============================================
+        // VISITOR TRACKING SYSTEM
+        // ============================================
+        
+        const JegaAnalytics = {
+            // Initialize tracking
+            init: function() {
+                this.trackPageView();
+                this.trackVisitor();
+                this.setupExitIntent();
+                this.trackTimeOnPage();
+            },
+
+            // Track page views
+            trackPageView: function() {
+                const pageData = {
+                    page: window.location.pathname || 'index.html',
+                    timestamp: new Date().toISOString(),
+                    referrer: document.referrer || 'direct',
+                    userAgent: navigator.userAgent
+                };
+
+                // Store in localStorage
+                let pageViews = JSON.parse(localStorage.getItem('jega_pageviews') || '[]');
+                pageViews.push(pageData);
+                localStorage.setItem('jega_pageviews', JSON.stringify(pageViews));
+
+                // Log to console (you can send this to your server)
+                console.log('📊 Page View:', pageData);
+
+                // If you have Google Analytics, uncomment this:
+                // gtag('event', 'page_view', { page_path: pageData.page });
+            },
+
+            // Track unique visitors
+            trackVisitor: function() {
+                let visitorId = localStorage.getItem('jega_visitor_id');
+                
+                if (!visitorId) {
+                    // New visitor
+                    visitorId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem('jega_visitor_id', visitorId);
+                    localStorage.setItem('jega_first_visit', new Date().toISOString());
+                    localStorage.setItem('jega_visit_count', '1');
+                    console.log('👋 New Visitor:', visitorId);
+                } else {
+                    // Returning visitor
+                    let visitCount = parseInt(localStorage.getItem('jega_visit_count') || '0') + 1;
+                    localStorage.setItem('jega_visit_count', visitCount.toString());
+                    localStorage.setItem('jega_last_visit', new Date().toISOString());
+                    console.log('👋 Returning Visitor:', visitorId, '| Visits:', visitCount);
+                }
+
+                return visitorId;
+            },
+
+            // Track time on page
+            trackTimeOnPage: function() {
+                const startTime = Date.now();
+                
+                window.addEventListener('beforeunload', function() {
+                    const timeSpent = Math.round((Date.now() - startTime) / 1000);
+                    console.log('⏱️ Time on page:', timeSpent, 'seconds');
+                    
+                    // Store session data
+                    let sessions = JSON.parse(localStorage.getItem('jega_sessions') || '[]');
+                    sessions.push({
+                        page: window.location.pathname || 'index.html',
+                        duration: timeSpent,
+                        timestamp: new Date().toISOString()
+                    });
+                    localStorage.setItem('jega_sessions', JSON.stringify(sessions));
+                });
+            },
+
+            // Setup exit intent detection
+            setupExitIntent: function() {
+                let exitShown = sessionStorage.getItem('jega_exit_shown');
+                
+                // Desktop: Mouse leaves viewport at top
+                document.addEventListener('mouseout', function(e) {
+                    if (e.clientY < 10 && !exitShown) {
+                        showExitPopup();
+                        sessionStorage.setItem('jega_exit_shown', 'true');
+                        exitShown = true;
+                        console.log('🚪 Exit intent triggered (desktop)');
+                    }
+                });
+
+                // Mobile: Back button or scroll up quickly
+                let lastScrollTop = 0;
+                let scrollUpCount = 0;
+                
+                window.addEventListener('scroll', function() {
+                    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    
+                    if (scrollTop < lastScrollTop && scrollTop < 100) {
+                        scrollUpCount++;
+                        if (scrollUpCount > 3 && !exitShown) {
+                            showExitPopup();
+                            sessionStorage.setItem('jega_exit_shown', 'true');
+                            exitShown = true;
+                            console.log('🚪 Exit intent triggered (mobile)');
+                        }
+                    } else {
+                        scrollUpCount = 0;
+                    }
+                    lastScrollTop = scrollTop;
+                });
+            },
+
+            // Get analytics summary
+            getSummary: function() {
+                return {
+                    visitorId: localStorage.getItem('jega_visitor_id'),
+                    firstVisit: localStorage.getItem('jega_first_visit'),
+                    lastVisit: localStorage.getItem('jega_last_visit'),
+                    visitCount: localStorage.getItem('jega_visit_count'),
+                    pageViews: JSON.parse(localStorage.getItem('jega_pageviews') || '[]'),
+                    sessions: JSON.parse(localStorage.getItem('jega_sessions') || '[]')
+                };
+            }
+        };
+
+        // Show exit popup
+        function showExitPopup() {
+            document.getElementById('exitPopup').classList.add('active');
+        }
+
+        // Close exit popup
+        function closeExitPopup() {
+            document.getElementById('exitPopup').classList.remove('active');
+        }
+
+        // Close on overlay click
+        document.getElementById('exitPopup').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeExitPopup();
+            }
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeExitPopup();
+            }
+        });
+
+        // Initialize analytics
+        JegaAnalytics.init();
+
+        // Make analytics available globally for debugging
+        window.JegaAnalytics = JegaAnalytics;
+
+        // To view your analytics, open browser console and type:
+        // JegaAnalytics.getSummary()
+    </script>
+
+    <!-- 
+    ============================================
+    GOOGLE ANALYTICS SETUP (Optional)
+    ============================================
+    To enable Google Analytics:
+    1. Go to https://analytics.google.com
+    2. Create a new property for your website
+    3. Get your Measurement ID (looks like: G-XXXXXXXXXX)
+    4. Uncomment the code below and replace YOUR_MEASUREMENT_ID
+    -->
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8QZK8QQMC3"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-8QZK8QQMC3');
+        
+        // Track custom events
+        function trackEvent(eventName, eventParams) {
+            gtag('event', eventName, eventParams);
+            console.log('📈 GA Event:', eventName, eventParams);
         }
     </script>
 </body>
