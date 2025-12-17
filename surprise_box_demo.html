@@ -604,7 +604,7 @@
                 </div>
             </div>
             
-            <a href="https://www.etsy.com/listing/4425556973/gift-for-him-man-golden-ticket-for" target="_blank" class="modal-cta" onclick="if(window.trackCtaClick) trackCtaClick('etsy_purchase'); if(typeof gtag !== 'undefined') gtag('event', 'purchase_click', {event_category: 'conversion', event_label: 'demo_modal'})">
+            <a href="https://www.etsy.com/listing/4425556973/gift-for-him-man-golden-ticket-for" target="_blank" class="modal-cta" id="etsyCta">
                 ♡ Get Your Own Surprise Box
             </a>
             
@@ -612,11 +612,49 @@
                 ↻ Play Again
             </button>
             
-            <a href="index.html" class="modal-secondary">
+            <a href="index.html" class="modal-secondary" id="backHome">
                 Maybe later — back to home
             </a>
         </div>
     </div>
+
+    <script>
+        // ============================================
+        // TRACK ALL BUTTON CLICKS
+        // ============================================
+        
+        // Track Etsy CTA click
+        document.getElementById('etsyCta').addEventListener('click', function() {
+            console.log('🛒 ETSY CLICK TRACKED!');
+            
+            // Google Analytics
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'click_etsy_cta', {
+                    'event_category': 'conversion',
+                    'event_label': 'surprise_box_demo',
+                    'value': 3.99
+                });
+            }
+            
+            // Local storage tracking
+            let clicks = JSON.parse(localStorage.getItem('jega_cta_clicks') || '[]');
+            clicks.push({
+                button: 'etsy_purchase',
+                timestamp: new Date().toISOString()
+            });
+            localStorage.setItem('jega_cta_clicks', JSON.stringify(clicks));
+        });
+        
+        // Track "back to home" click
+        document.getElementById('backHome').addEventListener('click', function() {
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'click_back_home', {
+                    'event_category': 'navigation',
+                    'event_label': 'demo_modal'
+                });
+            }
+        });
+    </script>
 
     <script>
         // Demo prize text (fixed for demo)
@@ -872,6 +910,15 @@
         
         function showModal() {
             document.getElementById('modalOverlay').classList.add('active');
+            
+            // Track that user completed demo and saw the purchase modal
+            console.log('🎉 DEMO COMPLETED - MODAL SHOWN!');
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'demo_completed', {
+                    'event_category': 'engagement',
+                    'event_label': 'purchase_modal_shown'
+                });
+            }
         }
         
         // Close modal on overlay click
