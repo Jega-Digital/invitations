@@ -1219,8 +1219,7 @@
         </div>
 
         <div class="footer">
-            💕 Made with love by Jega Digital<br>
-            <a href="index.html" style="color: var(--gold); text-decoration: none;">Back to Home</a>
+            💕 Made with love by Jega Digital
         </div>
     </div>
 
@@ -1245,8 +1244,8 @@
                     ↻ Play Again
                 </button>
                 
-                <button class="btn btn-secondary" onclick="closeLivePreview(); window.location.href='index.html';">
-                    ← Back to Home
+                <button class="btn btn-secondary" onclick="closeLivePreview();">
+                    ← Back to Editor
                 </button>
             </div>
         </div>
@@ -1746,8 +1745,9 @@
                     t: cardData.theme || 'gold'
                 });
                 
-                // Use relative path for the play page
-                const baseUrl = window.location.origin + window.location.pathname.replace('generator_freemium.html', '');
+                // Get the base URL properly
+                const currentUrl = window.location.href;
+                const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1);
                 const generatedLink = baseUrl + 'play.html?' + params.toString();
                 
                 document.getElementById('generatedLink').value = generatedLink;
