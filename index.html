@@ -14,9 +14,12 @@
         gtag('config', 'G-8QZK8QQMC3');
     </script>
     
+    <!-- Stripe -->
+    <script src="https://js.stripe.com/v3/"></script>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garabold:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <style>
         * {
@@ -1133,15 +1136,16 @@
                 <div class="email-benefits">
                     <div class="email-benefit"><span>✓</span> Save your card forever</div>
                     <div class="email-benefit"><span>✓</span> Get notified when they open it</div>
-                    <div class="email-benefit"><span>✓</span> Free date night ideas weekly</div>
+                    <div class="email-benefit"><span>✓</span> Unlimited edits & links with this email</div>
                 </div>
                 
                 <div class="input-group" style="margin-bottom: 0;">
-                    <input type="email" id="userEmail" placeholder="your@email.com">
+                    <input type="email" id="userEmail" placeholder="your@email.com" required>
+                    <p class="email-error" id="emailError" style="color: #ff6b6b; font-size: 12px; margin-top: 8px; display: none;">⚠️ Please enter a valid email address</p>
                 </div>
             </div>
 
-            <button class="btn btn-primary" onclick="nextStep(4)" id="step3Btn">
+            <button class="btn btn-primary" onclick="validateAndProceed()" id="step3Btn">
                 Generate My Link 🔗
             </button>
             <button class="btn btn-secondary" onclick="prevStep(2)">
@@ -1159,26 +1163,28 @@
             <div class="paywall-card">
                 <div class="paywall-icon">🔐</div>
                 <div class="paywall-title">Unlock Your Link</div>
-                <div class="paywall-subtitle">One-time fee to activate sending</div>
+                <div class="paywall-subtitle">One-time fee • Unlimited access forever</div>
                 
                 <div class="paywall-price">
-                    <span class="price-old">$4.99</span>
+                    <span class="price-old">$5.99</span>
                     <div>
-                        <div class="price-new">$0.99</div>
-                        <div class="price-label">Limited time offer</div>
+                        <div class="price-new">$1.99</div>
+                        <div class="price-label">Launch Special 🔥</div>
                     </div>
                 </div>
 
                 <div class="paywall-features">
-                    <div class="paywall-feature"><span>✓</span> Send unlimited times</div>
+                    <div class="paywall-feature"><span>✓</span> Unlimited links forever</div>
+                    <div class="paywall-feature"><span>✓</span> Edit & create new cards anytime</div>
                     <div class="paywall-feature"><span>✓</span> Works on any phone</div>
-                    <div class="paywall-feature"><span>✓</span> Link never expires</div>
-                    <div class="paywall-feature"><span>✓</span> See when they open it</div>
+                    <div class="paywall-feature"><span>✓</span> Links never expire</div>
                 </div>
 
                 <button class="btn btn-primary" id="paymentBtn" onclick="processPayment()">
-                    💳 Pay $0.99 & Get Link
+                    💳 Pay $1.99 & Get Link
                 </button>
+                
+                <p id="paymentError" style="color: #ff6b6b; font-size: 12px; margin-top: 12px; display: none;"></p>
 
                 <div class="secure-badge">
                     🔒 Secure payment via Stripe
@@ -1717,65 +1723,187 @@
         }
 
         // ============================================
-        // PAYMENT SIMULATION (BYPASSED FOR TESTING)
+        // EMAIL VALIDATION & STEP 3 PROCEED
         // ============================================
         
-        function processPayment() {
-            // ⚠️ TESTING MODE - PAYWALL BYPASSED
-            // TODO: Re-enable payment when going live
+        function validateEmail(email) {
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return regex.test(email);
+        }
+        
+        function validateAndProceed() {
+            const emailInput = document.getElementById('userEmail');
+            const emailError = document.getElementById('emailError');
+            const email = emailInput.value.trim();
             
+            if (!email || !validateEmail(email)) {
+                emailError.style.display = 'block';
+                emailInput.style.borderColor = '#ff6b6b';
+                emailInput.focus();
+                return;
+            }
+            
+            emailError.style.display = 'none';
+            emailInput.style.borderColor = 'var(--gold)';
+            cardData.email = email;
+            
+            // Save email to localStorage
+            localStorage.setItem('jega_user_email', email);
+            
+            // Check if user has already paid
+            const paidEmails = JSON.parse(localStorage.getItem('jega_paid_emails') || '[]');
+            if (paidEmails.includes(email.toLowerCase())) {
+                // User already paid - skip paywall!
+                generateLinkForPaidUser();
+                return;
+            }
+            
+            // Send email to Google Sheets (lead capture)
+            sendToGoogleSheets(email, 'lead', cardData);
+            
+            // Proceed to paywall
+            nextStep(4);
+        }
+        
+        // ============================================
+        // GOOGLE SHEETS INTEGRATION
+        // ============================================
+        
+        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzz7K2XPY04cYmJm_oo7hVQCKRleL5ji-XqnHsTV-gWKHxSyYIA204JyP6Q84QqfRt_/exec';
+        
+        function sendToGoogleSheets(email, type, data) {
+            // Send data to Google Sheets
+            const payload = {
+                email: email,
+                type: type, // 'lead' or 'paid'
+                date: new Date().toISOString(),
+                cardData: JSON.stringify(data)
+            };
+            
+            // Use navigator.sendBeacon for reliability
+            const formData = new FormData();
+            Object.keys(payload).forEach(key => formData.append(key, payload[key]));
+            
+            fetch(GOOGLE_SHEETS_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: formData
+            }).catch(err => console.log('Sheet save attempted'));
+            
+            console.log('📧 Email captured:', email, type);
+        }
+
+        // ============================================
+        // STRIPE PAYMENT
+        // ============================================
+        
+        const stripe = Stripe('pk_live_51Sfl7mLoHk00vlXFcR5GNjAWsSHmR9PQ77UBv3XfZWl0A1nCrkzG6GwijJOvQp4yodELHXj3BfWM6LbQuodTICEh00rMVYHgdq');
+        
+        async function processPayment() {
             const btn = document.getElementById('paymentBtn');
+            const errorEl = document.getElementById('paymentError');
+            
             btn.innerHTML = '⏳ Processing...';
             btn.disabled = true;
+            errorEl.style.display = 'none';
             
-            // Track payment attempt (still track for testing)
+            // Track payment attempt
             gtag('event', 'payment_initiated', { 
-                value: 0.99,
+                value: 1.99,
                 currency: 'USD',
-                card_data: cardData,
-                test_mode: true
+                email: cardData.email
             });
 
-            setTimeout(() => {
-                // Generate REAL working link with parameters
-                const params = new URLSearchParams({
-                    r: cardData.recipientName || 'Babe',
-                    s: cardData.senderName || 'Your Secret Admirer',
-                    p: cardData.prize || '30 Min Massage',
-                    t: cardData.theme || 'gold'
-                });
+            try {
+                // Create Stripe Checkout Session via client-side redirect
+                // Note: For production, you should create sessions server-side
+                // This uses Stripe Payment Links as a simpler alternative
                 
-                // Get the base URL properly
-                const currentUrl = window.location.href;
-                const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1);
-                const generatedLink = baseUrl + 'play.html?' + params.toString();
+                const paymentSuccess = await openStripeCheckout();
                 
-                document.getElementById('generatedLink').value = generatedLink;
+                if (paymentSuccess) {
+                    completePayment();
+                }
+            } catch (error) {
+                console.error('Payment error:', error);
+                errorEl.textContent = 'Payment failed. Please try again.';
+                errorEl.style.display = 'block';
+                btn.innerHTML = '💳 Pay $1.99 & Get Link';
+                btn.disabled = false;
+            }
+        }
+        
+        function openStripeCheckout() {
+            return new Promise((resolve, reject) => {
+                // Store card data for after payment
+                localStorage.setItem('jega_pending_card', JSON.stringify(cardData));
                 
-                // Track successful "payment" 
-                gtag('event', 'purchase', {
-                    value: 0.99,
-                    currency: 'USD',
-                    transaction_id: Date.now().toString(),
-                    test_mode: true
-                });
-                
-                // Store card data
-                localStorage.setItem('jega_last_card', JSON.stringify(cardData));
-                
-                // Update progress bar for step 5
-                document.getElementById('prog4').classList.remove('active');
-                document.getElementById('prog4').classList.add('completed');
-                
-                // Hide step 4, show step 5
-                document.getElementById('step4').classList.remove('active');
-                document.getElementById('step5').classList.add('active');
-                
-                currentStep = 5;
-                
-                // Scroll to top
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }, 1500);
+                // Redirect to Stripe Payment Link
+                window.location.href = 'https://buy.stripe.com/00w7sM0At4HQgU98dZ5gc00?client_reference_id=' + encodeURIComponent(cardData.email);
+            });
+        }
+        
+        function completePayment() {
+            // Mark email as paid
+            const paidEmails = JSON.parse(localStorage.getItem('jega_paid_emails') || '[]');
+            if (!paidEmails.includes(cardData.email.toLowerCase())) {
+                paidEmails.push(cardData.email.toLowerCase());
+                localStorage.setItem('jega_paid_emails', JSON.stringify(paidEmails));
+            }
+            
+            // Send to Google Sheets as paid customer
+            sendToGoogleSheets(cardData.email, 'paid', cardData);
+            
+            // Track successful payment
+            gtag('event', 'purchase', {
+                value: 1.99,
+                currency: 'USD',
+                transaction_id: Date.now().toString(),
+                email: cardData.email
+            });
+            
+            // Generate the link
+            generateLink();
+        }
+        
+        function generateLinkForPaidUser() {
+            // User already paid - go straight to link generation
+            gtag('event', 'returning_paid_user', { email: cardData.email });
+            generateLink();
+        }
+        
+        function generateLink() {
+            // Generate the shareable link
+            const params = new URLSearchParams({
+                r: cardData.recipientName || 'Babe',
+                s: cardData.senderName || 'Your Secret Admirer',
+                p: cardData.prize || '30 Min Massage',
+                t: cardData.theme || 'gold'
+            });
+            
+            const currentUrl = window.location.href;
+            const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1);
+            const generatedLink = baseUrl + 'play.html?' + params.toString();
+            
+            document.getElementById('generatedLink').value = generatedLink;
+            
+            // Store card data
+            localStorage.setItem('jega_last_card', JSON.stringify(cardData));
+            
+            // Update progress bar
+            document.getElementById('prog3').classList.remove('active');
+            document.getElementById('prog3').classList.add('completed');
+            document.getElementById('line3').classList.add('active');
+            document.getElementById('prog4').classList.add('active');
+            document.getElementById('prog4').classList.remove('active');
+            document.getElementById('prog4').classList.add('completed');
+            
+            // Show success step
+            document.querySelectorAll('.step-screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('step5').classList.add('active');
+            
+            currentStep = 5;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // ============================================
