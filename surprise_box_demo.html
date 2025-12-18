@@ -455,6 +455,75 @@
             text-decoration: underline;
         }
 
+        /* Discount & Urgency Styles */
+        .modal-discount {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(255, 20, 147, 0.15));
+            border: 1px dashed var(--gold);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .discount-badge {
+            background: linear-gradient(135deg, #FF1493, #DC143C);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin-bottom: 10px;
+            animation: pulse-badge 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse-badge {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .discount-price {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 8px;
+        }
+
+        .old-price {
+            color: #888;
+            text-decoration: line-through;
+            font-size: 18px;
+        }
+
+        .new-price {
+            color: var(--gold);
+            font-size: 32px;
+            font-weight: bold;
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        .discount-timer {
+            color: #FF6B6B;
+            font-size: 13px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .discount-timer span {
+            background: rgba(255, 107, 107, 0.2);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .modal-trust {
+            color: var(--gold);
+            font-size: 12px;
+            margin: 15px 0;
+            opacity: 0.9;
+        }
+
         .modal-features {
             display: flex;
             justify-content: center;
@@ -581,39 +650,52 @@
     <!-- Purchase Modal -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal">
-            <div class="modal-icon">🎟️</div>
-            <h2>You Found It!</h2>
+            <div class="modal-icon">🔥</div>
+            <h2>You Won! Now Make Him Win 😏</h2>
+            
+            <div class="modal-discount">
+                <span class="discount-badge">🎉 DEMO PLAYER SPECIAL</span>
+                <div class="discount-price">
+                    <span class="old-price">$5.99</span>
+                    <span class="new-price">$3.99</span>
+                </div>
+                <p class="discount-timer">⏰ Offer expires in <span id="countdown">10:00</span></p>
+            </div>
+            
             <p>
-                Imagine your partner's face when they scratch to reveal 
-                <strong>your custom surprise</strong> — a massage, a date night, 
-                or something more intimate... 
+                Create your own custom scratch card in <strong>2 minutes</strong>. 
+                Send it via text. Watch him scratch to reveal <strong>his prize for tonight</strong> 😏
             </p>
             
             <div class="modal-features">
                 <div class="modal-feature">
                     <div class="modal-feature-icon">✏️</div>
-                    <div class="modal-feature-text">Customize<br>Everything</div>
+                    <div class="modal-feature-text">Write Any<br>Prize You Want</div>
                 </div>
                 <div class="modal-feature">
                     <div class="modal-feature-icon">📱</div>
-                    <div class="modal-feature-text">Works on<br>Any Device</div>
+                    <div class="modal-feature-text">Send Via<br>Text Message</div>
                 </div>
                 <div class="modal-feature">
                     <div class="modal-feature-icon">⚡</div>
-                    <div class="modal-feature-text">Instant<br>Delivery</div>
+                    <div class="modal-feature-text">Ready in<br>2 Minutes</div>
                 </div>
             </div>
             
             <a href="https://www.etsy.com/listing/4425556973/gift-for-him-man-golden-ticket-for" target="_blank" class="modal-cta" id="etsyCta">
-                ♡ Get Your Own Surprise Box
+                🔥 Get Yours Now - Only $3.99
             </a>
             
+            <div class="modal-trust">
+                ⭐⭐⭐⭐⭐ "He LOVED it!" - 500+ Happy Couples
+            </div>
+            
             <button onclick="resetGame()" class="modal-play-again">
-                ↻ Play Again
+                ↻ Play Demo Again
             </button>
             
             <a href="index.html" class="modal-secondary" id="backHome">
-                Maybe later — back to home
+                No thanks, I don't want to surprise him
             </a>
         </div>
     </div>
@@ -911,6 +993,9 @@
         function showModal() {
             document.getElementById('modalOverlay').classList.add('active');
             
+            // Start countdown timer
+            startCountdown();
+            
             // Track that user completed demo and saw the purchase modal
             console.log('🎉 DEMO COMPLETED - MODAL SHOWN!');
             if (typeof gtag !== 'undefined') {
@@ -919,6 +1004,25 @@
                     'event_label': 'purchase_modal_shown'
                 });
             }
+        }
+        
+        // Countdown timer for urgency
+        function startCountdown() {
+            let timeLeft = 10 * 60; // 10 minutes in seconds
+            const countdownEl = document.getElementById('countdown');
+            
+            const timer = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                countdownEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    countdownEl.textContent = "EXPIRED";
+                    countdownEl.style.color = "#ff4444";
+                }
+                timeLeft--;
+            }, 1000);
         }
         
         // Close modal on overlay click
