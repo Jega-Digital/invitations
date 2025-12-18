@@ -721,10 +721,10 @@
 
         .scratch-box canvas {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: -5px;
+            left: -5px;
+            width: calc(100% + 10px);
+            height: calc(100% + 10px);
             border-radius: 12px;
             z-index: 2;
         }
@@ -1245,8 +1245,8 @@
                     ↻ Play Again
                 </button>
                 
-                <button class="btn btn-secondary" onclick="closeLivePreview()" style="margin-top: 10px;">
-                    ← Back to Editor
+                <button class="btn btn-secondary" onclick="closeLivePreview(); window.location.href='index.html';">
+                    ← Back to Home
                 </button>
             </div>
         </div>
@@ -1320,8 +1320,8 @@
                 
                 // Create canvas for scratch effect
                 const canvas = document.createElement('canvas');
-                canvas.width = 200;
-                canvas.height = 200;
+                canvas.width = 300;
+                canvas.height = 300;
                 
                 box.appendChild(content);
                 box.appendChild(canvas);
@@ -1342,31 +1342,48 @@
             drawScratchCover(ctx, canvas.width, canvas.height);
             
             function drawScratchCover(ctx, width, height) {
+                // First fill entire canvas with solid dark color to prevent bleed-through
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(0, 0, width, height);
+                
                 let gradient;
+                let ribbonColor;
+                let bowColor;
                 
                 if (cardData.theme === 'pink') {
                     gradient = ctx.createLinearGradient(0, 0, width, height);
                     gradient.addColorStop(0, '#FF1493');
                     gradient.addColorStop(0.5, '#FF69B4');
                     gradient.addColorStop(1, '#FF1493');
+                    ribbonColor = '#FFB6C1';
+                    bowColor = '#FF69B4';
                 } else if (cardData.theme === 'dark') {
                     gradient = ctx.createLinearGradient(0, 0, width, height);
                     gradient.addColorStop(0, '#1a1a2e');
                     gradient.addColorStop(0.5, '#16213e');
-                    gradient.addColorStop(1, '#1a1a2e');
+                    gradient.addColorStop(1, '#0f0f1a');
+                    ribbonColor = '#4a4a6a';
+                    bowColor = '#6a6a8a';
                 } else {
                     gradient = ctx.createLinearGradient(0, 0, width, height);
                     gradient.addColorStop(0, '#8B0000');
                     gradient.addColorStop(0.5, '#DC143C');
                     gradient.addColorStop(1, '#8B0000');
+                    ribbonColor = '#FFB6C1';
+                    bowColor = '#FF69B4';
                 }
                 
+                // Fill main background
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, width, height);
+                
+                // Add extra solid layer to ensure no bleed-through
                 ctx.fillStyle = gradient;
                 ctx.fillRect(0, 0, width, height);
                 
                 // Draw ribbon
-                ctx.strokeStyle = cardData.theme === 'dark' ? '#4a4a6a' : '#FFB6C1';
-                ctx.lineWidth = 10;
+                ctx.strokeStyle = ribbonColor;
+                ctx.lineWidth = 12;
                 ctx.beginPath();
                 ctx.moveTo(width / 2, 0);
                 ctx.lineTo(width / 2, height);
@@ -1376,23 +1393,23 @@
                 ctx.lineTo(width, height / 2);
                 ctx.stroke();
                 
-                // Draw bow
-                ctx.fillStyle = cardData.theme === 'dark' ? '#6a6a8a' : '#FF69B4';
+                // Draw bow circle
+                ctx.fillStyle = bowColor;
                 ctx.beginPath();
-                ctx.arc(width / 2, height / 2, 20, 0, Math.PI * 2);
+                ctx.arc(width / 2, height / 2, 25, 0, Math.PI * 2);
                 ctx.fill();
                 
-                // Heart
+                // Heart emoji
                 ctx.fillStyle = '#fff';
-                ctx.font = '28px Arial';
+                ctx.font = '32px Arial';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText('💕', width / 2, height / 2);
                 
-                // Text
-                ctx.fillStyle = '#FFE4E1';
-                ctx.font = 'bold 12px Arial';
-                ctx.fillText('SCRATCH ME', width / 2, height - 15);
+                // "SCRATCH ME" text
+                ctx.fillStyle = cardData.theme === 'dark' ? '#8a8aaa' : '#FFE4E1';
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText('SCRATCH ME', width / 2, height - 20);
             }
             
             function scratch(x, y) {
@@ -1721,15 +1738,26 @@
             });
 
             setTimeout(() => {
-                // Generate fake link
-                const linkId = Math.random().toString(36).substring(2, 8);
-                document.getElementById('generatedLink').value = `https://jega.digital/s/${linkId}`;
+                // Generate REAL working link with parameters
+                const params = new URLSearchParams({
+                    r: cardData.recipientName || 'Babe',
+                    s: cardData.senderName || 'Your Secret Admirer',
+                    p: cardData.prize || '30 Min Massage',
+                    t: cardData.theme || 'gold'
+                });
+                
+                // Get the base URL properly
+                const currentUrl = window.location.href;
+                const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1);
+                const generatedLink = baseUrl + 'play.html?' + params.toString();
+                
+                document.getElementById('generatedLink').value = generatedLink;
                 
                 // Track successful "payment" 
                 gtag('event', 'purchase', {
                     value: 0.99,
                     currency: 'USD',
-                    transaction_id: linkId,
+                    transaction_id: Date.now().toString(),
                     test_mode: true
                 });
                 
@@ -1758,15 +1786,32 @@
         function copyLink() {
             const link = document.getElementById('generatedLink').value;
             navigator.clipboard.writeText(link).then(() => {
-                alert('Link copied! 📋');
+                const copyBtn = document.querySelector('.copy-btn');
+                copyBtn.textContent = 'Copied! ✓';
+                setTimeout(() => copyBtn.textContent = 'Copy', 2000);
                 gtag('event', 'link_copied');
+            }).catch(() => {
+                // Fallback for older browsers
+                const input = document.getElementById('generatedLink');
+                input.select();
+                document.execCommand('copy');
+                alert('Link copied!');
             });
         }
 
         function shareViaSMS() {
             const link = document.getElementById('generatedLink').value;
             const message = encodeURIComponent(`Open this when you have a minute 😏 ${link}`);
-            window.open(`sms:?body=${message}`, '_blank');
+            
+            // Detect if iOS or Android
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            
+            if (isIOS) {
+                window.location.href = `sms:&body=${message}`;
+            } else {
+                window.location.href = `sms:?body=${message}`;
+            }
+            
             gtag('event', 'share_sms');
         }
 
