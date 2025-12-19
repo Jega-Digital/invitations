@@ -28,7 +28,7 @@
     <script src="https://js.stripe.com/v3/"></script>
     
     <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1741,12 +1741,21 @@
         
         const SUPABASE_URL = 'https://twksmudlxypozatfulzc.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3a3NtdWRseHlwb3phdGZ1bHpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwOTQ0NjAsImV4cCI6MjA4MTY3MDQ2MH0.wmq7QyIIT0fzbt0Tn7FXnzhOaOsJOqyj0eNW-G5wHHI';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        let supabaseClient = null;
+        try {
+            if (window.supabase && window.supabase.createClient) {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            }
+        } catch (e) {
+            console.log('Supabase init error:', e);
+        }
         
         // Check if email has paid (from Supabase)
         async function checkIfPaid(email) {
+            if (!supabaseClient) return false;
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('paid_emails')
                     .select('email')
                     .eq('email', email.toLowerCase())
@@ -1762,8 +1771,9 @@
         
         // Save paid email to Supabase
         async function savePaidEmail(email, cardData) {
+            if (!supabaseClient) return;
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('paid_emails')
                     .insert([
                         { 
