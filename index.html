@@ -1230,6 +1230,11 @@
                     📋 Copy Link
                 </button>
             </div>
+            
+            <!-- Preview Button -->
+            <button class="btn btn-preview" onclick="previewCreatedCard()" style="margin-top: 16px; background: linear-gradient(135deg, #ffc300, #2E7D32); color: #fff;">
+                👀 Preview What They'll See
+            </button>
 
             <div style="margin-top: 30px; padding: 20px; background: var(--bg-card); border-radius: 12px; text-align: center;">
                 <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">💡 Pro tip: Send it with no context for maximum surprise!</p>
@@ -1239,6 +1244,10 @@
 
         <div class="footer">
             💕 Made with love by Jega Digital
+            <br><br>
+            <button onclick="createNewCard()" style="background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 13px;">
+                ✨ Create Another Card
+            </button>
         </div>
     </div>
 
@@ -2042,6 +2051,51 @@
                 document.execCommand('copy');
                 alert('Link copied!');
             });
+        }
+        
+        function previewCreatedCard() {
+            const link = document.getElementById('generatedLink').value;
+            window.open(link, '_blank');
+            gtag('event', 'preview_clicked');
+        }
+        
+        function createNewCard() {
+            // Reset card data
+            cardData = {
+                theme: 'gold',
+                recipientName: '',
+                senderName: '',
+                prize: '',
+                email: localStorage.getItem('jega_user_email') || ''
+            };
+            
+            // Reset form fields
+            document.getElementById('recipientName').value = '';
+            document.getElementById('senderName').value = '';
+            document.getElementById('prizeText').value = '';
+            
+            // Reset progress bar
+            document.querySelectorAll('.progress-step').forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index === 0) step.classList.add('active');
+            });
+            document.querySelectorAll('.progress-line').forEach(line => {
+                line.classList.remove('active');
+            });
+            
+            // Reset theme selection
+            document.querySelectorAll('.theme-card').forEach(card => {
+                card.classList.remove('selected');
+                if (card.dataset.theme === 'gold') card.classList.add('selected');
+            });
+            
+            // Go back to step 1
+            document.querySelectorAll('.step-screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('step1').classList.add('active');
+            currentStep = 1;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            gtag('event', 'create_new_card');
         }
 
         function shareViaSMS() {
