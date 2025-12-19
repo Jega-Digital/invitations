@@ -1772,7 +1772,15 @@
             
             // Check if user has already paid
             const paidEmails = JSON.parse(localStorage.getItem('jega_paid_emails') || '[]');
-            if (paidEmails.includes(email.toLowerCase())) {
+            
+            // Manual list of paid emails (add your paying customers here)
+            const manualPaidEmails = [
+                'garcia.jerry22@live.com',
+            ];
+            
+            const allPaidEmails = [...paidEmails, ...manualPaidEmails];
+            
+            if (allPaidEmails.includes(email.toLowerCase())) {
                 // User already paid - skip paywall!
                 generateLinkForPaidUser();
                 return;
@@ -1868,7 +1876,7 @@
                 localStorage.setItem('jega_pending_card', JSON.stringify(cardData));
                 
                 // Redirect to Stripe Payment Link
-                window.location.href = 'https://buy.stripe.com/00w7sM0At4HQgU98dZ5gc00?client_reference_id=' + encodeURIComponent(cardData.email);
+                window.location.href = 'https://buy.stripe.com/3cI6oIab33DM6fv0Lx5gc01?client_reference_id=' + encodeURIComponent(cardData.email);
             });
         }
         
