@@ -24,6 +24,9 @@
     </script>
     <!-- TikTok Pixel Code End -->
     
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <style>
@@ -221,6 +224,33 @@
     </div>
 
     <script>
+        // Supabase setup
+        const SUPABASE_URL = 'https://twksmudlxypozatfulzc.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3a3NtdWRseHlwb3phdGZ1bHpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwOTQ0NjAsImV4cCI6MjA4MTY3MDQ2MH0.wmq7QyIIT0fzbt0Tn7FXnzhOaOsJOqyj0eNW-G5wHHI';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Save paid email to Supabase
+        async function savePaidEmail(email, cardData) {
+            try {
+                const { data, error } = await supabase
+                    .from('paid_emails')
+                    .insert([
+                        { 
+                            email: email.toLowerCase(),
+                            card_data: cardData
+                        }
+                    ]);
+                
+                if (error && error.code !== '23505') { // Ignore duplicate error
+                    console.log('Supabase error:', error);
+                } else {
+                    console.log('✅ Email saved to Supabase:', email);
+                }
+            } catch (error) {
+                console.log('Supabase save error:', error);
+            }
+        }
+        
         // Get pending card data from localStorage
         const pendingCard = localStorage.getItem('jega_pending_card');
         const userEmail = localStorage.getItem('jega_user_email');
@@ -231,7 +261,12 @@
             if (pendingCard) {
                 const cardData = JSON.parse(pendingCard);
                 
-                // Mark email as paid
+                // Save to Supabase (permanent storage)
+                if (userEmail) {
+                    savePaidEmail(userEmail, cardData);
+                }
+                
+                // Mark email as paid in localStorage (backup)
                 const paidEmails = JSON.parse(localStorage.getItem('jega_paid_emails') || '[]');
                 if (userEmail && !paidEmails.includes(userEmail.toLowerCase())) {
                     paidEmails.push(userEmail.toLowerCase());
