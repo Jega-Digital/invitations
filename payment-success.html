@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Successful! | Jega Digital</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Payment Success! | Jega Digital</title>
     
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-8QZK8QQMC3"></script>
@@ -14,7 +14,7 @@
         gtag('config', 'G-8QZK8QQMC3');
     </script>
     
-    <!-- TikTok Pixel Code Start -->
+    <!-- TikTok Pixel -->
     <script>
         !function (w, d, t) {
             w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
@@ -22,12 +22,11 @@
             ttq.page();
         }(window, document, 'ttq');
     </script>
-    <!-- TikTok Pixel Code End -->
     
     <!-- Supabase -->
     <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         * {
@@ -37,8 +36,8 @@
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a0a0a 100%);
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
             color: #fff;
             min-height: 100vh;
             display: flex;
@@ -48,14 +47,15 @@
         }
 
         .container {
+            max-width: 500px;
+            width: 100%;
             text-align: center;
-            max-width: 400px;
         }
 
         .success-icon {
             font-size: 80px;
             margin-bottom: 20px;
-            animation: bounce 0.6s ease;
+            animation: bounce 0.6s ease-out;
         }
 
         @keyframes bounce {
@@ -64,276 +64,471 @@
         }
 
         h1 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 32px;
-            color: #D4AF37;
-            margin-bottom: 16px;
+            font-family: 'DM Serif Display', serif;
+            font-size: 36px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #FFD700, #FF1493);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         p {
-            color: #888;
-            margin-bottom: 24px;
-            line-height: 1.6;
-        }
-
-        .link-box {
-            background: #141414;
-            border: 2px solid #D4AF37;
-            border-radius: 12px;
-            padding: 16px;
-            margin: 20px 0;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .link-box input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: #fff;
-            font-size: 13px;
-            outline: none;
-        }
-
-        .copy-btn {
-            background: #D4AF37;
-            color: #000;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 16px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .share-buttons {
-            display: flex;
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        .share-btn {
-            flex: 1;
-            padding: 14px;
-            border-radius: 12px;
-            border: none;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .share-btn.sms {
-            background: #4CAF50;
-            color: #fff;
-        }
-
-        .share-btn.copy {
-            background: #333;
-            color: #fff;
-        }
-
-        .tip-box {
-            margin-top: 30px;
-            padding: 20px;
-            background: #141414;
-            border-radius: 12px;
-        }
-
-        .tip-box p {
-            margin: 0;
-            font-size: 13px;
-        }
-
-        .new-card-btn {
-            display: inline-block;
-            margin-top: 30px;
-            padding: 16px 32px;
-            background: linear-gradient(135deg, #D4AF37, #FF1493);
-            color: #000;
-            text-decoration: none;
-            border-radius: 12px;
-            font-weight: 600;
+            color: #999;
+            font-size: 16px;
+            margin-bottom: 32px;
         }
 
         .loading {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
+            padding: 20px;
+            background: #1a1a1a;
+            border-radius: 16px;
+            margin-bottom: 24px;
         }
 
         .spinner {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             border: 4px solid #333;
-            border-top-color: #D4AF37;
+            border-top-color: #FF1493;
             border-radius: 50%;
             animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        .card-builder {
+            display: none;
+            background: #1a1a1a;
+            border-radius: 20px;
+            padding: 32px 24px;
+            margin-bottom: 24px;
+        }
+
+        .card-builder.show {
+            display: block;
+            animation: fadeIn 0.6s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            background: #0a0a0a;
+            border: 2px solid #333;
+            border-radius: 12px;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #FF1493;
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .prize-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .prize-chip {
+            padding: 8px 14px;
+            background: #333;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .prize-chip:hover {
+            background: #FF1493;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 17px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #FF1493, #FF69B4);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 20, 147, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .link-box {
+            display: none;
+            background: #1a1a1a;
+            border: 2px solid #FFD700;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .link-box.show {
+            display: block;
+            animation: fadeIn 0.6s;
+        }
+
+        .link-display {
+            background: #0a0a0a;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            word-break: break-all;
+            font-size: 14px;
+            color: #FFD700;
+        }
+
+        .share-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .share-btn {
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn {
+            background: #FFD700;
+            color: #000;
+        }
+
+        .sms-btn {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .share-btn:active {
+            transform: scale(0.98);
+        }
+
+        .tip {
+            background: rgba(255, 20, 147, 0.1);
+            border: 1px solid rgba(255, 20, 147, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 14px;
+            color: #999;
+            margin-top: 20px;
+        }
+
+        .error {
+            background: #ff6b6b;
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div id="loadingState" class="loading">
+        <div class="success-icon">🎉</div>
+        <h1>Payment Successful!</h1>
+        <p id="statusText">Processing your payment and setting up your account...</p>
+
+        <!-- Loading State -->
+        <div class="loading" id="loadingSection">
             <div class="spinner"></div>
-            <p>Confirming your payment...</p>
+            <p style="margin: 0; color: #666;">Saving your account...</p>
         </div>
 
-        <div id="successState" style="display: none;">
-            <div class="success-icon">🎉</div>
-            <h1>Payment Successful!</h1>
-            <p>Your link is ready to share. Send it to your lover and watch the magic happen! 💕</p>
+        <!-- Error State -->
+        <div id="errorSection" style="display: none;"></div>
 
-            <div class="link-box">
-                <input type="text" id="generatedLink" readonly>
-                <button class="copy-btn" onclick="copyLink()">Copy</button>
+        <!-- Card Builder -->
+        <div class="card-builder" id="cardBuilder">
+            <h2 style="margin-bottom: 20px; font-size: 22px;">Create Your Card</h2>
+            
+            <div class="input-group">
+                <label>Recipient Name (who receives)</label>
+                <input type="text" id="recipientName" placeholder="e.g. Babe, My Love..." maxlength="20">
             </div>
 
+            <div class="input-group">
+                <label>Your Name (the sender)</label>
+                <input type="text" id="senderName" placeholder="e.g. Your Girl, Wifey..." maxlength="20">
+            </div>
+
+            <div class="input-group">
+                <label>The Prize 🎁</label>
+                <textarea id="prizeText" placeholder="e.g. 30 Minute Full Body Massage..."></textarea>
+                <div class="prize-chips">
+                    <div class="prize-chip" onclick="setPrize('30 Min Massage 💆')">30 Min Massage 💆</div>
+                    <div class="prize-chip" onclick="setPrize('Breakfast in Bed 🥞')">Breakfast in Bed 🥞</div>
+                    <div class="prize-chip" onclick="setPrize('Movie Night Your Pick 🎬')">Movie Night 🎬</div>
+                    <div class="prize-chip" onclick="setPrize('Whatever You Want Tonight 😏')">Whatever You Want 😏</div>
+                    <div class="prize-chip" onclick="setPrize('Full Body Worship 🔥')">Full Body Worship 🔥</div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Theme</label>
+                <select id="themeSelect">
+                    <option value="gold">🔥 Romantic Gold</option>
+                    <option value="pink">💕 Hot Pink</option>
+                    <option value="dark">🌙 Midnight Dark</option>
+                </select>
+            </div>
+
+            <button class="btn" onclick="generateLink()">Generate My Link 🔗</button>
+        </div>
+
+        <!-- Link Display -->
+        <div class="link-box" id="linkBox">
+            <h3 style="margin-bottom: 16px; font-size: 20px;">Your Link is Ready! 🎉</h3>
+            <div class="link-display" id="linkDisplay"></div>
             <div class="share-buttons">
-                <button class="share-btn sms" onclick="shareViaSMS()">
-                    💬 Send via Text
-                </button>
-                <button class="share-btn copy" onclick="copyLink()">
-                    📋 Copy Link
-                </button>
+                <button class="share-btn copy-btn" onclick="copyLink()">📋 Copy Link</button>
+                <button class="share-btn sms-btn" onclick="shareViaSMS()">💬 Send via SMS</button>
             </div>
-
-            <div class="tip-box">
-                <p>💡 <strong>Pro tip:</strong> Send it with no context for maximum surprise!</p>
-                <p style="color: #666; margin-top: 8px;">"Open this when you have a minute 😏"</p>
+            <div class="tip">
+                💡 <strong>Pro tip:</strong> Send it with no context for maximum surprise!<br>
+                Example: "Open this when you have a minute 😏"
             </div>
+        </div>
 
-            <a href="index.html" class="new-card-btn">✨ Create Another Card</a>
-        </div>
-        
-        <div id="errorState" style="display: none;">
-            <div class="success-icon">😕</div>
-            <h1>Something went wrong</h1>
-            <p>We couldn't find your card data. Please try creating a new card.</p>
-            <a href="index.html" class="new-card-btn">← Back to Home</a>
-        </div>
+        <button class="btn" onclick="createAnother()" style="background: #333; margin-top: 16px; display: none;" id="createAnotherBtn">
+            ✨ Create Another Card
+        </button>
     </div>
 
     <script>
-        // Supabase setup
+        // Supabase Setup
         const SUPABASE_URL = 'https://twksmudlxypozatfulzc.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3a3NtdWRseHlwb3phdGZ1bHpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwOTQ0NjAsImV4cCI6MjA4MTY3MDQ2MH0.wmq7QyIIT0fzbt0Tn7FXnzhOaOsJOqyj0eNW-G5wHHI';
         
         let supabaseClient = null;
         try {
-            if (window.supabase && window.supabase.createClient) {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            }
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         } catch (e) {
-            console.log('Supabase init error:', e);
+            console.error('Supabase init error:', e);
         }
-        
-        // Save paid email to Supabase
-        async function savePaidEmail(email, cardData) {
-            if (!supabaseClient) return;
+
+        // Google Sheets URL
+        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzz7K2XPY04cYmJm_oo7hVQCKRleL5ji-XqnHsTV-gWKHxSyYIA204JyP6Q84QqfRt_/exec';
+
+        let cardData = {};
+        let generatedLink = '';
+
+        // On page load
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Track conversion
+            gtag('event', 'purchase', {
+                value: 1.99,
+                currency: 'USD',
+                transaction_id: Date.now().toString()
+            });
+            
+            ttq.track('CompletePayment', {
+                content_type: 'product',
+                content_id: 'scratch_card',
+                value: 1.99,
+                currency: 'USD'
+            });
+
+            // Get card data from localStorage
+            const pendingCard = localStorage.getItem('jega_pending_card');
+            if (pendingCard) {
+                cardData = JSON.parse(pendingCard);
+            }
+
+            // Get email from URL parameter (Stripe sends this)
+            const urlParams = new URLSearchParams(window.location.search);
+            const emailFromStripe = urlParams.get('email');
+            const clientRefId = urlParams.get('client_reference_id');
+            
+            // Use email from URL or localStorage
+            const userEmail = emailFromStripe || clientRefId || cardData.email || '';
+
+            if (!userEmail) {
+                showError('Could not identify your email. Please contact support.');
+                return;
+            }
+
+            cardData.email = userEmail;
+
+            // Save to Supabase
+            await savePaidEmail(userEmail, cardData);
+
+            // Save to Google Sheets
+            sendToGoogleSheets(userEmail, 'paid', cardData);
+
+            // Mark as paid in localStorage
+            const paidEmails = JSON.parse(localStorage.getItem('jega_paid_emails') || '[]');
+            if (!paidEmails.includes(userEmail.toLowerCase())) {
+                paidEmails.push(userEmail.toLowerCase());
+                localStorage.setItem('jega_paid_emails', JSON.stringify(paidEmails));
+            }
+
+            // Show card builder
+            document.getElementById('loadingSection').style.display = 'none';
+            document.getElementById('statusText').textContent = 'Now create your custom card!';
+            document.getElementById('cardBuilder').classList.add('show');
+
+            // Pre-fill if data exists
+            if (cardData.recipientName) document.getElementById('recipientName').value = cardData.recipientName;
+            if (cardData.senderName) document.getElementById('senderName').value = cardData.senderName;
+            if (cardData.prize) document.getElementById('prizeText').value = cardData.prize;
+            if (cardData.theme) document.getElementById('themeSelect').value = cardData.theme;
+        });
+
+        async function savePaidEmail(email, data) {
+            if (!supabaseClient) {
+                console.error('Supabase not available');
+                return;
+            }
+
             try {
-                const { data, error } = await supabaseClient
+                const { data: result, error } = await supabaseClient
                     .from('paid_emails')
                     .insert([
                         { 
                             email: email.toLowerCase(),
-                            card_data: cardData
+                            card_data: data,
+                            paid_at: new Date().toISOString()
                         }
-                    ]);
+                    ])
+                    .select();
                 
-                if (error && error.code !== '23505') { // Ignore duplicate error
-                    console.log('Supabase error:', error);
+                if (error) {
+                    console.error('Supabase save error:', error);
+                    // Don't show error to user - they already paid
                 } else {
                     console.log('✅ Email saved to Supabase:', email);
                 }
             } catch (error) {
-                console.log('Supabase save error:', error);
+                console.error('Supabase unexpected error:', error);
             }
         }
-        
-        // Get pending card data from localStorage
-        const pendingCard = localStorage.getItem('jega_pending_card');
-        const userEmail = localStorage.getItem('jega_user_email');
-        
-        setTimeout(() => {
-            document.getElementById('loadingState').style.display = 'none';
+
+        function sendToGoogleSheets(email, type, data) {
+            const payload = {
+                email: email,
+                type: type,
+                date: new Date().toISOString(),
+                cardData: JSON.stringify(data)
+            };
             
-            if (pendingCard) {
-                const cardData = JSON.parse(pendingCard);
-                
-                // Save to Supabase (permanent storage)
-                if (userEmail) {
-                    savePaidEmail(userEmail, cardData);
-                }
-                
-                // Mark email as paid in localStorage (backup)
-                const paidEmails = JSON.parse(localStorage.getItem('jega_paid_emails') || '[]');
-                if (userEmail && !paidEmails.includes(userEmail.toLowerCase())) {
-                    paidEmails.push(userEmail.toLowerCase());
-                    localStorage.setItem('jega_paid_emails', JSON.stringify(paidEmails));
-                }
-                
-                // Generate link
-                const params = new URLSearchParams({
-                    r: cardData.recipientName || 'Babe',
-                    s: cardData.senderName || 'Your Secret Admirer',
-                    p: cardData.prize || '30 Min Massage',
-                    t: cardData.theme || 'gold'
-                });
-                
-                const baseUrl = window.location.origin + '/';
-                const generatedLink = baseUrl + 'play.html?' + params.toString();
-                
-                document.getElementById('generatedLink').value = generatedLink;
-                document.getElementById('successState').style.display = 'block';
-                
-                // Track successful payment
-                gtag('event', 'purchase', {
-                    value: 1.99,
-                    currency: 'USD',
-                    transaction_id: Date.now().toString()
-                });
-                
-                // TikTok - Complete Payment
-                ttq.track('CompletePayment', {
-                    content_type: 'product',
-                    content_id: 'scratch_card',
-                    content_name: 'Jega Digital Scratch Card',
-                    value: 1.99,
-                    currency: 'USD'
-                });
-                
-                // Clear pending card
-                localStorage.removeItem('jega_pending_card');
-                
-            } else {
-                document.getElementById('errorState').style.display = 'block';
-            }
-        }, 1500);
-        
-        function copyLink() {
-            const link = document.getElementById('generatedLink').value;
-            navigator.clipboard.writeText(link).then(() => {
-                const btn = document.querySelector('.copy-btn');
-                btn.textContent = 'Copied! ✓';
-                setTimeout(() => btn.textContent = 'Copy', 2000);
-            });
+            fetch(GOOGLE_SHEETS_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams(payload)
+            }).catch(err => console.log('Sheet save attempted'));
+            
+            console.log('📧 Email sent to Google Sheets:', email);
         }
-        
+
+        function setPrize(text) {
+            document.getElementById('prizeText').value = text;
+        }
+
+        function generateLink() {
+            const recipient = document.getElementById('recipientName').value || 'Babe';
+            const sender = document.getElementById('senderName').value || 'Your Secret Admirer';
+            const prize = document.getElementById('prizeText').value || '30 Min Massage';
+            const theme = document.getElementById('themeSelect').value;
+
+            const params = new URLSearchParams({
+                r: recipient,
+                s: sender,
+                p: prize,
+                t: theme
+            });
+
+            generatedLink = `${window.location.origin}/play.html?${params.toString()}`;
+
+            document.getElementById('linkDisplay').textContent = generatedLink;
+            document.getElementById('linkBox').classList.add('show');
+            document.getElementById('createAnotherBtn').style.display = 'block';
+            document.getElementById('cardBuilder').style.display = 'none';
+
+            // Track link generation
+            gtag('event', 'link_generated');
+        }
+
+        function copyLink() {
+            navigator.clipboard.writeText(generatedLink);
+            const btn = event.target;
+            btn.textContent = '✅ Copied!';
+            setTimeout(() => {
+                btn.textContent = '📋 Copy Link';
+            }, 2000);
+
+            gtag('event', 'link_copied');
+        }
+
         function shareViaSMS() {
-            const link = document.getElementById('generatedLink').value;
-            const message = encodeURIComponent(`Open this when you have a minute 😏 ${link}`);
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            window.location.href = isIOS ? `sms:&body=${message}` : `sms:?body=${message}`;
+            const smsLink = `sms:?&body=${encodeURIComponent(generatedLink)}`;
+            window.location.href = smsLink;
+            gtag('event', 'share_sms');
+        }
+
+        function createAnother() {
+            document.getElementById('linkBox').classList.remove('show');
+            document.getElementById('cardBuilder').style.display = 'block';
+            document.getElementById('createAnotherBtn').style.display = 'none';
+            
+            // Clear form
+            document.getElementById('recipientName').value = '';
+            document.getElementById('senderName').value = '';
+            document.getElementById('prizeText').value = '';
+
+            gtag('event', 'create_another_card');
+        }
+
+        function showError(message) {
+            document.getElementById('loadingSection').style.display = 'none';
+            document.getElementById('errorSection').innerHTML = `<div class="error">${message}</div>`;
+            document.getElementById('errorSection').style.display = 'block';
         }
     </script>
 </body>
