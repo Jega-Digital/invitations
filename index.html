@@ -999,6 +999,205 @@
                 max-width: none;
             }
         }
+
+        /* Hero Section */
+        .hero-section {
+            text-align: center;
+            padding: 0 0 32px 0;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--pink), var(--gold));
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 8px 20px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            animation: slideDown 0.6s ease-out 0.2s both;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 36px;
+            line-height: 1.2;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--pink) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: slideDown 0.6s ease-out 0.3s both;
+        }
+
+        .hero-subtitle {
+            font-size: 16px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            line-height: 1.5;
+            animation: slideDown 0.6s ease-out 0.4s both;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 32px;
+            animation: fadeInUp 0.8s ease-out 0.5s both;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 16px 12px;
+            background: rgba(212, 175, 55, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(212, 175, 55, 0.15);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gold);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Benefits Section */
+        .benefits-section {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 32px;
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: rgba(212, 175, 55, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .benefit-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--gold), var(--pink));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .benefit-text {
+            font-size: 14px;
+            line-height: 1.4;
+            color: var(--text);
+        }
+
+        .benefit-text strong {
+            color: var(--gold);
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        /* Social Proof Reviews */
+        .review-section {
+            text-align: center;
+            padding: 20px;
+            background: rgba(212, 175, 55, 0.05);
+            border-radius: 16px;
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            margin-bottom: 32px;
+            animation: fadeInUp 0.8s ease-out 0.7s both;
+        }
+
+        .review-stars {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: var(--gold);
+        }
+
+        .review-rating {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .review-quote {
+            font-style: italic;
+            color: var(--text);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+
+        .reviewer-name {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Divider */
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 32px 0;
+            opacity: 0.3;
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 32px;
+            }
+            
+            .stats-grid {
+                gap: 8px;
+            }
+            
+            .stat-card {
+                padding: 12px 8px;
+            }
+            
+            .stat-value {
+                font-size: 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1033,6 +1232,76 @@
     </div>
 
     <div class="container">
+
+    <div class="container">
+        <!-- Hero Section (NEW) -->
+        <div class="hero-section">
+            <div class="hero-badge">🔥 1,243 Couples Used This Today</div>
+            <h1 class="hero-title">Send Him a Scratch-Off Mystery Prize</h1>
+            <p class="hero-subtitle">He'll scratch to reveal what you owe him... 😏</p>
+        </div>
+
+        <!-- Stats Grid (NEW) -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-value">4.9★</span>
+                <span class="stat-label">Rating</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value">2 min</span>
+                <span class="stat-label">Setup Time</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value">1,243</span>
+                <span class="stat-label">Today's Cards</span>
+            </div>
+        </div>
+
+        <!-- Benefits Section (NEW) -->
+        <div class="benefits-section">
+            <div class="benefit-item">
+                <div class="benefit-icon">⚡</div>
+                <div class="benefit-text">
+                    <strong>Instant Delivery</strong>
+                    Share via text in seconds
+                </div>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon">♾️</div>
+                <div class="benefit-text">
+                    <strong>Unlimited Cards Forever</strong>
+                    One payment, unlimited cards with your email
+                </div>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon">🎨</div>
+                <div class="benefit-text">
+                    <strong>Fully Customizable</strong>
+                    Add any prize you want - get creative!
+                </div>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon">📱</div>
+                <div class="benefit-text">
+                    <strong>Works Everywhere</strong>
+                    Phone, tablet, computer - all devices
+                </div>
+            </div>
+        </div>
+
+        <!-- Review Section (NEW) -->
+        <div class="review-section">
+            <div class="review-stars">⭐⭐⭐⭐⭐</div>
+            <div class="review-rating">4.9/5 from 1,243 couples</div>
+            <p class="review-quote">
+                "He couldn't stop laughing when he saw his prize. Best $2 I ever spent! 😂"
+            </p>
+            <div class="reviewer-name">- Sarah M., Texas</div>
+        </div>
+
+        <!-- Section Divider (NEW) -->
+        <div class="section-divider"></div>
+        
         
         <!-- STEP 1: Choose Theme -->
         <div class="step-screen active" id="step1">
@@ -1232,7 +1501,7 @@
             </div>
             
             <!-- Preview Button -->
-            <button class="btn btn-preview" onclick="previewCreatedCard()" style="margin-top: 16px; background: linear-gradient(135deg, #ffc300, #D4AF37); color: #fff;">
+            <button class="btn btn-preview" onclick="previewCreatedCard()" style="margin-top: 16px; background: linear-gradient(135deg, #4CAF50, #2E7D32); color: #fff;">
                 👀 Preview What They'll See
             </button>
 
@@ -1709,8 +1978,14 @@
             // Track step
             gtag('event', 'step_completed', { step: step });
             
-            // Scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            // Scroll to the active step (smooth scroll to keep user focused on current step)
+            const activeStep = document.getElementById(`step${step}`);
+            if (activeStep) {
+                // Scroll to show the step header at the top of viewport
+                const yOffset = -100; // Offset to account for progress bar
+                const y = activeStep.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+            }
         }
 
         function prevStep(step) {
@@ -1725,7 +2000,15 @@
             document.getElementById(`step${step}`).classList.add('active');
             
             currentStep = step;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Scroll to the active step (smooth scroll to keep user focused on current step)
+            const activeStep = document.getElementById(`step${step}`);
+            if (activeStep) {
+                // Scroll to show the step header at the top of viewport
+                const yOffset = -100; // Offset to account for progress bar
+                const y = activeStep.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+            }
         }
 
         // ============================================
