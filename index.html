@@ -1107,8 +1107,8 @@
         <!-- STEP 1: Choose Theme (FIRST THING USERS SEE - INTERACTIVE!) -->
         <div class="step-screen active" id="step1">
             <div class="step-header">
-                <h1>✨ Pick Your Vibe</h1>
-                <p>Tap to start creating your surprise</p>
+                <h1 id="step1Title">✨ Pick Your Vibe</h1>
+                <p id="step1Subtitle">Tap to start creating your surprise</p>
             </div>
 
             <div class="theme-grid">
@@ -1663,6 +1663,22 @@
             prize: '',
             email: ''
         };
+
+        // Detect if user came from scratch page
+        const cameFromScratch = document.referrer.includes('index-scratch-first.html') || 
+                                sessionStorage.getItem('from_scratch') === 'true';
+        
+        if (cameFromScratch) {
+            // Mark that they came from scratch
+            sessionStorage.setItem('from_scratch', 'true');
+            
+            // Update Step 1 messaging to maintain momentum
+            document.getElementById('step1Title').textContent = '🎉 Perfect! Now Pick Your Vibe';
+            document.getElementById('step1Subtitle').textContent = 'Choose a theme for your mystery prize';
+            
+            // Track that they continued from scratch
+            gtag('event', 'continued_from_scratch');
+        }
 
         // ============================================
         // SOCIAL PROOF
