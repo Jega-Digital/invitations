@@ -544,18 +544,70 @@
         <!-- DEMO SECTION -->
         <div class="demo-section">
             <div class="demo-header">
-                <h1>💕 Try It Out! 💕</h1>
-                <p class="from">From: Your Future Self</p>
+                <h1 id="demoTitle">💕 Try It Out! 💕</h1>
+                <p class="from" id="demoFrom">From: Your Future Self</p>
             </div>
             <p class="instruction">✨ Scratch each box to see how it works ✨</p>
             <div class="scratch-grid" id="scratchGrid"></div>
             <button class="play-again" onclick="resetDemo()">↻ Play Again</button>
         </div>
 
-        <!-- PAYMENT STICKY BOX -->
+        <!-- BUILDER SECTION (Right after demo!) -->
+        <div class="builder-section">
+            <h2 class="builder-title">🎨 Build Your Card</h2>
+            <p class="builder-subtitle">Customize below - watch the demo update above! ⬆️</p>
+
+            <div class="section-label">Pick a Theme</div>
+            <div class="theme-options">
+                <div class="theme-option active" onclick="selectTheme('gold')">
+                    <div class="theme-icon">🔥</div>
+                    <div class="theme-name">Romantic Gold</div>
+                </div>
+                <div class="theme-option" onclick="selectTheme('pink')">
+                    <div class="theme-icon">💕</div>
+                    <div class="theme-name">Hot Pink</div>
+                </div>
+                <div class="theme-option" onclick="selectTheme('dark')">
+                    <div class="theme-icon">🌙</div>
+                    <div class="theme-name">Midnight Dark</div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Who is this for? (Recipient)</label>
+                <input type="text" id="recipientName" placeholder="e.g., Babe, My Love..." maxlength="20" oninput="updateLiveDemo()">
+            </div>
+
+            <div class="input-group">
+                <label>Who is it from? (Your Name)</label>
+                <input type="text" id="senderName" placeholder="e.g., Your Girl, Wifey..." maxlength="20" oninput="updateLiveDemo()">
+            </div>
+
+            <div class="input-group">
+                <label>The Prize 🎁</label>
+                <textarea id="prizeText" placeholder="e.g., 30 Minute Full Body Massage..." oninput="updateLiveDemo()"></textarea>
+                <div class="prize-chips">
+                    <div class="prize-chip" onclick="setPrize('30 Min Massage 💆')">30 Min Massage</div>
+                    <div class="prize-chip" onclick="setPrize('Breakfast in Bed 🥞')">Breakfast in Bed</div>
+                    <div class="prize-chip" onclick="setPrize('Movie Night 🎬')">Movie Night</div>
+                    <div class="prize-chip" onclick="setPrize('Whatever You Want 😏')">Whatever You Want</div>
+                </div>
+            </div>
+
+            <div class="preview-box">
+                <div class="preview-title">📱 What He'll See</div>
+                <p class="preview-text" id="previewText">
+                    "💕 Surprise for <span id="previewRecipient">Babe</span> 💕"<br>
+                    From: <span id="previewSender">Your Future Self</span><br>
+                    Prize: "<span id="previewPrize">30 Min Massage</span>"
+                </p>
+            </div>
+        </div>
+
+        <!-- PAYMENT SECTION (Below builder) -->
         <div class="payment-sticky">
             <h2 class="payment-header">🎉 Ready to Create Yours?</h2>
-            <p class="payment-subtitle">Try the builder below, then get your link!</p>
+            <p class="payment-subtitle">Get your link to send!</p>
             
             <div class="price-display">$1.99</div>
             
@@ -582,60 +634,14 @@
                     <button class="share-btn sms-btn" onclick="shareViaSMS()">💬 Send via Text</button>
                     <button class="copy-btn share-btn" onclick="copyLink()">📋 Copy Link</button>
                 </div>
+                
+                <!-- Preview Button -->
+                <button class="generate-btn" onclick="openPreview()" style="margin-top: 16px; background: linear-gradient(135deg, #4CAF50, #2E7D32);">
+                    👀 Preview Your Card
+                </button>
             </div>
         </div>
 
-        <!-- BUILDER SECTION -->
-        <div class="builder-section">
-            <h2 class="builder-title">🎨 Build Your Card</h2>
-            <p class="builder-subtitle">Try it out! Customize everything below</p>
-
-            <div class="section-label">Pick a Theme</div>
-            <div class="theme-options">
-                <div class="theme-option active" onclick="selectTheme('gold')">
-                    <div class="theme-icon">🔥</div>
-                    <div class="theme-name">Romantic Gold</div>
-                </div>
-                <div class="theme-option" onclick="selectTheme('pink')">
-                    <div class="theme-icon">💕</div>
-                    <div class="theme-name">Hot Pink</div>
-                </div>
-                <div class="theme-option" onclick="selectTheme('dark')">
-                    <div class="theme-icon">🌙</div>
-                    <div class="theme-name">Midnight Dark</div>
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label>Who is this for? (Recipient)</label>
-                <input type="text" id="recipientName" placeholder="e.g., Babe, My Love..." maxlength="20" oninput="updatePreview()">
-            </div>
-
-            <div class="input-group">
-                <label>Who is it from? (Your Name)</label>
-                <input type="text" id="senderName" placeholder="e.g., Your Girl, Wifey..." maxlength="20" oninput="updatePreview()">
-            </div>
-
-            <div class="input-group">
-                <label>The Prize 🎁</label>
-                <textarea id="prizeText" placeholder="e.g., 30 Minute Full Body Massage..." oninput="updatePreview()"></textarea>
-                <div class="prize-chips">
-                    <div class="prize-chip" onclick="setPrize('30 Min Massage 💆')">30 Min Massage</div>
-                    <div class="prize-chip" onclick="setPrize('Breakfast in Bed 🥞')">Breakfast in Bed</div>
-                    <div class="prize-chip" onclick="setPrize('Movie Night 🎬')">Movie Night</div>
-                    <div class="prize-chip" onclick="setPrize('Whatever You Want 😏')">Whatever You Want</div>
-                </div>
-            </div>
-
-            <div class="preview-box">
-                <div class="preview-title">📱 Preview</div>
-                <p class="preview-text" id="previewText">
-                    He'll see: "💕 Surprise for <span id="previewRecipient">Babe</span> 💕"<br>
-                    From: <span id="previewSender">Your Secret Admirer</span><br>
-                    Prize: "<span id="previewPrize">30 Min Massage</span>"
-                </p>
-            </div>
-        </div>
 
     </div>
 
@@ -821,7 +827,9 @@
                 content.className = 'scratch-content';
                 if (i === winningBox) {
                     content.classList.add('winner');
-                    content.innerHTML = `<div class="icon">🎟️</div><div class="text">30 Min Massage</div>`;
+                    const currentPrize = cardData.prize || '30 Min Massage';
+                    const displayPrize = currentPrize.length > 20 ? currentPrize.substring(0, 17) + '...' : currentPrize;
+                    content.innerHTML = `<div class="icon">🎟️</div><div class="text">${displayPrize}</div>`;
                 } else {
                     content.classList.add('empty');
                     const msg = emptyMessages[i === 0 ? 0 : 1];
@@ -973,22 +981,42 @@
             cardData.theme = theme;
             document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
             event.target.closest('.theme-option').classList.add('active');
+            updateLiveDemo();
             gtag('event', 'theme_selected', { theme });
         }
 
         function setPrize(text) {
             document.getElementById('prizeText').value = text;
             cardData.prize = text;
-            updatePreview();
+            updateLiveDemo();
         }
 
-        function updatePreview() {
+        function updateLiveDemo() {
+            // Update card data
             cardData.recipientName = document.getElementById('recipientName').value || 'Babe';
-            cardData.senderName = document.getElementById('senderName').value || 'Your Secret Admirer';
+            cardData.senderName = document.getElementById('senderName').value || 'Your Future Self';
             cardData.prize = document.getElementById('prizeText').value || '30 Min Massage';
+            
+            // Update preview text box
             document.getElementById('previewRecipient').textContent = cardData.recipientName;
             document.getElementById('previewSender').textContent = cardData.senderName;
             document.getElementById('previewPrize').textContent = cardData.prize;
+            
+            // Update LIVE DEMO at top!
+            document.getElementById('demoTitle').textContent = `💕 Surprise for ${cardData.recipientName} 💕`;
+            document.getElementById('demoFrom').textContent = `From: ${cardData.senderName}`;
+            
+            // Update winner modal prize
+            const prizeDisplay = document.querySelector('.winner-modal .prize-display');
+            if (prizeDisplay) {
+                prizeDisplay.textContent = cardData.prize;
+            }
+            
+            // Regenerate scratch boxes with new prize (only if not revealed)
+            const allRevealed = document.querySelectorAll('.scratch-box.revealed').length === 3;
+            if (!allRevealed) {
+                generateDemoBoxes();
+            }
         }
 
         function handleGenerateLink() {
@@ -1055,8 +1083,16 @@
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
         }
 
+        function openPreview() {
+            const link = document.getElementById('generatedLink').value;
+            if (link) {
+                window.open(link, '_blank');
+                gtag('event', 'preview_opened');
+            }
+        }
+
         generateDemoBoxes();
-        updatePreview();
+        updateLiveDemo();
     </script>
 </body>
 </html>
