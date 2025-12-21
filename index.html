@@ -80,7 +80,7 @@
             position: relative;
             z-index: 1;
         }
-
+        
         /* Demo Section */
         .demo-section {
             text-align: center;
@@ -540,12 +540,18 @@
     <div class="hearts-background" id="heartsBackground"></div>
 
     <div class="container">
-        
+        <div style="text-align: center; margin-bottom: 30px; padding: 0 10px;">
+    
+    </h1>
+    <p style="color: var(--text-muted); font-size: 12px;">
+        Better than a text. Cheaper than a greeting card. <br>Create a custom scratch-off mystery for your partner in seconds.
+    </p>
+</div>
         <!-- DEMO SECTION -->
         <div class="demo-section">
             <div class="demo-header">
-                <h1 id="demoTitle">💕 Try It Out! 💕</h1>
-                <p class="from" id="demoFrom">From: Your Future Self</p>
+                <h1 id="demoTitle">💕 Surprise for Zaddy! 💕</h1>
+                <p class="from" id="demoFrom">From: Your Your Baby Girl</p>
             </div>
             <p class="instruction">✨ Scratch each box to see how it works ✨</p>
             <div class="scratch-grid" id="scratchGrid"></div>
@@ -612,15 +618,15 @@
             <div class="price-display">$1.99</div>
             
             <div class="benefits">
-                <div class="benefit"><span class="benefit-check">✓</span> Unlimited cards forever</div>
-                <div class="benefit"><span class="benefit-check">✓</span> Send via text instantly</div>
+                <div class="benefit"><span class="benefit-check">✓</span> Cheaper Than Starbucks Coffee</div>
+                <div class="benefit"><span class="benefit-check">✓</span> Instant Delivery</div>
                 <div class="benefit"><span class="benefit-check">✓</span> Customize everything</div>
             </div>
 
             <input type="email" id="userEmail" class="email-input" placeholder="Enter your email">
             
             <button class="generate-btn" onclick="handleGenerateLink()" id="generateBtn">
-                <span id="btnText">💳 Pay $1.99 & Get Link</span>
+                <span id="btnText">💳 Pay $1.99 or Log in</span>
             </button>
 
             <p class="trust-badge">🔒 Secure payment via Stripe</p>
@@ -648,7 +654,7 @@
     <div class="winner-modal" id="winnerModal">
         <div class="winner-content">
             <h2>🎉 You Won!</h2>
-            <div class="prize-display">30 Min Full Body Massage</div>
+            <div class="prize-display">Hugs, Kisses and More! 😏 </div>
             <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">
                 This is what HE will see when you send him a card! 😏
             </p>
@@ -804,7 +810,7 @@
                 content.className = 'scratch-content';
                 if (i === winningBox) {
                     content.classList.add('winner');
-                    content.innerHTML = `<div class="icon">🎟️</div><div class="text">30 Min Massage</div>`;
+                    content.innerHTML = `<div class="icon">🎟️</div><div class="text">Hugs, Kisses and More! 😏</div>`;
                 } else {
                     content.classList.add('empty');
                     const msg = emptyMessages[i === 0 ? 0 : 1];
