@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Send a Mystery Scratch Card | Jega Digital</title>
     
-    <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-8QZK8QQMC3"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -14,7 +13,6 @@
         gtag('config', 'G-8QZK8QQMC3');
     </script>
     
-    <!-- TikTok Pixel -->
     <script>
         !function (w, d, t) {
             w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
@@ -305,10 +303,9 @@
             color: var(--text-muted);
         }
 
-        /* Payment Sticky */
+        /* Payment Sticky Removed */
         .payment-sticky {
-            position: sticky;
-            top: 20px;
+            position: relative;
             background: var(--bg-card);
             border: 2px solid var(--gold);
             border-radius: 20px;
@@ -544,7 +541,6 @@
 
     <div class="container">
         
-        <!-- DEMO SECTION -->
         <div class="demo-section">
             <div class="demo-header">
                 <h1>💕 Try It Out! 💕</h1>
@@ -555,7 +551,6 @@
             <button class="play-again" onclick="resetDemo()">↻ Play Again</button>
         </div>
 
-        <!-- PAYMENT STICKY BOX -->
         <div class="payment-sticky">
             <h2 class="payment-header">🎉 Ready to Create Yours?</h2>
             <p class="payment-subtitle">Try the builder below, then get your link!</p>
@@ -588,7 +583,6 @@
             </div>
         </div>
 
-        <!-- BUILDER SECTION -->
         <div class="builder-section">
             <h2 class="builder-title">🎨 Build Your Card</h2>
             <p class="builder-subtitle">Try it out! Customize everything below</p>
