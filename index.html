@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Send a Mystery Scratch Card | Jega Digital</title>
     
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-8QZK8QQMC3"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -650,6 +652,11 @@
     <div class="confetti-container" id="confettiContainer"></div>
 
     <script>
+        // --- SUPABASE CONFIGURATION ---
+        const SUB_URL = 'YOUR_SUPABASE_PROJECT_URL'; // Replace this
+        const SUB_KEY = 'YOUR_SUPABASE_ANON_KEY';    // Replace this
+        const _supabase = supabase.createClient(SUB_URL, SUB_KEY);
+
         gtag('event', 'page_view');
         ttq.track('ViewContent');
 
@@ -864,14 +871,39 @@
             document.getElementById('previewPrize').textContent = cardData.prize;
         }
 
-        function handleGenerateLink() {
+        // --- UPDATED GENERATE LINK LOGIC WITH SUPABASE ---
+        async function handleGenerateLink() {
             const email = document.getElementById('userEmail').value.trim();
             if (!email || !validateEmail(email)) {
                 alert('Please enter a valid email address');
                 return;
             }
+
             cardData.email = email;
             localStorage.setItem('jega_user_email', email);
+
+            // 1. Check if user already paid in Supabase
+            try {
+                const { data, error } = await _supabase
+                    .from('customers')
+                    .select('has_paid')
+                    .eq('email', email)
+                    .single();
+
+                if (data && data.has_paid) {
+                    isPaid = true;
+                    generateLink();
+                    return;
+                }
+
+                // 2. If not paid, save as pending lead before redirecting
+                await _supabase
+                    .from('customers')
+                    .upsert({ email: email, has_paid: false }, { onConflict: 'email' });
+
+            } catch (err) {
+                console.error("Database error:", err);
+            }
 
             if (isPaid) {
                 generateLink();
