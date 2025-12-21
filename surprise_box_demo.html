@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Surprise Box Demo | Jega Digital</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Send Your Man a Mystery Scratch Card | Jega Digital</title>
     
-    <!-- Google Analytics - MUST BE FIRST -->
+    <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-8QZK8QQMC3"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -14,31 +14,43 @@
         gtag('config', 'G-8QZK8QQMC3');
     </script>
     
+    <!-- TikTok Pixel -->
+    <script>
+        !function (w, d, t) {
+            w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
+            ttq.load('D5298KJC77U22M4JM01G');
+            ttq.page();
+        }(window, document, 'ttq');
+    </script>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         :root {
-            --deep-burgundy: #4A0E0E;
-            --rose-gold: #B76E79;
-            --champagne: #F7E7CE;
-            --soft-blush: #FFE4E1;
-            --midnight: #1A0A0A;
-            --cream: #FDF8F5;
-            --hot-pink: #FF1493;
+            --bg-dark: #0a0a0a;
+            --bg-card: #141414;
+            --gold: #D4AF37;
+            --gold-light: #F7E7CE;
+            --pink: #FF1493;
+            --pink-light: #FFB6C1;
+            --text: #ffffff;
+            --text-muted: #888888;
         }
 
         body {
-            font-family: 'Libre Baskerville', serif;
-            background: linear-gradient(135deg, #1A0A0A 0%, #2D0A0A 50%, #4A0E0E 100%);
+            font-family: 'Poppins', sans-serif;
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 20px;
@@ -46,156 +58,105 @@
             position: relative;
         }
 
-        /* Floating hearts background */
-        body::before {
-            content: '♡ ♥ ♡ ♥ ♡ ♥ ♡ ♥ ♡ ♥ ♡ ♥ ♡ ♥ ♡ ♥';
+        /* Theme backgrounds */
+        body.gold-theme {
+            background: linear-gradient(135deg, #1A0505 0%, #2D0A0A 50%, #1A0505 100%);
+        }
+
+        body.pink-theme {
+            background: linear-gradient(135deg, #2D0A1A 0%, #1A0510 50%, #2D0A1A 100%);
+        }
+
+        body.dark-theme {
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #0a0a1a 100%);
+        }
+
+        /* Floating Hearts Background */
+        .hearts-background {
             position: fixed;
-            top: 5%;
-            left: 0;
-            width: 200%;
-            font-size: 1.5em;
-            color: var(--rose-gold);
-            opacity: 0.08;
-            animation: floatHearts 30s linear infinite;
-            pointer-events: none;
-        }
-
-        body::after {
-            content: '♥ ♡ ♥ ♡ ♥ ♡ ♥ ♡ ♥ ♡ ♥ ♡ ♥ ♡ ♥ ♡';
-            position: fixed;
-            bottom: 5%;
-            left: 0;
-            width: 200%;
-            font-size: 1.5em;
-            color: var(--rose-gold);
-            opacity: 0.08;
-            animation: floatHearts 25s linear infinite reverse;
-            pointer-events: none;
-        }
-
-        @keyframes floatHearts {
-            from { transform: translateX(-50%); }
-            to { transform: translateX(0%); }
-        }
-
-        /* Demo Badge */
-        .demo-badge {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, var(--rose-gold) 0%, #9A5A63 100%);
-            color: var(--cream);
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            box-shadow: 0 4px 20px rgba(183, 110, 121, 0.4);
-            z-index: 100;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .container {
-            max-width: 900px;
-            width: 100%;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            animation: fadeIn 1s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .header h1 {
-            font-family: 'Cormorant Garamond', serif;
-            color: var(--champagne);
-            font-size: 2.2em;
-            font-weight: 600;
-            letter-spacing: 3px;
-            text-shadow: 0 0 30px rgba(183, 110, 121, 0.5);
-            margin-bottom: 15px;
-        }
-
-        .header .message {
-            color: var(--soft-blush);
-            font-size: 1.1em;
-            font-style: italic;
-            margin-bottom: 10px;
-            opacity: 0.9;
-        }
-
-        .header .from {
-            color: var(--rose-gold);
-            font-size: 0.95em;
-        }
-
-        .instruction {
-            text-align: center;
-            color: var(--champagne);
-            font-size: 1em;
-            margin-bottom: 30px;
-            opacity: 0.85;
-            letter-spacing: 1px;
-        }
-
-        .boxes-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-bottom: 40px;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .mystery-box {
-            position: relative;
-            aspect-ratio: 1;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            overflow: hidden;
-            border-radius: 12px;
-        }
-
-        .mystery-box:hover {
-            transform: scale(1.05);
-        }
-
-        .mystery-box.scratched {
-            pointer-events: none;
-        }
-
-        .box-canvas {
-            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            border-radius: 12px;
-            box-shadow: 
-                0 10px 40px rgba(0, 0, 0, 0.5),
-                0 0 0 1px rgba(183, 110, 121, 0.2);
-            z-index: 2;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        .box-content {
+        .floating-heart {
+            position: absolute;
+            opacity: 0.08;
+            animation: float-heart-center 8s ease-in-out infinite;
+        }
+
+        @keyframes float-heart-center {
+            0%, 100% {
+                transform: translateY(0) translateX(0) scale(1);
+                opacity: 0.05;
+            }
+            25% {
+                transform: translateY(-30px) translateX(15px) scale(1.1);
+                opacity: 0.1;
+            }
+            50% {
+                transform: translateY(-50px) translateX(-10px) scale(1);
+                opacity: 0.08;
+            }
+            75% {
+                transform: translateY(-20px) translateX(20px) scale(1.05);
+                opacity: 0.1;
+            }
+        }
+
+        .container {
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 28px;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+
+        .header .from {
+            color: var(--pink-light);
+            font-size: 16px;
+        }
+
+        .instruction {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .scratch-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .scratch-box {
+            aspect-ratio: 1;
+            position: relative;
+            cursor: pointer;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .scratch-content {
             position: absolute;
             top: 0;
             left: 0;
@@ -205,98 +166,210 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, var(--rose-gold) 0%, #9A5A63 50%, #8B4A52 100%);
-            border: 2px solid var(--rose-gold);
-            box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 20px;
+            padding: 10px;
             text-align: center;
-            z-index: 1;
+            border-radius: 16px;
         }
 
-        .box-content.golden {
-            background: linear-gradient(135deg, #D4AF37 0%, #F7E7CE 30%, #D4AF37 60%, #B8860B 100%);
-            border-color: #D4AF37;
-            box-shadow: 
-                inset 0 0 30px rgba(255, 255, 255, 0.4),
-                0 0 20px rgba(212, 175, 55, 0.3);
+        .scratch-content.winner {
+            background: linear-gradient(135deg, #D4AF37, #F7E7CE, #D4AF37);
+            border: 3px solid #D4AF37;
         }
 
-        .box-content.empty {
-            background: linear-gradient(135deg, #4A0E0E 0%, #6B1A1A 50%, #4A0E0E 100%);
-            border-color: #6B1A1A;
-            box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.05);
+        .scratch-content.empty {
+            background: linear-gradient(135deg, #4A0E0E, #6B1A1A);
+            border: 3px solid #6B1A1A;
         }
 
-        .box-content::before {
-            content: '♡';
+        .scratch-content .icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .scratch-content .text {
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .scratch-content.winner .text {
+            color: #1a0a0a;
+        }
+
+        .scratch-content.empty .text {
+            color: #fff;
+        }
+
+        .scratch-box canvas {
             position: absolute;
-            top: 8px;
-            left: 8px;
-            font-size: 1em;
-            color: var(--cream);
-            opacity: 0.2;
+            top: -5px;
+            left: -5px;
+            width: calc(100% + 10px);
+            height: calc(100% + 10px);
+            border-radius: 16px;
+            z-index: 2;
         }
 
-        .box-content::after {
-            content: '♡';
-            position: absolute;
-            bottom: 8px;
-            right: 8px;
-            font-size: 1em;
-            color: var(--cream);
-            opacity: 0.2;
+        .scratch-box.revealed canvas {
+            display: none;
         }
 
-        .box-icon {
-            font-size: 0.05em;
+        .scratch-box.revealed .scratch-content {
+            animation: reveal-float 0.6s ease-out;
+        }
+
+        @keyframes reveal-float {
+            0% { transform: scale(0.8) translateY(0); opacity: 0; }
+            50% { transform: scale(1.1) translateY(-15px); opacity: 1; }
+            75% { transform: scale(1.05) translateY(-8px); }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        /* Payment Section - appears after scratching */
+        .payment-section {
+            display: none;
+            margin-top: 20px;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .payment-section.show {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .payment-box {
+            background: var(--bg-card);
+            border: 2px solid var(--gold);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .payment-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px;
+            color: var(--gold);
             margin-bottom: 12px;
         }
 
-        .box-text {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 0.95em;
+        .payment-subtitle {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .price-display {
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 4px;
+        }
+
+        .price-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .benefits-list {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .benefit {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .benefit-check {
+            color: var(--gold);
+            font-size: 16px;
+        }
+
+        input[type="email"] {
+            width: 100%;
+            padding: 14px;
+            background: #0a0a0a;
+            border: 2px solid #333;
+            border-radius: 12px;
+            color: white;
+            font-size: 15px;
+            margin-bottom: 14px;
+        }
+
+        input[type="email"]:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        .pay-button {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--gold), var(--pink));
+            color: #000;
+            font-size: 17px;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .pay-button:active {
+            transform: scale(0.98);
+        }
+
+        .trust-badge {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 10px;
+        }
+
+        .play-again {
+            background: linear-gradient(135deg, var(--gold), var(--pink));
+            color: #000;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
             font-weight: 600;
-            color: var(--cream);
-            line-height: 1.4;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+            margin-top: 20px;
         }
 
-        .box-content.golden .box-text {
-            color: #1A0A0A;
-            text-shadow: none;
+        .footer {
+            margin-top: 40px;
+            text-align: center;
         }
 
-        .box-content.empty .box-text {
-            color: var(--soft-blush);
-            opacity: 0.9;
+        .footer p {
+            color: var(--text-muted);
+            font-size: 12px;
+            margin-bottom: 10px;
         }
 
-        .reveal-animation {
-            animation: revealBox 0.8s ease-out;
-        }
-
-        @keyframes revealBox {
-            0% {
-                transform: scale(0) rotate(-180deg);
-                opacity: 0;
-            }
-            60% {
-                transform: scale(1.1);
-            }
-            100% {
-                transform: scale(1) rotate(0deg);
-                opacity: 1;
-            }
-        }
-
-        /* Confetti */
-        .confetti {
+        .confetti-container {
             position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .confetti {
+            position: absolute;
             width: 10px;
             height: 10px;
-            animation: confetti-fall 3s linear;
-            z-index: 1000;
+            animation: confetti-fall 3s linear forwards;
         }
 
         @keyframes confetti-fall {
@@ -306,1166 +379,466 @@
             }
         }
 
-        /* POPUP MODAL */
-        .modal-overlay {
+        /* Winner modal */
+        .winner-modal {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
-            display: flex;
+            background: rgba(0,0,0,0.9);
+            z-index: 200;
             align-items: center;
             justify-content: center;
-            z-index: 2000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.4s ease;
             padding: 20px;
         }
 
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
+        .winner-modal.active {
+            display: flex;
         }
 
-        .modal {
-            background: linear-gradient(135deg, #1A0A0A 0%, #2D0A0A 50%, #4A0E0E 100%);
-            border: 1px solid var(--rose-gold);
-            border-radius: 16px;
-            padding: 40px 32px;
-            max-width: 420px;
-            width: 100%;
-            text-align: center;
-            transform: scale(0.8) translateY(30px);
-            transition: transform 0.4s ease;
-            box-shadow: 
-                0 20px 60px rgba(0, 0, 0, 0.5),
-                0 0 0 1px rgba(183, 110, 121, 0.3),
-                0 0 80px rgba(183, 110, 121, 0.15);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .modal::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--rose-gold), var(--champagne), var(--rose-gold), transparent);
-        }
-
-        .modal-overlay.active .modal {
-            transform: scale(1) translateY(0);
-        }
-
-        .modal-icon {
-            font-size: 60px;
-            margin-bottom: 20px;
-            animation: bounce 1s ease-in-out infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .modal h2 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 28px;
-            font-weight: 600;
-            color: var(--champagne);
-            margin-bottom: 12px;
-            letter-spacing: 2px;
-        }
-
-        .modal p {
-            color: var(--soft-blush);
-            font-size: 15px;
-            line-height: 1.7;
-            margin-bottom: 28px;
-            opacity: 0.9;
-        }
-
-        .modal p strong {
-            color: var(--champagne);
-        }
-
-        .modal-cta {
-            display: block;
-            width: 100%;
-            padding: 18px 24px;
-            background: linear-gradient(135deg, var(--rose-gold) 0%, #9A5A63 100%);
-            color: var(--cream);
-            font-family: 'Libre Baskerville', serif;
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-decoration: none;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(183, 110, 121, 0.4);
-            margin-bottom: 16px;
-        }
-
-        .modal-cta:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(183, 110, 121, 0.5);
-        }
-
-        .modal-play-again {
-            display: block;
-            width: 100%;
-            padding: 14px 24px;
-            background: transparent;
-            color: var(--champagne);
-            font-family: 'Libre Baskerville', serif;
-            font-size: 13px;
-            letter-spacing: 1px;
-            text-decoration: none;
-            border: 1px solid rgba(247, 231, 206, 0.3);
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 16px;
-        }
-
-        .modal-play-again:hover {
-            background: rgba(247, 231, 206, 0.1);
-            border-color: var(--champagne);
-            transform: translateY(-2px);
-        }
-
-        .modal-secondary {
-            color: var(--rose-gold);
-            font-size: 13px;
-            text-decoration: none;
-            opacity: 0.8;
-            transition: opacity 0.3s ease;
-        }
-
-        .modal-secondary:hover {
-            opacity: 1;
-            text-decoration: underline;
-        }
-
-        /* Discount & Urgency Styles */
-        .modal-discount {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(255, 20, 147, 0.15));
-            border: 1px dashed var(--gold);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .discount-badge {
-            background: linear-gradient(135deg, #FF1493, #DC143C);
-            color: white;
-            padding: 5px 12px;
+        .winner-content {
+            background: var(--bg-card);
+            border: 2px solid var(--gold);
             border-radius: 20px;
-            font-size: 11px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            display: inline-block;
-            margin-bottom: 10px;
-            animation: pulse-badge 1.5s ease-in-out infinite;
-        }
-
-        @keyframes pulse-badge {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .discount-price {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 8px;
-        }
-
-        .old-price {
-            color: #888;
-            text-decoration: line-through;
-            font-size: 18px;
-        }
-
-        .new-price {
-            color: #FFFFFF;
-            font-size: 32px;
-            font-weight: bold;
-            font-family: 'Cormorant Garamond', serif;
-        }
-
-        .discount-timer {
-            color: #FF6B6B;
-            font-size: 13px;
-            font-weight: bold;
-            margin: 0;
-        }
-
-        .discount-timer span {
-            background: rgba(255, 107, 107, 0.2);
-            padding: 2px 8px;
-            border-radius: 4px;
-        }
-
-        .modal-trust {
-            color: var(--gold);
-            font-size: 12px;
-            margin: 15px 0;
-            opacity: 0.9;
-        }
-
-        .modal-features {
-            display: flex;
-            justify-content: center;
-            gap: 24px;
-            margin: 24px 0;
-            padding: 20px 0;
-            border-top: 1px solid rgba(183, 110, 121, 0.2);
-            border-bottom: 1px solid rgba(183, 110, 121, 0.2);
-        }
-
-        .modal-feature {
+            padding: 30px;
             text-align: center;
+            max-width: 350px;
+            animation: pop-in 0.4s ease;
         }
 
-        .modal-feature-icon {
-            font-size: 24px;
-            margin-bottom: 6px;
+        @keyframes pop-in {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
-        .modal-feature-text {
-            font-size: 11px;
-            color: var(--rose-gold);
-            letter-spacing: 1px;
+        .winner-content h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 32px;
+            color: var(--gold);
+            margin-bottom: 10px;
         }
 
-        /* Back button */
-        .back-link {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            color: var(--rose-gold);
-            text-decoration: none;
-            font-size: 13px;
-            opacity: 0.7;
-            transition: opacity 0.3s ease;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .winner-content .prize-display {
+            background: linear-gradient(135deg, var(--gold), #F7E7CE);
+            color: #1a0a0a;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 20px;
+            font-weight: 600;
+            margin: 20px 0;
         }
 
-        .back-link:hover {
-            opacity: 1;
+        .winner-content p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 20px;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.6em;
-            }
-
-            .header .message {
-                font-size: 0.95em;
-            }
-
-            .boxes-container {
-                gap: 12px;
-                max-width: 100%;
-            }
-
-            .box-content {
-                padding: 12px;
-            }
-
-            .box-icon {
-                font-size: 0.6em;
-                margin-bottom: 6px;
-            }
-
-            .box-text {
-                font-size: 0.7em;
-            }
-
-            .demo-badge {
-                top: 10px;
-                right: 10px;
-                padding: 8px 14px;
-                font-size: 10px;
-            }
-
-            .back-link {
-                top: 12px;
-                left: 12px;
-                font-size: 11px;
-            }
-
-            .modal {
-                padding: 32px 24px;
-            }
-
-            .modal h2 {
-                font-size: 22px;
-            }
-
-            .modal p {
-                font-size: 14px;
-            }
-            
-            /* Smaller modal for mobile */
-            .modal-overlay {
-                padding: 15px;
-                align-items: center;
-            }
-            
-            .modal {
-                padding: 20px 16px;
-                max-width: 320px;
-                max-height: 85vh;
-                overflow-y: auto;
-                border-radius: 16px;
-            }
-            
-            .modal-icon {
-                font-size: 35px;
-                margin-bottom: 10px;
-            }
-            
-            .modal h2 {
-                font-size: 18px;
-                margin-bottom: 8px;
-            }
-            
-            .modal p {
-                font-size: 12px;
-                line-height: 1.5;
-                margin-bottom: 15px;
-            }
-            
-            .modal-discount {
-                padding: 10px;
-                margin-bottom: 12px;
-            }
-            
-            .discount-badge {
-                font-size: 9px;
-                padding: 4px 10px;
-                margin-bottom: 6px;
-            }
-            
-            .old-price {
-                font-size: 14px;
-            }
-            
-            .new-price {
-                font-size: 24px;
-            }
-            
-            .discount-timer {
-                font-size: 11px;
-            }
-            
-            .modal-features {
-                gap: 12px;
-                margin: 12px 0;
-                padding: 12px 0;
-            }
-            
-            .modal-feature-icon {
-                font-size: 18px;
-                margin-bottom: 4px;
-            }
-            
-            .modal-feature-text {
-                font-size: 9px;
-            }
-            
-            .modal-cta {
-                padding: 12px 16px;
-                font-size: 12px;
-                margin-bottom: 10px;
-            }
-            
-            .modal-trust {
-                font-size: 10px;
-                margin: 10px 0;
-            }
-            
-            .modal-play-again {
-                padding: 10px 16px;
-                font-size: 11px;
-                margin-bottom: 10px;
-            }
-            
-            .modal-secondary {
-                font-size: 10px;
-            }
+        .close-modal {
+            background: transparent;
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
         }
     </style>
 </head>
-<body>
-    <div class="demo-badge">✦ Demo Mode</div>
-    
-    <a href="index.html" class="back-link">
-        ← Back to Home
-    </a>
+<body class="gold-theme">
+    <!-- Floating Hearts -->
+    <div class="hearts-background" id="heartsBackground"></div>
 
     <div class="container">
         <div class="header">
-            <h1>♡ Ultimate Pleasure Surprise ♡</h1>
-            <p class="message">One box contains your special reward...</p>
-            <p class="from">From: Your Secret Admirer</p>
+            <h1 id="titleText">💕 Try It Out! 💕</h1>
+            <p class="from" id="fromText">From: Your Future Self</p>
         </div>
 
-        <p class="instruction">
-            ✨ Scratch each box to reveal what's inside ✨
-        </p>
+        <p class="instruction">✨ Scratch each box to see how it works ✨</p>
 
-        <div class="boxes-container" id="boxesContainer">
-            <!-- Boxes will be generated here -->
+        <div class="scratch-grid" id="scratchGrid">
+            <!-- Generated by JS -->
+        </div>
+
+        <!-- Payment Section (shows after scratching) -->
+        <div class="payment-section" id="paymentSection">
+            <div class="payment-box">
+                <div class="payment-title">🎉 Want to Create Yours?</div>
+                <div class="payment-subtitle">Send surprise scratch cards to your man!</div>
+                
+                <div class="price-display">$1.99</div>
+                <div class="price-label">One-time • Unlimited cards forever</div>
+                
+                <div class="benefits-list">
+                    <div class="benefit">
+                        <span class="benefit-check">✓</span>
+                        <span>Create unlimited cards</span>
+                    </div>
+                    <div class="benefit">
+                        <span class="benefit-check">✓</span>
+                        <span>Customize names & prizes</span>
+                    </div>
+                    <div class="benefit">
+                        <span class="benefit-check">✓</span>
+                        <span>Send via text instantly</span>
+                    </div>
+                    <div class="benefit">
+                        <span class="benefit-check">✓</span>
+                        <span>Works on any device</span>
+                    </div>
+                </div>
+
+                <input type="email" id="userEmail" placeholder="Enter your email" required>
+                
+                <button class="pay-button" onclick="processPayment()">
+                    💳 Pay $1.99 & Start Creating
+                </button>
+
+                <div class="trust-badge">🔒 Secure payment via Stripe</div>
+            </div>
+        </div>
+
+        <button class="play-again" onclick="resetGame()" id="playAgainBtn">↻ Play Again</button>
+
+        <div class="footer">
+            <p>Surprise your man with a mystery prize!</p>
         </div>
     </div>
 
-    <!-- Purchase Modal -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal">
-            <div class="modal-icon">🔥</div>
-            <h2>You Won! Now Make Him Win 😏</h2>
-            
-            <div class="modal-discount">
-                <span class="discount-badge">🎉 DEMO PLAYER SPECIAL</span>
-                <div class="discount-price">
-                    <span class="old-price">$5.99</span>
-                    <span class="new-price">$3.99</span>
-                </div>
-                <p class="discount-timer">⏰ Offer expires in <span id="countdown">10:00</span></p>
-            </div>
-            
-            <p>
-                Create your own custom scratch card in <strong>2 minutes</strong>. 
-                Send it via text. Watch him scratch to reveal <strong>his prize for tonight</strong> 😏
-            </p>
-            
-            <div class="modal-features">
-                <div class="modal-feature">
-                    <div class="modal-feature-icon">✏️</div>
-                    <div class="modal-feature-text">Write Any<br>Prize You Want</div>
-                </div>
-                <div class="modal-feature">
-                    <div class="modal-feature-icon">📱</div>
-                    <div class="modal-feature-text">Send Via<br>Text Message</div>
-                </div>
-                <div class="modal-feature">
-                    <div class="modal-feature-icon">⚡</div>
-                    <div class="modal-feature-text">Ready in<br>2 Minutes</div>
-                </div>
-            </div>
-            
-            <a href="https://www.etsy.com/listing/4425556973/gift-for-him-man-golden-ticket-for" target="_blank" class="modal-cta" id="etsyCta">
-                🔥 Get Yours Now - Only $3.99
-            </a>
-            
-            <div class="modal-trust">
-                ⭐⭐⭐⭐⭐ "He LOVED it!" - 500+ Happy Couples
-            </div>
-            
-            <button onclick="resetGame()" class="modal-play-again">
-                ↻ Play Demo Again
-            </button>
-            
-            <a href="index.html" class="modal-secondary" id="backHome">
-                No thanks, I don't want to surprise him
-            </a>
+    <div class="confetti-container" id="confettiContainer"></div>
+
+    <!-- Winner Modal -->
+    <div class="winner-modal" id="winnerModal">
+        <div class="winner-content">
+            <h2>🎉 You Won!</h2>
+            <div class="prize-display" id="prizeDisplay">30 Min Full Body Massage</div>
+            <p>This is what HE will see when you send him a card! 😏</p>
+            <button class="close-modal" onclick="closeModal()">Got It!</button>
         </div>
     </div>
 
     <script>
-        // ============================================
-        // TRACK ALL BUTTON CLICKS
-        // ============================================
-        
-        // Track Etsy CTA click
-        document.getElementById('etsyCta').addEventListener('click', function() {
-            console.log('🛒 ETSY CLICK TRACKED!');
-            
-            // Google Analytics
-            if (typeof gtag !== 'undefined') {
-                gtag('event', 'click_etsy_cta', {
-                    'event_category': 'conversion',
-                    'event_label': 'surprise_box_demo',
-                    'value': 3.99
-                });
-            }
-            
-            // Local storage tracking
-            let clicks = JSON.parse(localStorage.getItem('jega_cta_clicks') || '[]');
-            clicks.push({
-                button: 'etsy_purchase',
-                timestamp: new Date().toISOString()
-            });
-            localStorage.setItem('jega_cta_clicks', JSON.stringify(clicks));
-        });
-        
-        // Track "back to home" click
-        document.getElementById('backHome').addEventListener('click', function() {
-            if (typeof gtag !== 'undefined') {
-                gtag('event', 'click_back_home', {
-                    'event_category': 'navigation',
-                    'event_label': 'demo_modal'
-                });
-            }
-        });
-    </script>
+        // Track page load
+        gtag('event', 'page_view');
+        ttq.track('ViewContent');
 
-    <script>
-        // Demo prize text (fixed for demo)
-        const prize = "Golden Ticket:\n30 Minute Massage";
-        
-        // Randomly select winning box (0, 1, or 2)
-        const winningBox = Math.floor(Math.random() * 3);
-        
-        // Create boxes
-        const boxesContainer = document.getElementById('boxesContainer');
-        
-        const emptyMessages = [
-            { icon: '😏', text: 'Not this one...<br>Keep scratching' },
-            { icon: '💋', text: 'Try again,<br>love...' }
-        ];
-        
-        let emptyMessageIndex = 0;
-        let boxesRevealed = 0;
-        
-        for (let i = 0; i < 3; i++) {
-            const boxDiv = document.createElement('div');
-            boxDiv.className = 'mystery-box';
-            boxDiv.id = `box-${i}`;
-            
-            const canvas = document.createElement('canvas');
-            canvas.className = 'box-canvas';
-            canvas.width = 300;
-            canvas.height = 300;
-            
-            const contentDiv = document.createElement('div');
-            contentDiv.className = 'box-content';
-            contentDiv.id = `content-${i}`;
-            
-            if (i === winningBox) {
-                contentDiv.classList.add('golden');
-                contentDiv.innerHTML = `
-                    <div class="box-icon">🎟️</div>
-                    <div class="box-text">${prize.replace(/\n/g, '<br>')}</div>
-                `;
-            } else {
-                contentDiv.classList.add('empty');
-                const emptyMsg = emptyMessages[emptyMessageIndex];
-                contentDiv.innerHTML = `
-                    <div class="box-icon">${emptyMsg.icon}</div>
-                    <div class="box-text">${emptyMsg.text}</div>
-                `;
-                emptyMessageIndex = (emptyMessageIndex + 1) % emptyMessages.length;
-            }
-            
-            boxDiv.appendChild(contentDiv);
-            boxDiv.appendChild(canvas);
-            boxesContainer.appendChild(boxDiv);
-            
-            initScratchBox(canvas, i);
-        }
+        const prize = '30 Min Full Body Massage 💆';
+        const theme = 'gold';
+        let allBoxesScratched = false;
 
-        function initScratchBox(canvas, boxIndex) {
-            const ctx = canvas.getContext('2d');
-            let isScratching = false;
-            let scratchedPercentage = 0;
-            let lastX = 0;
-            let lastY = 0;
-            
-            drawGiftBox(ctx, canvas.width, canvas.height);
-            
-            function drawGiftBox(ctx, width, height) {
-                // Elegant dark gradient
-                const gradient = ctx.createLinearGradient(0, 0, width, height);
-                gradient.addColorStop(0, '#4A0E0E');
-                gradient.addColorStop(0.5, '#6B1A1A');
-                gradient.addColorStop(1, '#4A0E0E');
-                ctx.fillStyle = gradient;
-                ctx.fillRect(0, 0, width, height);
-                
-                // Rose gold ribbon
-                ctx.strokeStyle = '#B76E79';
-                ctx.lineWidth = 12;
-                ctx.beginPath();
-                ctx.moveTo(width / 2, 0);
-                ctx.lineTo(width / 2, height);
-                ctx.stroke();
-                
-                ctx.beginPath();
-                ctx.moveTo(0, height / 2);
-                ctx.lineTo(width, height / 2);
-                ctx.stroke();
-                
-                // Bow center
-                ctx.fillStyle = '#B76E79';
-                ctx.beginPath();
-                ctx.arc(width / 2, height / 2, 25, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // Heart symbol
-                ctx.fillStyle = '#FDF8F5';
-                ctx.font = '36px Arial';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText('♡', width / 2, height / 2);
-                
-                // Scratch text
-                ctx.fillStyle = '#F7E7CE';
-                ctx.font = '600 16px Arial';
-                ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-                ctx.shadowBlur = 4;
-                ctx.fillText('SCRATCH ME', width / 2, height - 25);
-            }
-            
-            function scratch(x, y) {
-                ctx.globalCompositeOperation = 'destination-out';
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                ctx.lineWidth = 50;
+        // Apply theme
+        document.body.className = theme + '-theme';
+        document.getElementById('prizeDisplay').textContent = prize;
 
-                ctx.beginPath();
-                ctx.moveTo(lastX, lastY);
-                ctx.lineTo(x, y);
-                ctx.stroke();
-                
-                ctx.beginPath();
-                ctx.arc(x, y, 20, 0, Math.PI * 2);
-                ctx.fill();
-                
-                lastX = x;
-                lastY = y;
-            }
+        // Create floating hearts
+        function createHearts() {
+            const container = document.getElementById('heartsBackground');
+            const hearts = ['💕', '♡', '💗', '❤️', '💖'];
             
-            function calculateScratched() {
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const pixels = imageData.data;
-                let transparent = 0;
+            for (let i = 0; i < 20; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
                 
-                for (let i = 3; i < pixels.length; i += 4) {
-                    if (pixels[i] === 0) transparent++;
-                }
-                
-                scratchedPercentage = (transparent / (pixels.length / 4)) * 100;
-                
-                if (scratchedPercentage > 30) {
-                    revealBox(boxIndex);
-                }
+                heart.style.left = (20 + Math.random() * 60) + '%';
+                heart.style.top = (20 + Math.random() * 60) + '%';
+                heart.style.fontSize = (14 + Math.random() * 18) + 'px';
+                heart.style.animationDuration = (6 + Math.random() * 6) + 's';
+                heart.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(heart);
             }
-            
-            function getCoordinates(e) {
-                const rect = canvas.getBoundingClientRect();
-                const scaleX = canvas.width / rect.width;
-                const scaleY = canvas.height / rect.height;
-                const clientX = e.clientX || e.touches[0].clientX;
-                const clientY = e.clientY || e.touches[0].clientY;
-                return {
-                    x: (clientX - rect.left) * scaleX,
-                    y: (clientY - rect.top) * scaleY
-                };
-            }
+        }
+        createHearts();
 
-            // Mouse events
-            canvas.addEventListener('mousedown', (e) => {
-                isScratching = true;
-                const { x, y } = getCoordinates(e);
-                lastX = x;
-                lastY = y;
-                scratch(x, y);
-            });
-            
-            canvas.addEventListener('mousemove', (e) => {
-                if (!isScratching) return;
-                const { x, y } = getCoordinates(e);
-                scratch(x, y);
-            });
-            
-            canvas.addEventListener('mouseup', () => {
-                isScratching = false;
-                calculateScratched();
-            });
-            
-            canvas.addEventListener('mouseleave', () => {
-                if (isScratching) {
-                    isScratching = false;
-                    calculateScratched();
-                }
-            });
-            
-            // Touch events
-            canvas.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                isScratching = true;
-                const { x, y } = getCoordinates(e);
-                lastX = x;
-                lastY = y;
-                scratch(x, y);
-            });
-            
-            canvas.addEventListener('touchmove', (e) => {
-                e.preventDefault();
-                if (!isScratching) return;
-                const { x, y } = getCoordinates(e);
-                scratch(x, y);
-            });
-            
-            canvas.addEventListener('touchend', () => {
-                isScratching = false;
-                calculateScratched();
-            });
-        }
-        
-        function revealBox(boxIndex) {
-            const box = document.getElementById(`box-${boxIndex}`);
-            const canvas = box.querySelector('canvas');
-            const content = document.getElementById(`content-${boxIndex}`);
-            
-            if (box.classList.contains('scratched')) return;
-            
-            box.classList.add('scratched');
-            boxesRevealed++;
-            
-            canvas.style.transition = 'opacity 0.5s ease';
-            canvas.style.opacity = '0';
-            
-            setTimeout(() => {
-                canvas.remove();
-                content.classList.add('reveal-animation');
-                
-                if (boxIndex === winningBox) {
-                    celebrate();
-                    // Show modal after celebration
-                    setTimeout(showModal, 2000);
-                }
-            }, 500);
-        }
-        
-        function celebrate() {
-            for (let i = 0; i < 50; i++) {
-                setTimeout(() => {
-                    createConfetti();
-                }, i * 30);
-            }
-        }
-        
-        function createConfetti() {
-            const confetti = document.createElement('div');
-            confetti.className = 'confetti';
-            confetti.style.left = Math.random() * 100 + '%';
-            confetti.style.top = '-10px';
-            confetti.style.background = ['#D4AF37', '#B76E79', '#F7E7CE', '#FFE4E1'][Math.floor(Math.random() * 4)];
-            confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
-            confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-            document.body.appendChild(confetti);
-            
-            setTimeout(() => {
-                confetti.remove();
-            }, 4000);
-        }
-        
-        function showModal() {
-            document.getElementById('modalOverlay').classList.add('active');
-            
-            // Start countdown timer
-            startCountdown();
-            
-            // Track that user completed demo and saw the purchase modal
-            console.log('🎉 DEMO COMPLETED - MODAL SHOWN!');
-            if (typeof gtag !== 'undefined') {
-                gtag('event', 'demo_completed', {
-                    'event_category': 'engagement',
-                    'event_label': 'purchase_modal_shown'
-                });
-            }
-        }
-        
-        // Countdown timer for urgency
-        function startCountdown() {
-            let timeLeft = 10 * 60; // 10 minutes in seconds
-            const countdownEl = document.getElementById('countdown');
-            
-            const timer = setInterval(() => {
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                countdownEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-                
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    countdownEl.textContent = "EXPIRED";
-                    countdownEl.style.color = "#ff4444";
-                }
-                timeLeft--;
-            }, 1000);
-        }
-        
-        // Close modal on overlay click
-        document.getElementById('modalOverlay').addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) {
-                document.getElementById('modalOverlay').classList.remove('active');
-            }
-        });
+        // Generate scratch boxes
+        let winningBox = Math.floor(Math.random() * 3);
+        let scratchedCount = 0;
 
-        // Reset game function
-        function resetGame() {
-            // Hide the modal
-            document.getElementById('modalOverlay').classList.remove('active');
-            
-            // Clear the boxes container
-            const boxesContainer = document.getElementById('boxesContainer');
-            boxesContainer.innerHTML = '';
-            
-            // Reset variables
-            boxesRevealed = 0;
-            
-            // Generate new winning box
-            const newWinningBox = Math.floor(Math.random() * 3);
-            
-            // Recreate empty message index
-            let newEmptyMessageIndex = 0;
-            
-            // Recreate the boxes
+        function generateBoxes() {
+            const grid = document.getElementById('scratchGrid');
+            grid.innerHTML = '';
+            winningBox = Math.floor(Math.random() * 3);
+            scratchedCount = 0;
+            allBoxesScratched = false;
+
+            const emptyMessages = [
+                { icon: '😏', text: 'Not this one... Keep scratching!' },
+                { icon: '💋', text: 'Try again, love...' }
+            ];
+
+            let emptyIdx = 0;
+
             for (let i = 0; i < 3; i++) {
-                const boxDiv = document.createElement('div');
-                boxDiv.className = 'mystery-box';
-                boxDiv.id = `box-${i}`;
-                
+                const box = document.createElement('div');
+                box.className = 'scratch-box';
+                box.id = 'box-' + i;
+
+                const content = document.createElement('div');
+                content.className = 'scratch-content';
+
+                if (i === winningBox) {
+                    content.classList.add('winner');
+                    content.innerHTML = `<div class="icon">🎟️</div><div class="text">${prize}</div>`;
+                } else {
+                    content.classList.add('empty');
+                    const msg = emptyMessages[emptyIdx];
+                    content.innerHTML = `<div class="icon">${msg.icon}</div><div class="text">${msg.text}</div>`;
+                    emptyIdx = (emptyIdx + 1) % emptyMessages.length;
+                }
+
                 const canvas = document.createElement('canvas');
-                canvas.className = 'box-canvas';
                 canvas.width = 300;
                 canvas.height = 300;
-                
-                const contentDiv = document.createElement('div');
-                contentDiv.className = 'box-content';
-                contentDiv.id = `content-${i}`;
-                
-                if (i === newWinningBox) {
-                    contentDiv.classList.add('golden');
-                    contentDiv.innerHTML = `
-                        <div class="box-icon">🎟️</div>
-                        <div class="box-text">${prize.replace(/\n/g, '<br>')}</div>
-                    `;
-                } else {
-                    contentDiv.classList.add('empty');
-                    const emptyMsg = emptyMessages[newEmptyMessageIndex];
-                    contentDiv.innerHTML = `
-                        <div class="box-icon">${emptyMsg.icon}</div>
-                        <div class="box-text">${emptyMsg.text}</div>
-                    `;
-                    newEmptyMessageIndex = (newEmptyMessageIndex + 1) % emptyMessages.length;
-                }
-                
-                boxDiv.appendChild(contentDiv);
-                boxDiv.appendChild(canvas);
-                boxesContainer.appendChild(boxDiv);
-                
-                // Initialize scratch with the new winning box reference
-                initScratchBoxWithWinner(canvas, i, newWinningBox);
+
+                box.appendChild(content);
+                box.appendChild(canvas);
+                grid.appendChild(box);
+
+                initScratch(canvas, box, i);
             }
         }
-        
-        // Modified init function that accepts winning box as parameter
-        function initScratchBoxWithWinner(canvas, boxIndex, winnerIndex) {
+
+        function initScratch(canvas, box, boxIndex) {
             const ctx = canvas.getContext('2d');
             let isScratching = false;
-            let scratchedPercentage = 0;
-            let lastX = 0;
-            let lastY = 0;
-            
-            drawGiftBox(ctx, canvas.width, canvas.height);
-            
-            function drawGiftBox(ctx, width, height) {
-                const gradient = ctx.createLinearGradient(0, 0, width, height);
-                gradient.addColorStop(0, '#4A0E0E');
-                gradient.addColorStop(0.5, '#6B1A1A');
-                gradient.addColorStop(1, '#4A0E0E');
-                ctx.fillStyle = gradient;
-                ctx.fillRect(0, 0, width, height);
-                
-                ctx.strokeStyle = '#B76E79';
-                ctx.lineWidth = 12;
+            let lastX = 0, lastY = 0;
+
+            // Draw cover
+            drawCover(ctx, canvas.width, canvas.height);
+
+            function drawCover(ctx, w, h) {
+                ctx.fillStyle = '#000';
+                ctx.fillRect(0, 0, w, h);
+
+                const grad = ctx.createLinearGradient(0, 0, w, h);
+                grad.addColorStop(0, '#8B0000');
+                grad.addColorStop(0.5, '#DC143C');
+                grad.addColorStop(1, '#8B0000');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, w, h);
+
+                // Ribbons
+                ctx.strokeStyle = '#FFB6C1';
+                ctx.lineWidth = 14;
                 ctx.beginPath();
-                ctx.moveTo(width / 2, 0);
-                ctx.lineTo(width / 2, height);
+                ctx.moveTo(w/2, 0);
+                ctx.lineTo(w/2, h);
                 ctx.stroke();
-                
                 ctx.beginPath();
-                ctx.moveTo(0, height / 2);
-                ctx.lineTo(width, height / 2);
+                ctx.moveTo(0, h/2);
+                ctx.lineTo(w, h/2);
                 ctx.stroke();
-                
-                ctx.fillStyle = '#B76E79';
+
+                // Bow
+                ctx.fillStyle = '#FF69B4';
                 ctx.beginPath();
-                ctx.arc(width / 2, height / 2, 25, 0, Math.PI * 2);
+                ctx.arc(w/2, h/2, 28, 0, Math.PI * 2);
                 ctx.fill();
-                
-                ctx.fillStyle = '#FDF8F5';
+
+                // Heart
                 ctx.font = '36px Arial';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText('♡', width / 2, height / 2);
-                
-                ctx.fillStyle = '#F7E7CE';
-                ctx.font = '600 16px Arial';
-                ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-                ctx.shadowBlur = 4;
-                ctx.fillText('SCRATCH ME', width / 2, height - 25);
+                ctx.fillText('💕', w/2, h/2);
+
+                // Text
+                ctx.fillStyle = '#FFE4E1';
+                ctx.font = 'bold 16px Arial';
+                ctx.fillText('SCRATCH ME', w/2, h - 25);
             }
-            
+
             function scratch(x, y) {
                 ctx.globalCompositeOperation = 'destination-out';
+                ctx.lineWidth = 50;
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round';
-                ctx.lineWidth = 50;
 
                 ctx.beginPath();
                 ctx.moveTo(lastX, lastY);
                 ctx.lineTo(x, y);
                 ctx.stroke();
-                
+
                 ctx.beginPath();
                 ctx.arc(x, y, 20, 0, Math.PI * 2);
                 ctx.fill();
-                
+
                 lastX = x;
                 lastY = y;
             }
-            
-            function calculateScratched() {
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const pixels = imageData.data;
+
+            function checkReveal() {
+                const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
                 let transparent = 0;
-                
-                for (let i = 3; i < pixels.length; i += 4) {
-                    if (pixels[i] === 0) transparent++;
+                for (let i = 3; i < data.length; i += 4) {
+                    if (data[i] === 0) transparent++;
                 }
-                
-                scratchedPercentage = (transparent / (pixels.length / 4)) * 100;
-                
-                if (scratchedPercentage > 30) {
-                    revealBoxWithWinner(boxIndex, winnerIndex);
+                const pct = (transparent / (data.length / 4)) * 100;
+
+                if (pct > 60) {
+                    revealBox(box, boxIndex);
                 }
             }
-            
-            function getCoordinates(e) {
+
+            function getCoords(e) {
                 const rect = canvas.getBoundingClientRect();
                 const scaleX = canvas.width / rect.width;
                 const scaleY = canvas.height / rect.height;
-                const clientX = e.clientX || e.touches[0].clientX;
-                const clientY = e.clientY || e.touches[0].clientY;
+                const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                const clientY = e.clientY || (e.touches && e.touches[0].clientY);
                 return {
                     x: (clientX - rect.left) * scaleX,
                     y: (clientY - rect.top) * scaleY
                 };
             }
 
-            canvas.addEventListener('mousedown', (e) => {
+            canvas.addEventListener('mousedown', e => {
                 isScratching = true;
-                const { x, y } = getCoordinates(e);
-                lastX = x;
-                lastY = y;
+                const {x, y} = getCoords(e);
+                lastX = x; lastY = y;
                 scratch(x, y);
             });
-            
-            canvas.addEventListener('mousemove', (e) => {
+
+            canvas.addEventListener('mousemove', e => {
                 if (!isScratching) return;
-                const { x, y } = getCoordinates(e);
+                const {x, y} = getCoords(e);
                 scratch(x, y);
             });
-            
+
             canvas.addEventListener('mouseup', () => {
                 isScratching = false;
-                calculateScratched();
+                checkReveal();
             });
-            
+
             canvas.addEventListener('mouseleave', () => {
                 if (isScratching) {
                     isScratching = false;
-                    calculateScratched();
+                    checkReveal();
                 }
             });
-            
-            canvas.addEventListener('touchstart', (e) => {
+
+            canvas.addEventListener('touchstart', e => {
                 e.preventDefault();
                 isScratching = true;
-                const { x, y } = getCoordinates(e);
-                lastX = x;
-                lastY = y;
+                const {x, y} = getCoords(e);
+                lastX = x; lastY = y;
                 scratch(x, y);
             });
-            
-            canvas.addEventListener('touchmove', (e) => {
+
+            canvas.addEventListener('touchmove', e => {
                 e.preventDefault();
                 if (!isScratching) return;
-                const { x, y } = getCoordinates(e);
+                const {x, y} = getCoords(e);
                 scratch(x, y);
             });
-            
+
             canvas.addEventListener('touchend', () => {
                 isScratching = false;
-                calculateScratched();
+                checkReveal();
             });
         }
-        
-        function revealBoxWithWinner(boxIndex, winnerIndex) {
-            const box = document.getElementById(`box-${boxIndex}`);
-            const canvas = box.querySelector('canvas');
-            const content = document.getElementById(`content-${boxIndex}`);
-            
-            if (box.classList.contains('scratched')) return;
-            
-            box.classList.add('scratched');
-            boxesRevealed++;
-            
-            canvas.style.transition = 'opacity 0.5s ease';
-            canvas.style.opacity = '0';
-            
-            setTimeout(() => {
-                canvas.remove();
-                content.classList.add('reveal-animation');
-                
-                if (boxIndex === winnerIndex) {
-                    celebrate();
-                    setTimeout(showModal, 2000);
-                }
-            }, 500);
-        }
 
-        // ============================================
-        // DEMO PAGE TRACKING
-        // ============================================
-        
-        const DemoAnalytics = {
-            init: function() {
-                this.trackPageView();
-                this.trackVisitor();
-                this.trackDemoInteraction();
-            },
+        function revealBox(box, idx) {
+            if (box.classList.contains('revealed')) return;
+            box.classList.add('revealed');
+            scratchedCount++;
 
-            trackPageView: function() {
-                const pageData = {
-                    page: 'surprise_box_demo.html',
-                    timestamp: new Date().toISOString(),
-                    referrer: document.referrer || 'direct'
-                };
+            // Track scratch
+            gtag('event', 'demo_scratch', { box: idx });
 
-                let pageViews = JSON.parse(localStorage.getItem('jega_pageviews') || '[]');
-                pageViews.push(pageData);
-                localStorage.setItem('jega_pageviews', JSON.stringify(pageViews));
+            if (idx === winningBox) {
+                createConfetti();
+                gtag('event', 'demo_prize_revealed');
+                setTimeout(() => {
+                    document.getElementById('winnerModal').classList.add('active');
+                }, 1000);
+            }
 
-                console.log('📊 Demo Page View:', pageData);
-            },
-
-            trackVisitor: function() {
-                let visitorId = localStorage.getItem('jega_visitor_id');
-                
-                if (!visitorId) {
-                    visitorId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                    localStorage.setItem('jega_visitor_id', visitorId);
-                    localStorage.setItem('jega_first_visit', new Date().toISOString());
-                    localStorage.setItem('jega_visit_count', '1');
-                } else {
-                    let visitCount = parseInt(localStorage.getItem('jega_visit_count') || '0') + 1;
-                    localStorage.setItem('jega_visit_count', visitCount.toString());
-                }
-
-                // Track demo visits specifically
-                let demoVisits = parseInt(localStorage.getItem('jega_demo_visits') || '0') + 1;
-                localStorage.setItem('jega_demo_visits', demoVisits.toString());
-                
-                console.log('🎮 Demo Visit #' + demoVisits);
-            },
-
-            trackDemoInteraction: function() {
-                // Track when user scratches a box
-                window.trackScratch = function() {
-                    let scratchCount = parseInt(localStorage.getItem('jega_scratch_count') || '0') + 1;
-                    localStorage.setItem('jega_scratch_count', scratchCount.toString());
-                    console.log('✨ Scratch interaction #' + scratchCount);
-                };
-
-                // Track when user finds the prize
-                window.trackWin = function() {
-                    let winCount = parseInt(localStorage.getItem('jega_demo_wins') || '0') + 1;
-                    localStorage.setItem('jega_demo_wins', winCount.toString());
-                    localStorage.setItem('jega_last_win', new Date().toISOString());
-                    console.log('🎉 Demo completed! Total wins: ' + winCount);
-                };
-
-                // Track CTA clicks
-                window.trackCtaClick = function(destination) {
-                    let ctaClicks = JSON.parse(localStorage.getItem('jega_cta_clicks') || '[]');
-                    ctaClicks.push({
-                        destination: destination,
-                        timestamp: new Date().toISOString()
+            // Show payment form after all boxes scratched
+            if (scratchedCount === 3 && !allBoxesScratched) {
+                allBoxesScratched = true;
+                setTimeout(() => {
+                    document.getElementById('paymentSection').classList.add('show');
+                    document.getElementById('playAgainBtn').style.display = 'none';
+                    
+                    // Track engagement
+                    gtag('event', 'demo_completed');
+                    ttq.track('AddToCart', {
+                        content_type: 'product',
+                        value: 1.99,
+                        currency: 'USD'
                     });
-                    localStorage.setItem('jega_cta_clicks', JSON.stringify(ctaClicks));
-                    console.log('🛒 CTA Click:', destination);
-                };
-            },
 
-            getSummary: function() {
-                return {
-                    visitorId: localStorage.getItem('jega_visitor_id'),
-                    totalVisits: localStorage.getItem('jega_visit_count'),
-                    demoVisits: localStorage.getItem('jega_demo_visits'),
-                    scratchCount: localStorage.getItem('jega_scratch_count'),
-                    demoWins: localStorage.getItem('jega_demo_wins'),
-                    ctaClicks: JSON.parse(localStorage.getItem('jega_cta_clicks') || '[]')
-                };
+                    // Scroll to payment form
+                    setTimeout(() => {
+                        document.getElementById('paymentSection').scrollIntoView({ 
+                            behavior: 'smooth',
+                            block: 'nearest'
+                        });
+                    }, 300);
+                }, 1500);
             }
-        };
-
-        // Initialize demo analytics
-        DemoAnalytics.init();
-        window.DemoAnalytics = DemoAnalytics;
-
-        // Override celebrate to track wins
-        const originalCelebrate = celebrate;
-        celebrate = function() {
-            originalCelebrate();
-            if (window.trackWin) window.trackWin();
-            // Send to Google Analytics
-            if (typeof gtag !== 'undefined') {
-                gtag('event', 'demo_win', { event_category: 'engagement' });
-            }
-        };
-    </script>
-    
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8QZK8QQMC3"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-8QZK8QQMC3');
-        
-        // Track demo page view
-        gtag('event', 'page_view', {
-            page_title: 'Surprise Box Demo',
-            page_location: window.location.href
-        });
-        
-        // Track custom events
-        function trackGAEvent(eventName, eventParams) {
-            gtag('event', eventName, eventParams);
-            console.log('📈 GA Event:', eventName, eventParams);
         }
+
+        function createConfetti() {
+            const container = document.getElementById('confettiContainer');
+            const colors = ['#D4AF37', '#FF1493', '#FFB6C1', '#F7E7CE', '#fff'];
+
+            for (let i = 0; i < 60; i++) {
+                setTimeout(() => {
+                    const c = document.createElement('div');
+                    c.className = 'confetti';
+                    c.style.left = Math.random() * 100 + '%';
+                    c.style.top = '-10px';
+                    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    c.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                    container.appendChild(c);
+                    setTimeout(() => c.remove(), 3000);
+                }, i * 25);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('winnerModal').classList.remove('active');
+        }
+
+        function resetGame() {
+            document.getElementById('paymentSection').classList.remove('show');
+            document.getElementById('playAgainBtn').style.display = 'block';
+            generateBoxes();
+        }
+
+        function processPayment() {
+            const email = document.getElementById('userEmail').value.trim();
+            
+            if (!email || !validateEmail(email)) {
+                alert('Please enter a valid email address');
+                return;
+            }
+
+            // Save email
+            localStorage.setItem('jega_user_email', email);
+
+            // Track payment initiation
+            gtag('event', 'payment_initiated', { value: 1.99, currency: 'USD' });
+            ttq.track('InitiateCheckout', {
+                content_type: 'product',
+                value: 1.99,
+                currency: 'USD'
+            });
+
+            // Redirect to Stripe
+            window.location.href = 'https://buy.stripe.com/3cI6oIab33DM6fv0Lx5gc01?client_reference_id=' + encodeURIComponent(email);
+        }
+
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        // Initialize
+        generateBoxes();
     </script>
 </body>
 </html>
