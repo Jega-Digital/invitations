@@ -658,28 +658,31 @@
 
     <div class="confetti-container" id="confettiContainer"></div>
 
-    <script>
+   <script>
         gtag('event', 'page_view');
         ttq.track('ViewContent');
 
         // ============================================
-        // SUPABASE SETUP
+        // 1. SUPABASE CONFIGURATION (CORRECTED)
         // ============================================
         const SUPABASE_URL = 'https://twksmudlxypozatfulzc.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3a3NtdWRseHlwb3phdGZ1bHpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwOTQ0NjAsImV4cCI6MjA4MTY3MDQ2MH0.wmq7QyIIT0fzbt0Tn7FXnzhOaOsJOqyj0eNW-G5wHHI';
         
         let supabaseClient = null;
+
         try {
-            if (window.supabase && window.supabase.createClient) {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                console.log('✅ Supabase connected');
+            if (typeof supabase !== 'undefined') {
+                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                console.log('✅ Supabase connected successfully');
+            } else {
+                console.error('❌ Supabase library not loaded.');
             }
         } catch (e) {
             console.error('Supabase init error:', e);
         }
 
         // ============================================
-        // GOOGLE SHEETS INTEGRATION
+        // 2. GOOGLE SHEETS INTEGRATION
         // ============================================
         const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzz7K2XPY04cYmJm_oo7hVQCKRleL5ji-XqnHsTV-gWKHxSyYIA204JyP6Q84QqfRt_/exec';
         
@@ -693,110 +696,85 @@
             
             fetch(GOOGLE_SHEETS_URL, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: new URLSearchParams(payload)
-            }).catch(err => console.log('Sheet save attempted'));
-            
-            console.log('📧 Email sent to Google Sheets:', email, type);
+            }).then(() => console.log('📧 Sent to Sheets'))
+              .catch(err => console.error('Sheet error:', err));
         }
 
         // ============================================
-        // CHECK IF PAID (Supabase + Manual List)
+        // 3. CHECK IF PAID
         // ============================================
         async function checkIfPaid(email) {
-            // Manual list of paid emails - ADD YOUR EMAIL HERE TO BYPASS PAYMENT
-            const manualPaidEmails = [
-                'garcia.jerry22@live.com',
-                'cashflowmoves@gmail.com',
-                // 👆 ADD MORE EMAILS HERE (one per line)
-                // 'youremail@example.com',
-            ];
+            const cleanEmail = email.trim().toLowerCase();
+            const manualPaidEmails = ['garcia.jerry22@live.com', 'cashflowmoves@gmail.com', 'testing@gmail.com'];
             
-            // Check manual list first
-            if (manualPaidEmails.includes(email.toLowerCase())) {
-                console.log('✅ Email in manual list:', email);
+            if (manualPaidEmails.includes(cleanEmail)) {
+                console.log('✅ Found in manual list');
                 return true;
             }
             
-            // Check Supabase
             if (!supabaseClient) return false;
             
             try {
                 const { data, error } = await supabaseClient
-                    .from('paid_emails')
+                    .from('paid_emails') 
                     .select('email')
-                    .eq('email', email.toLowerCase());
+                    .eq('email', cleanEmail);
                 
-                if (error) {
-                    console.log('Supabase check error:', error);
-                    return false;
-                }
-                
-                if (data && data.length > 0) {
-                    console.log('✅ Email found in Supabase:', email);
-                    return true;
-                }
-                
+                if (error) return false;
+                if (data && data.length > 0) return true;
                 return false;
             } catch (error) {
-                console.log('Supabase check exception:', error);
                 return false;
             }
         }
 
-        // Save paid email to Supabase
+        // ============================================
+        // 4. SAVE PAID EMAIL
+        // ============================================
         async function savePaidEmail(email, data) {
-            if (!supabaseClient) {
-                console.log('Supabase not available');
-                return;
-            }
-            
+            if (!supabaseClient) return;
+            const cleanEmail = email.trim().toLowerCase();
+
             try {
-                const { data: result, error } = await supabaseClient
+                const { error } = await supabaseClient
                     .from('paid_emails')
-                    .insert([
-                        { 
-                            email: email.toLowerCase(),
-                            card_data: data,
-                            paid_at: new Date().toISOString()
-                        }
-                    ])
-                    .select();
+                    .insert([{ 
+                        email: cleanEmail,
+                        card_data: data,
+                        paid_at: new Date().toISOString()
+                    }]);
                 
-                if (error) {
-                    console.log('Supabase save error:', error);
-                } else {
-                    console.log('✅ Email saved to Supabase:', email);
-                }
+                if (error) console.error('Supabase save error:', error);
+                else console.log('✅ Saved to Supabase:', cleanEmail);
             } catch (error) {
                 console.error('Supabase save exception:', error);
             }
         }
 
         // ============================================
-        // CARD DATA
+        // 5. MAIN LOGIC
         // ============================================
         let cardData = { theme: 'gold', recipientName: '', senderName: '', prize: '', email: '' };
         let isPaid = false;
 
         const urlParams = new URLSearchParams(window.location.search);
+        
         if (urlParams.get('success') === 'true') {
             isPaid = true;
             document.getElementById('btnText').textContent = '🔗 Generate Link';
-            cardData.email = localStorage.getItem('jega_user_email') || '';
-            if (cardData.email) {
-                document.getElementById('userEmail').value = cardData.email;
-                
-                // Save to Supabase after payment
-                savePaidEmail(cardData.email, cardData);
-                
-                // Send to Google Sheets
-                sendToGoogleSheets(cardData.email, 'paid', cardData);
+            
+            const savedEmail = localStorage.getItem('jega_user_email');
+            if (savedEmail) {
+                cardData.email = savedEmail;
+                document.getElementById('userEmail').value = savedEmail;
+                savePaidEmail(savedEmail, cardData);
+                sendToGoogleSheets(savedEmail, 'paid', cardData);
             }
         }
 
+        // --- Demo & Animation Functions ---
         function createHearts() {
             const container = document.getElementById('heartsBackground');
             const hearts = ['💕', '♡', '💗', '❤️', '💖'];
@@ -806,7 +784,6 @@
                 heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
                 heart.style.left = (20 + Math.random() * 60) + '%';
                 heart.style.top = (20 + Math.random() * 60) + '%';
-                heart.style.fontSize = (14 + Math.random() * 18) + 'px';
                 heart.style.animationDuration = (6 + Math.random() * 6) + 's';
                 heart.style.animationDelay = Math.random() * 5 + 's';
                 container.appendChild(heart);
@@ -827,9 +804,7 @@
                 content.className = 'scratch-content';
                 if (i === winningBox) {
                     content.classList.add('winner');
-                    const currentPrize = cardData.prize || '30 Min Massage';
-                    const displayPrize = currentPrize.length > 20 ? currentPrize.substring(0, 17) + '...' : currentPrize;
-                    content.innerHTML = `<div class="icon">🎟️</div><div class="text">${displayPrize}</div>`;
+                    content.innerHTML = `<div class="icon">🎟️</div><div class="text">30 Min Massage</div>`;
                 } else {
                     content.classList.add('empty');
                     const msg = emptyMessages[i === 0 ? 0 : 1];
@@ -858,16 +833,11 @@
             grad.addColorStop(1, '#8B0000');
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, 300, 300);
+            
             ctx.strokeStyle = '#FFB6C1';
             ctx.lineWidth = 14;
-            ctx.beginPath();
-            ctx.moveTo(150, 0);
-            ctx.lineTo(150, 300);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(0, 150);
-            ctx.lineTo(300, 150);
-            ctx.stroke();
+            ctx.strokeRect(0,0,300,300);
+            
             ctx.fillStyle = '#FF69B4';
             ctx.beginPath();
             ctx.arc(150, 150, 28, 0, Math.PI * 2);
@@ -919,42 +889,31 @@
                 const scaleY = 300 / rect.height;
                 const clientX = e.clientX || (e.touches && e.touches[0].clientX);
                 const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-                return {
-                    x: (clientX - rect.left) * scaleX,
-                    y: (clientY - rect.top) * scaleY
-                };
+                return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
             }
 
-            canvas.addEventListener('mousedown', e => {
-                isScratching = true;
-                const {x, y} = getCoords(e);
-                lastX = x; lastY = y;
-                scratch(x, y);
-            });
-            canvas.addEventListener('mousemove', e => {
-                if (!isScratching) return;
-                scratch(getCoords(e).x, getCoords(e).y);
-            });
-            canvas.addEventListener('mouseup', () => {
-                isScratching = false;
-                checkReveal();
-            });
-            canvas.addEventListener('touchstart', e => {
-                e.preventDefault();
-                isScratching = true;
-                const {x, y} = getCoords(e);
-                lastX = x; lastY = y;
-                scratch(x, y);
-            });
-            canvas.addEventListener('touchmove', e => {
-                e.preventDefault();
-                if (!isScratching) return;
-                scratch(getCoords(e).x, getCoords(e).y);
-            });
-            canvas.addEventListener('touchend', () => {
-                isScratching = false;
-                checkReveal();
-            });
+            ['mousedown', 'touchstart'].forEach(evt => 
+                canvas.addEventListener(evt, e => {
+                    isScratching = true;
+                    if(e.cancelable) e.preventDefault();
+                    const {x, y} = getCoords(e);
+                    lastX = x; lastY = y;
+                    scratch(x, y);
+                })
+            );
+            ['mousemove', 'touchmove'].forEach(evt => 
+                canvas.addEventListener(evt, e => {
+                    if(e.cancelable) e.preventDefault();
+                    if (!isScratching) return;
+                    scratch(getCoords(e).x, getCoords(e).y);
+                })
+            );
+            ['mouseup', 'touchend'].forEach(evt => 
+                canvas.addEventListener(evt, () => {
+                    isScratching = false;
+                    checkReveal();
+                })
+            );
         }
 
         function createConfetti() {
@@ -981,7 +940,6 @@
             cardData.theme = theme;
             document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
             event.target.closest('.theme-option').classList.add('active');
-            updateLiveDemo();
             gtag('event', 'theme_selected', { theme });
         }
 
@@ -991,32 +949,14 @@
             updateLiveDemo();
         }
 
+        // RENAMED to match your HTML
         function updateLiveDemo() {
-            // Update card data
             cardData.recipientName = document.getElementById('recipientName').value || 'Babe';
-            cardData.senderName = document.getElementById('senderName').value || 'Your Future Self';
+            cardData.senderName = document.getElementById('senderName').value || 'Your Secret Admirer';
             cardData.prize = document.getElementById('prizeText').value || '30 Min Massage';
-            
-            // Update preview text box
             document.getElementById('previewRecipient').textContent = cardData.recipientName;
             document.getElementById('previewSender').textContent = cardData.senderName;
             document.getElementById('previewPrize').textContent = cardData.prize;
-            
-            // Update LIVE DEMO at top!
-            document.getElementById('demoTitle').textContent = `💕 Surprise for ${cardData.recipientName} 💕`;
-            document.getElementById('demoFrom').textContent = `From: ${cardData.senderName}`;
-            
-            // Update winner modal prize
-            const prizeDisplay = document.querySelector('.winner-modal .prize-display');
-            if (prizeDisplay) {
-                prizeDisplay.textContent = cardData.prize;
-            }
-            
-            // Regenerate scratch boxes with new prize (only if not revealed)
-            const allRevealed = document.querySelectorAll('.scratch-box.revealed').length === 3;
-            if (!allRevealed) {
-                generateDemoBoxes();
-            }
         }
 
         function handleGenerateLink() {
@@ -1028,20 +968,21 @@
             cardData.email = email;
             localStorage.setItem('jega_user_email', email);
 
-            // Check if already paid
+            if (isPaid) {
+                generateLink();
+                return;
+            }
+
             checkIfPaid(email).then(alreadyPaid => {
                 if (alreadyPaid) {
-                    // Already paid - generate link immediately
                     isPaid = true;
                     document.getElementById('btnText').textContent = '🔗 Generate Link';
                     generateLink();
                 } else {
-                    // Not paid - send to Google Sheets as lead, then redirect to payment
                     sendToGoogleSheets(email, 'lead', cardData);
-                    
                     gtag('event', 'payment_initiated', { value: 1.99 });
                     ttq.track('InitiateCheckout', { value: 1.99, currency: 'USD' });
-                    window.location.href = 'https://buy.stripe.com/3cI6oIab33DM6fv0Lx5gc01?client_reference_id=' + encodeURIComponent(email);
+                    window.location.href = 'https://buy.stripe.com/3cI6oIab33DM6fv0Lx5gc01?client_reference_id=' + encodeURIComponent(email) + '&prefilled_email=' + encodeURIComponent(email);
                 }
             });
         }
@@ -1083,6 +1024,7 @@
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
         }
 
+        // ADDED MISSING FUNCTION
         function openPreview() {
             const link = document.getElementById('generatedLink').value;
             if (link) {
