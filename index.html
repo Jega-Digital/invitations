@@ -3,1037 +3,239 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Send a Mystery Scratch Card | Jega Digital</title>
-    
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8QZK8QQMC3"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-8QZK8QQMC3');
-    </script>
-    
-    <!-- TikTok Pixel -->
-    <script>
-        !function (w, d, t) {
-            w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
-            ttq.load('D5298KJC77U22M4JM01G');
-            ttq.page();
-        }(window, document, 'ttq');
-    </script>
-    
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
+    <title>PressOn Pro (AI Connected)</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
         :root {
-            --bg-dark: #0a0a0a;
-            --bg-card: #141414;
-            --gold: #D4AF37;
-            --gold-light: #F7E7CE;
-            --pink: #FF1493;
-            --pink-light: #FFB6C1;
+            --primary: #ff4081;     
+            --secondary: #00e676;   
+            --dark: #121212;
+            --panel: #1e1e1e;
             --text: #ffffff;
-            --text-muted: #888888;
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #1A0505 0%, #2D0A0A 50%, #1A0505 100%);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            background-color: var(--dark);
             color: var(--text);
-            min-height: 100vh;
-            padding: 20px;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        .hearts-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
-        }
-
-        .floating-heart {
-            position: absolute;
-            opacity: 0.08;
-            animation: float-heart 8s ease-in-out infinite;
-        }
-
-        @keyframes float-heart {
-            0%, 100% { transform: translateY(0) scale(1); opacity: 0.05; }
-            50% { transform: translateY(-50px) scale(1.1); opacity: 0.1; }
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-        
-        /* Demo Section */
-        .demo-section {
-            text-align: center;
-            margin-bottom: 50px;
-        }
-
-        .demo-header h1 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 32px;
-            color: var(--gold);
-            margin-bottom: 8px;
-        }
-
-        .demo-header .from {
-            color: var(--pink-light);
-            font-size: 16px;
-            margin-bottom: 20px;
-        }
-
-        .instruction {
-            color: var(--text-muted);
-            font-size: 14px;
-            margin-bottom: 25px;
-        }
-
-        .scratch-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-            max-width: 400px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .scratch-box {
-            aspect-ratio: 1;
-            position: relative;
-            cursor: pointer;
-            border-radius: 16px;
-            overflow: hidden;
-        }
-
-        .scratch-content {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* --- VIEWS --- */
+        .view { display: none; flex-direction: column; height: 100%; width: 100%; }
+        .view.active { display: flex; }
+
+        /* --- INTRO --- */
+        #intro-view {
             justify-content: center;
-            padding: 10px;
-            border-radius: 16px;
-        }
-
-        .scratch-content.winner {
-            background: linear-gradient(135deg, #D4AF37, #F7E7CE, #D4AF37);
-            border: 3px solid #D4AF37;
-        }
-
-        .scratch-content.empty {
-            background: linear-gradient(135deg, #4A0E0E, #6B1A1A);
-            border: 3px solid #6B1A1A;
-        }
-
-        .scratch-content .icon { font-size: 28px; margin-bottom: 8px; }
-        .scratch-content .text { font-size: 12px; font-weight: 600; color: #fff; }
-        .scratch-content.winner .text { color: #1a0a0a; }
-
-        .scratch-box canvas {
-            position: absolute;
-            top: -5px;
-            left: -5px;
-            width: calc(100% + 10px);
-            height: calc(100% + 10px);
-            border-radius: 16px;
-            z-index: 2;
-        }
-
-        .scratch-box.revealed canvas { display: none; }
-
-        .scratch-box.revealed .scratch-content {
-            animation: reveal-float 0.6s ease-out;
-        }
-
-        @keyframes reveal-float {
-            0% { transform: scale(0.8); opacity: 0; }
-            50% { transform: scale(1.1) translateY(-15px); opacity: 1; }
-            100% { transform: scale(1) translateY(0); opacity: 1; }
-        }
-
-        .play-again {
-            background: linear-gradient(135deg, var(--gold), var(--pink));
-            color: #000;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        /* Builder Section */
-        .builder-section {
-            background: var(--bg-card);
-            border-radius: 24px;
-            padding: 32px 24px;
-            margin-bottom: 30px;
-        }
-
-        .builder-title {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 28px;
-            color: var(--gold);
-            margin-bottom: 8px;
-            text-align: center;
-        }
-
-        .builder-subtitle {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 14px;
-            margin-bottom: 30px;
-        }
-
-        .section-label {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .theme-options {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 30px;
-        }
-
-        .theme-option {
-            padding: 16px;
-            border-radius: 12px;
-            border: 2px solid #333;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.2s;
-        }
-
-        .theme-option:hover { border-color: var(--gold); }
-        .theme-option.active {
-            border-color: var(--gold);
-            background: rgba(212, 175, 55, 0.1);
-        }
-
-        .theme-icon { font-size: 32px; margin-bottom: 8px; }
-        .theme-name { font-size: 13px; font-weight: 600; }
-
-        .input-group { margin-bottom: 20px; }
-        .input-group label {
-            display: block;
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-        }
-
-        .input-group input,
-        .input-group textarea {
-            width: 100%;
-            padding: 14px;
-            background: #0a0a0a;
-            border: 2px solid #333;
-            border-radius: 12px;
-            color: white;
-            font-size: 16px;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .input-group input:focus,
-        .input-group textarea:focus {
-            outline: none;
-            border-color: var(--gold);
-        }
-
-        .input-group textarea { min-height: 80px; resize: vertical; }
-
-        .prize-chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .prize-chip {
-            padding: 8px 14px;
-            background: #333;
-            border-radius: 20px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .prize-chip:hover { background: var(--pink); }
-
-        .preview-box {
-            background: #0a0a0a;
-            border: 2px solid var(--gold);
-            border-radius: 16px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        .preview-title {
-            font-size: 18px;
-            color: var(--gold);
-            margin-bottom: 12px;
-        }
-
-        .preview-text {
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        /* Payment Sticky */
-        .payment-sticky {
-            background: var(--bg-card);
-            border: 2px solid var(--gold);
-            border-radius: 20px;
-            padding: 24px;
-            margin-bottom: 30px;
-        }
-
-        .payment-header {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 22px;
-            color: var(--gold);
-            margin-bottom: 8px;
-            text-align: center;
-        }
-
-        .payment-subtitle {
-            text-align: center;
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-        }
-
-        .price-display {
-            text-align: center;
-            font-size: 36px;
-            font-weight: 700;
-            color: var(--gold);
-            margin-bottom: 16px;
-        }
-
-        .benefits { margin-bottom: 20px; }
-
-        .benefit {
-            display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-            font-size: 13px;
-        }
-
-        .benefit-check { color: var(--gold); }
-
-        .email-input {
-            width: 100%;
-            padding: 14px;
-            background: #0a0a0a;
-            border: 2px solid #333;
-            border-radius: 12px;
-            color: white;
-            font-size: 15px;
-            margin-bottom: 12px;
-        }
-
-        .email-input:focus {
-            outline: none;
-            border-color: var(--gold);
-        }
-
-        .generate-btn {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, var(--gold), var(--pink));
-            color: #000;
-            border: none;
-            border-radius: 12px;
-            font-size: 17px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .generate-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(255, 20, 147, 0.4);
-        }
-
-        .trust-badge {
+            padding: 40px;
             text-align: center;
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-top: 10px;
+            background: linear-gradient(135deg, #1e1e1e 0%, #000000 100%);
         }
 
-        /* Link Result */
-        .link-result {
-            display: none;
-            background: #0a0a0a;
-            border: 2px solid var(--gold);
-            border-radius: 16px;
-            padding: 20px;
+        .btn-main {
+            border: 2px solid var(--primary);
+            color: white;
+            background: transparent;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
             margin-top: 20px;
         }
-
-        .link-result.show {
-            display: block;
-            animation: slideUp 0.6s ease-out;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .link-box {
+        
+        /* --- WORKSPACE --- */
+        #workspace-view { position: relative; }
+        
+        #workspace-container {
+            flex-grow: 1;
+            position: relative;
+            background: #000;
+            overflow: hidden;
             display: flex;
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-
-        .link-box input {
-            flex: 1;
-            padding: 12px;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 8px;
-            color: var(--gold);
-            font-size: 13px;
-        }
-
-        .copy-btn {
-            padding: 12px 20px;
-            background: var(--gold);
-            color: #000;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .share-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .share-btn {
-            padding: 14px;
-            border: none;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-        }
-
-        .sms-btn { background: #4CAF50; color: white; }
-
-        /* Winner Modal */
-        .winner-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 200;
             align-items: center;
             justify-content: center;
-            padding: 20px;
         }
 
-        .winner-modal.active { display: flex; }
-
-        .winner-content {
-            background: var(--bg-card);
-            border: 2px solid var(--gold);
-            border-radius: 20px;
-            padding: 30px;
-            text-align: center;
-            max-width: 350px;
-            animation: pop-in 0.4s ease;
-        }
-
-        @keyframes pop-in {
-            0% { transform: scale(0.5); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .winner-content h2 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 32px;
-            color: var(--gold);
-            margin-bottom: 10px;
-        }
-
-        .prize-display {
-            background: linear-gradient(135deg, var(--gold), #F7E7CE);
-            color: #1a0a0a;
-            padding: 20px;
-            border-radius: 12px;
-            font-size: 20px;
-            font-weight: 600;
-            margin: 20px 0;
-        }
-
-        .close-modal {
-            background: transparent;
-            border: 2px solid var(--gold);
-            color: var(--gold);
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .confetti-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+        #image-layer {
+            max-width: 100%;
+            max-height: 100%;
             pointer-events: none;
-            z-index: 100;
+            transition: transform 0.2s;
         }
 
-        .confetti {
+        #selection-tool {
             position: absolute;
-            width: 10px;
-            height: 10px;
-            animation: confetti-fall 3s linear forwards;
+            top: 50%; left: 50%;
+            width: 100px; height: 100px;
+            border: 2px solid white;
+            box-shadow: 0 0 0 1000px rgba(0,0,0,0.6);
+            transform: translate(-50%, -50%);
+            z-index: 10;
         }
 
-        @keyframes confetti-fall {
-            to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        .mode-calibrate #selection-tool { border-color: var(--secondary); border-radius: 2px; }
+        .mode-measure #selection-tool { border-color: var(--primary); border-radius: 50%; }
+
+        /* --- CONTROLS --- */
+        #controls-panel {
+            background: var(--panel);
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            z-index: 20;
+        }
+
+        button { padding: 15px; border-radius: 8px; border: none; font-size: 1.2rem; background: #333; color: white; }
+        button:active { background: #555; }
+        .btn-action { background: var(--primary); }
+        .magic-btn { background: linear-gradient(135deg, #6200ea, #b388ff); font-size: 0.9rem; }
+
+        #hud {
+            position: absolute; top: 0; left: 0; right: 0; padding: 15px;
+            background: rgba(0,0,0,0.5); z-index: 5;
+            display: flex; justify-content: space-between;
         }
     </style>
 </head>
 <body>
-    <div class="hearts-background" id="heartsBackground"></div>
 
-    <div class="container">
-        <div style="text-align: center; margin-bottom: 30px; padding: 0 10px;">
-    
-    </h1>
-    <p style="color: var(--text-muted); font-size: 12px;">
-        The Cutest Way to Say 'I Love You'. <br>Create a custom scratch-off for your partner in seconds.<br>send via Text Message
-    </p>
-</div>
-        <!-- DEMO SECTION -->
-        <div class="demo-section">
-            <div class="demo-header">
-                <h1 id="demoTitle">💕 Surprise for Zaddy! 💕</h1>
-                <p class="from" id="demoFrom">From: Your Baby Girl</p>
-            </div>
-            <p class="instruction">✨ Scratch each box to see how it works ✨</p>
-            <div class="scratch-grid" id="scratchGrid"></div>
-            <button class="play-again" onclick="resetDemo()">↻ Play Again</button>
-        </div>
-
-        <!-- BUILDER SECTION (Right after demo!) -->
-        <div class="builder-section">
-            <h2 class="builder-title">🎨 Build Your Card</h2>
-            <p class="builder-subtitle">Customize below - Get Your Link and send to your Bestie!! 💕 </p>
-
-            <div class="section-label">Pick a Theme</div>
-            <div class="theme-options">
-                <div class="theme-option active" onclick="selectTheme('gold')">
-                    <div class="theme-icon">🔥</div>
-                    <div class="theme-name">Romantic Gold</div>
-                </div>
-                <div class="theme-option" onclick="selectTheme('pink')">
-                    <div class="theme-icon">💕</div>
-                    <div class="theme-name">Hot Pink</div>
-                </div>
-                <div class="theme-option" onclick="selectTheme('dark')">
-                    <div class="theme-icon">🌙</div>
-                    <div class="theme-name">Midnight Dark</div>
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label>Who is this for? (Recipient)</label>
-                <input type="text" id="recipientName" placeholder="e.g., Babe, My Love..." maxlength="20" oninput="updateLiveDemo()">
-            </div>
-
-            <div class="input-group">
-                <label>Who is it from? (Your Name)</label>
-                <input type="text" id="senderName" placeholder="e.g., Your Girl, Wifey..." maxlength="20" oninput="updateLiveDemo()">
-            </div>
-
-            <div class="input-group">
-                <label>The Prize 🎁</label>
-                <textarea id="prizeText" placeholder="e.g., 30 Minute Full Body Massage..." oninput="updateLiveDemo()"></textarea>
-                <div class="prize-chips">
-                    <div class="prize-chip" onclick="setPrize('30 Min Massage 💆')">30 Min Massage 😏</div>
-                    <div class="prize-chip" onclick="setPrize('Breakfast in Bed 🥞')">Breakfast in Bed 😏</div>
-                    <div class="prize-chip" onclick="setPrize('Movie Night 🎬')">Movie Night  </div>
-                    <div class="prize-chip" onclick="setPrize('Whatever You Want baby😏')">Whatever You Want Baby 😏</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- PAYMENT SECTION (Below builder) -->
-        <div class="payment-sticky">
-            <h2 class="payment-header"> Ready to Get Your Card?</h2>
-            <p class="payment-subtitle">Get your link to send!</p>
-            
-            <div class="price-display">$1.99 </div>
-            
-            <div class="benefits">
-                <div class="benefit"><span class="benefit-check">✓</span> Cheaper Than Starbucks Coffee</div>
-                <div class="benefit"><span class="benefit-check">✓</span> Instant Delivery</div>
-                <div class="benefit"><span class="benefit-check">✓</span> Customize everything</div>
-                <div class="benefit"><span class="benefit-check">✓</span> One Time Payment - unlimited access</div>
-    
-            </div>
-
-            <input type="email" id="userEmail" class="email-input" placeholder="Enter your email">
-            
-            <button class="generate-btn" onclick="handleGenerateLink()" id="generateBtn">
-                <span id="btnText">💳 Pay $1.99 or Log in</span>
-            </button>
-
-            <p class="trust-badge">🔒 Secure payment via Stripe</p>
-
-            <div class="link-result" id="linkResult">
-                <div class="link-box">
-                    <input type="text" id="generatedLink" readonly>
-                    <button class="copy-btn" onclick="copyLink()">Copy</button>
-                </div>
-                <div class="share-buttons">
-                    <button class="share-btn sms-btn" onclick="shareViaSMS()">💬 Send via Text</button>
-                    <button class="copy-btn share-btn" onclick="copyLink()">📋 Copy Link</button>
-                </div>
-                
-                <!-- Preview Button -->
-                <button class="generate-btn" onclick="openPreview()" style="margin-top: 16px; background: linear-gradient(135deg, #4CAF50, #2E7D32);">
-                    👀 Preview Your Card
-                </button>
-            </div>
-        </div>
-
-
+    <!-- INTRO -->
+    <div id="intro-view" class="view active">
+        <h1>PressOn Pro</h1>
+        <p>1. Upload Photo <br> 2. Calibrate (Green) <br> 3. Measure (Pink)</p>
+        <button class="btn-main" onclick="document.getElementById('file-input').click()">📸 Upload Photo</button>
+        <input type="file" id="file-input" hidden accept="image/*">
     </div>
 
-    <div class="winner-modal" id="winnerModal">
-        <div class="winner-content">
-            <h2>🎉 You Won!</h2>
-            <div class="prize-display">Hugs, Kisses and More! 😏 </div>
-            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">
-                This is what HE will see when you send him a card! 😏
-            </p>
-            <button class="close-modal" onclick="closeModal()">Got It!</button>
+    <!-- WORKSPACE -->
+    <div id="workspace-view" class="view">
+        <div id="hud">
+            <span id="step-label" style="font-weight:bold; color:var(--secondary)">STEP 1: CALIBRATE</span>
+            <button class="magic-btn" onclick="app.magicFit()">✨ Magic Fit</button>
+        </div>
+
+        <div id="workspace-container">
+            <img id="image-layer" src="">
+            <div id="selection-tool"></div>
+        </div>
+
+        <div id="controls-panel">
+            <button onclick="app.action('w-dec')">W-</button>
+            <button onclick="app.action('up')">▲</button>
+            <button onclick="app.action('w-inc')">W+</button>
+
+            <button onclick="app.action('left')">◀</button>
+            <button class="btn-action" onclick="app.next()">NEXT</button>
+            <button onclick="app.action('right')">▶</button>
+
+            <button onclick="app.action('h-dec')">H-</button>
+            <button onclick="app.action('down')">▼</button>
+            <button onclick="app.action('h-inc')">H+</button>
         </div>
     </div>
 
-    <div class="confetti-container" id="confettiContainer"></div>
+    <script>
+        const STEPS = [
+            { id: 'cal', label: 'STEP 1: FIT TO CARD', type: 'cal' },
+            { id: 'thumb', label: 'STEP 2: FIT TO THUMB', type: 'measure' },
+            { id: 'index', label: 'STEP 3: FIT TO INDEX', type: 'measure' }
+        ];
 
-   <script>
-        gtag('event', 'page_view');
-        ttq.track('ViewContent');
-
-        // ============================================
-        // 1. SUPABASE CONFIGURATION (CORRECTED)
-        // ============================================
-        const SUPABASE_URL = 'https://twksmudlxypozatfulzc.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3a3NtdWRseHlwb3phdGZ1bHpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwOTQ0NjAsImV4cCI6MjA4MTY3MDQ2MH0.wmq7QyIIT0fzbt0Tn7FXnzhOaOsJOqyj0eNW-G5wHHI';
-        
-        let supabaseClient = null;
-
-        try {
-            if (typeof supabase !== 'undefined') {
-                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                console.log('✅ Supabase connected successfully');
-            } else {
-                console.error('❌ Supabase library not loaded.');
-            }
-        } catch (e) {
-            console.error('Supabase init error:', e);
-        }
-
-        // ============================================
-        // 2. GOOGLE SHEETS INTEGRATION
-        // ============================================
-        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzz7K2XPY04cYmJm_oo7hVQCKRleL5ji-XqnHsTV-gWKHxSyYIA204JyP6Q84QqfRt_/exec';
-        
-        function sendToGoogleSheets(email, type, data) {
-            const payload = {
-                email: email,
-                type: type,
-                date: new Date().toISOString(),
-                cardData: JSON.stringify(data)
-            };
+        const app = {
+            state: { step: 0, x: 0, y: 0, w: 200, h: 130, scale: 1 },
             
-            fetch(GOOGLE_SHEETS_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams(payload)
-            }).then(() => console.log('📧 Sent to Sheets'))
-              .catch(err => console.error('Sheet error:', err));
-        }
+            init() {
+                document.getElementById('file-input').addEventListener('change', e => {
+                    const reader = new FileReader();
+                    reader.onload = evt => {
+                        document.getElementById('image-layer').src = evt.target.result;
+                        document.getElementById('intro-view').classList.remove('active');
+                        document.getElementById('workspace-view').classList.add('active');
+                        this.updateView();
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                });
+            },
 
-        // ============================================
-        // 3. CHECK IF PAID
-        // ============================================
-        async function checkIfPaid(email) {
-            const cleanEmail = email.trim().toLowerCase();
-            const manualPaidEmails = ['garcia.jerry22@live.com', 'cashflowmoves@gmail.com', 'testing@gmail.com'];
-            
-            if (manualPaidEmails.includes(cleanEmail)) {
-                console.log('✅ Found in manual list');
-                return true;
-            }
-            
-            if (!supabaseClient) return false;
-            
-            try {
-                const { data, error } = await supabaseClient
-                    .from('paid_emails') 
-                    .select('email')
-                    .eq('email', cleanEmail);
-                
-                if (error) return false;
-                if (data && data.length > 0) return true;
-                return false;
-            } catch (error) {
-                return false;
-            }
-        }
+            action(act) {
+                const s = this.state;
+                if(act === 'up') s.y -= 5;
+                if(act === 'down') s.y += 5;
+                if(act === 'left') s.x -= 5;
+                if(act === 'right') s.x += 5;
+                if(act === 'w-inc') s.w += 5;
+                if(act === 'w-dec') s.w -= 5;
+                if(act === 'h-inc') s.h += 5;
+                if(act === 'h-dec') s.h -= 5;
+                this.renderTool();
+            },
 
-        // ============================================
-        // 4. SAVE PAID EMAIL
-        // ============================================
-        async function savePaidEmail(email, data) {
-            if (!supabaseClient) return;
-            const cleanEmail = email.trim().toLowerCase();
+            renderTool() {
+                const tool = document.getElementById('selection-tool');
+                tool.style.transform = `translate(calc(-50% + ${this.state.x}px), calc(-50% + ${this.state.y}px))`;
+                tool.style.width = this.state.w + 'px';
+                tool.style.height = this.state.h + 'px';
+            },
 
-            try {
-                const { error } = await supabaseClient
-                    .from('paid_emails')
-                    .insert([{ 
-                        email: cleanEmail,
-                        card_data: data,
-                        paid_at: new Date().toISOString()
-                    }]);
-                
-                if (error) console.error('Supabase save error:', error);
-                else console.log('✅ Saved to Supabase:', cleanEmail);
-            } catch (error) {
-                console.error('Supabase save exception:', error);
-            }
-        }
-
-        // ============================================
-        // 5. MAIN LOGIC
-        // ============================================
-        let cardData = { theme: 'gold', recipientName: '', senderName: '', prize: '', email: '' };
-        let isPaid = false;
-
-        const urlParams = new URLSearchParams(window.location.search);
-        
-        if (urlParams.get('success') === 'true') {
-            isPaid = true;
-            document.getElementById('btnText').textContent = '🔗 Generate Link';
-            
-            const savedEmail = localStorage.getItem('jega_user_email');
-            if (savedEmail) {
-                cardData.email = savedEmail;
-                document.getElementById('userEmail').value = savedEmail;
-                savePaidEmail(savedEmail, cardData);
-                sendToGoogleSheets(savedEmail, 'paid', cardData);
-            }
-        }
-
-        // --- Demo & Animation Functions ---
-        function createHearts() {
-            const container = document.getElementById('heartsBackground');
-            const hearts = ['💕', '♡', '💗', '❤️', '💖'];
-            for (let i = 0; i < 20; i++) {
-                const heart = document.createElement('div');
-                heart.className = 'floating-heart';
-                heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-                heart.style.left = (20 + Math.random() * 60) + '%';
-                heart.style.top = (20 + Math.random() * 60) + '%';
-                heart.style.animationDuration = (6 + Math.random() * 6) + 's';
-                heart.style.animationDelay = Math.random() * 5 + 's';
-                container.appendChild(heart);
-            }
-        }
-        createHearts();
-
-        let winningBox = 0;
-        function generateDemoBoxes() {
-            const grid = document.getElementById('scratchGrid');
-            grid.innerHTML = '';
-            winningBox = Math.floor(Math.random() * 3);
-            const emptyMessages = [{ icon: '😏', text: 'Not this one...' }, { icon: '💋', text: 'Try again!' }];
-            for (let i = 0; i < 3; i++) {
-                const box = document.createElement('div');
-                box.className = 'scratch-box';
-                const content = document.createElement('div');
-                content.className = 'scratch-content';
-                if (i === winningBox) {
-                    content.classList.add('winner');
-                    content.innerHTML = `<div class="icon">🎟️</div><div class="text">Hugs, Kisses and More! 😏</div>`;
+            next() {
+                // Simple logic for next step
+                if(this.state.step < STEPS.length - 1) {
+                    this.state.step++;
+                    this.updateView();
                 } else {
-                    content.classList.add('empty');
-                    const msg = emptyMessages[i === 0 ? 0 : 1];
-                    content.innerHTML = `<div class="icon">${msg.icon}</div><div class="text">${msg.text}</div>`;
+                    alert("Done! Measurements saved.");
                 }
-                const canvas = document.createElement('canvas');
-                canvas.width = 300;
-                canvas.height = 300;
-                box.appendChild(content);
-                box.appendChild(canvas);
-                grid.appendChild(box);
-                initScratch(canvas, box, i);
-            }
-        }
+            },
 
-        function initScratch(canvas, box, boxIndex) {
-            const ctx = canvas.getContext('2d');
-            let isScratching = false;
-            let lastX = 0, lastY = 0;
+            updateView() {
+                const step = STEPS[this.state.step];
+                document.getElementById('step-label').innerText = step.label;
+                document.body.className = step.type === 'cal' ? 'mode-calibrate' : 'mode-measure';
+            },
 
-            ctx.fillStyle = '#000';
-            ctx.fillRect(0, 0, 300, 300);
-            const grad = ctx.createLinearGradient(0, 0, 300, 300);
-            grad.addColorStop(0, '#8B0000');
-            grad.addColorStop(0.5, '#DC143C');
-            grad.addColorStop(1, '#8B0000');
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, 300, 300);
-            
-            ctx.strokeStyle = '#FFB6C1';
-            ctx.lineWidth = 14;
-            ctx.strokeRect(0,0,300,300);
-            
-            ctx.fillStyle = '#FF69B4';
-            ctx.beginPath();
-            ctx.arc(150, 150, 28, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.font = '36px Arial';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('💕', 150, 150);
-            ctx.fillStyle = '#FFE4E1';
-            ctx.font = 'bold 16px Arial';
-            ctx.fillText('SCRATCH ME', 150, 275);
+            // --- AI CONNECTION ---
+            async magicFit() {
+                const btn = document.querySelector('.magic-btn');
+                const img = document.getElementById('image-layer');
+                
+                btn.innerText = "Thinking...";
+                
+                try {
+                    // Send to Python Server (Port 5001)
+                    const response = await fetch('http://localhost:5001/detect-nail', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ image: img.src })
+                    });
 
-            function scratch(x, y) {
-                ctx.globalCompositeOperation = 'destination-out';
-                ctx.lineWidth = 50;
-                ctx.lineCap = 'round';
-                ctx.beginPath();
-                ctx.moveTo(lastX, lastY);
-                ctx.lineTo(x, y);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.arc(x, y, 20, 0, Math.PI * 2);
-                ctx.fill();
-                lastX = x;
-                lastY = y;
-            }
+                    const data = await response.json();
+                    
+                    // Update Tool Position
+                    this.state.x = data.x;
+                    this.state.y = data.y;
+                    this.state.w = data.w;
+                    this.state.h = data.h;
+                    this.renderTool();
 
-            function checkReveal() {
-                const data = ctx.getImageData(0, 0, 300, 300).data;
-                let transparent = 0;
-                for (let i = 3; i < data.length; i += 4) {
-                    if (data[i] === 0) transparent++;
-                }
-                if ((transparent / (data.length / 4)) * 100 > 60) {
-                    box.classList.add('revealed');
-                    if (boxIndex === winningBox) {
-                        createConfetti();
-                        setTimeout(() => {
-                            document.getElementById('winnerModal').classList.add('active');
-                        }, 1000);
-                        gtag('event', 'demo_prize_revealed');
-                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("Server Error: Is python3 server.py running?");
+                } finally {
+                    btn.innerText = "✨ Magic Fit";
                 }
             }
+        };
 
-            function getCoords(e) {
-                const rect = canvas.getBoundingClientRect();
-                const scaleX = 300 / rect.width;
-                const scaleY = 300 / rect.height;
-                const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-                const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-                return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
-            }
-
-            ['mousedown', 'touchstart'].forEach(evt => 
-                canvas.addEventListener(evt, e => {
-                    isScratching = true;
-                    if(e.cancelable) e.preventDefault();
-                    const {x, y} = getCoords(e);
-                    lastX = x; lastY = y;
-                    scratch(x, y);
-                })
-            );
-            ['mousemove', 'touchmove'].forEach(evt => 
-                canvas.addEventListener(evt, e => {
-                    if(e.cancelable) e.preventDefault();
-                    if (!isScratching) return;
-                    scratch(getCoords(e).x, getCoords(e).y);
-                })
-            );
-            ['mouseup', 'touchend'].forEach(evt => 
-                canvas.addEventListener(evt, () => {
-                    isScratching = false;
-                    checkReveal();
-                })
-            );
-        }
-
-        function createConfetti() {
-            const container = document.getElementById('confettiContainer');
-            const colors = ['#D4AF37', '#FF1493', '#FFB6C1', '#F7E7CE', '#fff'];
-            for (let i = 0; i < 60; i++) {
-                setTimeout(() => {
-                    const c = document.createElement('div');
-                    c.className = 'confetti';
-                    c.style.left = Math.random() * 100 + '%';
-                    c.style.top = '-10px';
-                    c.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    c.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-                    container.appendChild(c);
-                    setTimeout(() => c.remove(), 3000);
-                }, i * 25);
-            }
-        }
-
-        function resetDemo() { generateDemoBoxes(); }
-        function closeModal() { document.getElementById('winnerModal').classList.remove('active'); }
-
-        function selectTheme(theme) {
-            cardData.theme = theme;
-            document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
-            event.target.closest('.theme-option').classList.add('active');
-            gtag('event', 'theme_selected', { theme });
-        }
-
-        function setPrize(text) {
-            document.getElementById('prizeText').value = text;
-            cardData.prize = text;
-            updateLiveDemo();
-        }
-
-        // RENAMED to match your HTML
-        function updateLiveDemo() {
-            cardData.recipientName = document.getElementById('recipientName').value || 'Babe';
-            cardData.senderName = document.getElementById('senderName').value || 'Your Secret Admirer';
-            cardData.prize = document.getElementById('prizeText').value || '30 Min Massage';
-            document.getElementById('previewRecipient').textContent = cardData.recipientName;
-            document.getElementById('previewSender').textContent = cardData.senderName;
-            document.getElementById('previewPrize').textContent = cardData.prize;
-        }
-
-        function handleGenerateLink() {
-            const email = document.getElementById('userEmail').value.trim();
-            if (!email || !validateEmail(email)) {
-                alert('Please enter a valid email address');
-                return;
-            }
-            cardData.email = email;
-            localStorage.setItem('jega_user_email', email);
-
-            if (isPaid) {
-                generateLink();
-                return;
-            }
-
-            checkIfPaid(email).then(alreadyPaid => {
-                if (alreadyPaid) {
-                    isPaid = true;
-                    document.getElementById('btnText').textContent = '🔗 Generate Link';
-                    generateLink();
-                } else {
-                    sendToGoogleSheets(email, 'lead', cardData);
-                    gtag('event', 'payment_initiated', { value: 1.99 });
-                    ttq.track('InitiateCheckout', { value: 1.99, currency: 'USD' });
-                    window.location.href = 'https://buy.stripe.com/3cI6oIab33DM6fv0Lx5gc01?client_reference_id=' + encodeURIComponent(email) + '&prefilled_email=' + encodeURIComponent(email);
-                }
-            });
-        }
-
-        function generateLink() {
-            localStorage.setItem('jega_card_data', JSON.stringify(cardData));
-            const params = new URLSearchParams({
-                r: cardData.recipientName || 'Babe',
-                s: cardData.senderName || 'Your Secret Admirer',
-                p: cardData.prize || '30 Min Massage',
-                t: cardData.theme || 'gold'
-            });
-            const link = `${window.location.origin}/play.html?${params.toString()}`;
-            document.getElementById('generatedLink').value = link;
-            document.getElementById('linkResult').classList.add('show');
-            gtag('event', 'link_generated');
-            setTimeout(() => {
-                document.getElementById('linkResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }, 100);
-        }
-
-        function copyLink() {
-            const link = document.getElementById('generatedLink').value;
-            navigator.clipboard.writeText(link);
-            const btn = event.target;
-            const originalText = btn.textContent;
-            btn.textContent = '✅ Copied!';
-            setTimeout(() => { btn.textContent = originalText; }, 2000);
-            gtag('event', 'link_copied');
-        }
-
-        function shareViaSMS() {
-            const link = document.getElementById('generatedLink').value;
-            window.location.href = `sms:?&body=${encodeURIComponent(link)}`;
-            gtag('event', 'share_sms');
-        }
-
-        function validateEmail(email) {
-            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-        }
-
-        // ADDED MISSING FUNCTION
-        function openPreview() {
-            const link = document.getElementById('generatedLink').value;
-            if (link) {
-                window.open(link, '_blank');
-                gtag('event', 'preview_opened');
-            }
-        }
-
-        generateDemoBoxes();
-        updateLiveDemo();
+        app.init();
     </script>
 </body>
 </html>
