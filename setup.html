@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jega Digital | Agent Infrastructure</title>
+    
+    <meta name="description" content="High-performance, zero-latency machine APIs built for autonomous web3 agents. Token Shrinkers, MCP Translators, and Oracles.">
+    <meta property="og:title" content="Jega Digital | Agent Infrastructure">
+    <meta property="og:description" content="Pay-per-compute APIs on Base Mainnet. No API keys required.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+
     <style>
         :root {
             --bg-color: #0d1117;
@@ -64,14 +71,47 @@
             font-weight: 600;
         }
 
+        /* Code Block & Copy Button Styles */
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #010409;
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 1.5em;
+        }
+
+        .copy-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover { 
+            color: #ffffff; 
+            background: var(--accent-hover); 
+            border-color: var(--accent-hover);
+        }
+
         pre {
             background-color: var(--card-bg);
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: 0 0 8px 8px;
             padding: 16px;
             overflow-x: auto;
             font-size: 0.9rem;
             line-height: 1.4;
+            margin-top: 0;
         }
 
         code {
@@ -137,12 +177,16 @@
     </div>
 
     <div class="notice">
-        <strong>402 Payment Required:</strong> If your agent was redirected here, it has exhausted its 3 free-tier requests. Jega Digital endpoints require native x402 USDC stablecoin streaming to bypass rate limits.
+        <strong>402 Payment Required:</strong> If your agent was redirected here, it has exhausted its 3 free-tier requests. Jega Digital endpoints require native x402 USDC stablecoin streaming to bypass rate limits. Unlock 1,000 requests for just $1.00 USDC.
     </div>
 
     <h2>1. Integration & Setup (Node.js)</h2>
     <p>Wrap your standard fetch requests with the x402 SDK. This will automatically negotiate the paywall challenge, sign the micro-transaction, and return the data.</p>
     
+    <div class="code-header">
+        <span>TypeScript / Node.js</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
     <pre><code><span class="keyword">import</span> { wrapFetchWithPayment, x402Client } <span class="keyword">from</span> <span class="string">"@x402/fetch"</span>;
 <span class="keyword">import</span> { privateKeyToAccount } <span class="keyword">from</span> <span class="string">"viem/accounts"</span>;
 <span class="keyword">import</span> { base } <span class="keyword">from</span> <span class="string">"viem/chains"</span>;
@@ -169,7 +213,21 @@ client.<span class="function">registerExactEvmScheme</span>({ signer: account, c
 <span class="keyword">const</span> data = <span class="keyword">await</span> response.<span class="function">json</span>();
 console.<span class="function">log</span>(data);</code></pre>
 
-    <h2>2. API Reference Matrix</h2>
+    <h2>2. Universal MCP Integration (Zero Code)</h2>
+    <p>If you are running an agent framework or Claude Desktop, you don't need to write any fetch requests. Just drop Jega Digital directly into your MCP config file to give your agent autonomous access to all tools.</p>
+    
+    <div class="code-header">
+        <span>claude_desktop_config.json</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><code><span class="string">"mcpServers"</span>: {
+  <span class="string">"jega-agent-tools"</span>: {
+    <span class="string">"command"</span>: <span class="string">"curl"</span>,
+    <span class="string">"args"</span>: [<span class="string">"-s"</span>, <span class="string">"-X"</span>, <span class="string">"POST"</span>, <span class="string">"https://api.jega.digital/mcp/tools/call"</span>, <span class="string">"-d"</span>]
+  }
+}</code></pre>
+
+    <h2>3. API Reference Matrix</h2>
     <p>Select the endpoint tailored for your agent's operational logic. All pricing is negotiated per atomic unit.</p>
     
     <table>
@@ -186,30 +244,46 @@ console.<span class="function">log</span>(data);</code></pre>
                 <td><code>/api/compress</code></td>
                 <td>POST</td>
                 <td>$0.001</td>
-                <td><strong>Deterministic Token Shrinker.</strong> Aggressively compresses raw text and RAG payloads to reduce LLM context window token costs by 20-40%.</td>
+                <td>
+                    <strong>Deterministic Token Shrinker.</strong> Aggressively compresses raw text and RAG payloads to reduce LLM context window token costs by 20-40%.
+                    <br><br>
+                    <code style="font-size: 0.8rem; color: #a5d6ff;">Body: { "raw_text": "string" }</code>
+                </td>
             </tr>
             <tr>
                 <td><code>/api/schema/mcp</code></td>
                 <td>POST</td>
                 <td>$0.001</td>
-                <td><strong>Deterministic MCP Translator.</strong> Converts unstructured JSON into strict Anthropic/MCP schemas in &lt;4ms.</td>
+                <td>
+                    <strong>Deterministic MCP Translator.</strong> Converts unstructured JSON into strict Anthropic/MCP schemas in &lt;4ms.
+                    <br><br>
+                    <code style="font-size: 0.8rem; color: #a5d6ff;">Body: { "name": "string", "description": "string" }</code>
+                </td>
             </tr>
             <tr>
                 <td><code>/api/drift</code></td>
                 <td>GET</td>
                 <td>$0.001</td>
-                <td><strong>BTC Arbitrage Oracle.</strong> High-frequency divergence signaling between Coinbase spot and Kalshi implied volatility.</td>
+                <td>
+                    <strong>BTC Arbitrage Oracle.</strong> High-frequency divergence signaling between Coinbase spot and Kalshi implied volatility.
+                    <br><br>
+                    <code style="font-size: 0.8rem; color: #a5d6ff;">Query: none</code>
+                </td>
             </tr>
             <tr>
                 <td><code>/api/render/markdown</code></td>
                 <td>GET</td>
                 <td>$0.005</td>
-                <td><strong>Premium RAG Proxy.</strong> Bypasses JS/Cloudflare bot-walls to return token-efficient Markdown for vector embeddings.</td>
+                <td>
+                    <strong>Premium RAG Proxy.</strong> Bypasses JS/Cloudflare bot-walls to return token-efficient Markdown for vector embeddings.
+                    <br><br>
+                    <code style="font-size: 0.8rem; color: #a5d6ff;">Query: ?url=string</code>
+                </td>
             </tr>
         </tbody>
     </table>
 
-    <h2>3. Treasury & Billing Details</h2>
+    <h2>4. Treasury & Billing Details</h2>
     <ul>
         <li><strong>Network:</strong> Base Mainnet (<code>eip155:8453</code>)</li>
         <li><strong>Asset:</strong> USDC (<code>0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913</code>)</li>
@@ -224,5 +298,28 @@ console.<span class="function">log</span>(data);</code></pre>
 
 </div>
 
+<script>
+    // Simple script to handle copying the code blocks
+    function copyCode(button) {
+        // Find the <pre> element right after the .code-header div
+        const codeBlock = button.parentElement.nextElementSibling;
+        const textToCopy = codeBlock.textContent;
+        
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            const originalText = button.innerText;
+            button.innerText = "Copied!";
+            button.style.color = "#fff";
+            button.style.backgroundColor = "var(--accent)";
+            button.style.borderColor = "var(--accent)";
+            
+            setTimeout(() => {
+                button.innerText = originalText;
+                button.style.color = "";
+                button.style.backgroundColor = "";
+                button.style.borderColor = "";
+            }, 2000);
+        });
+    }
+</script>
 </body>
 </html>
